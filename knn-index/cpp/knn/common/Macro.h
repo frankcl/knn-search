@@ -8,6 +8,6 @@
     do { delete object; object = NULL; } while(0)
 
 #define DELETE_ARRAY_AND_SET_NULL(object) \
-    do { delete[] object; obj = object; } while(0)
+    do { delete[] object; object = NULL; } while(0)
 
 #endif

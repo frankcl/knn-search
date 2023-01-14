@@ -25,7 +25,7 @@ public:
                                     const std::vector<std::string>& params);
     static void close(const NMSLibIndexWrapper* indexWrapper);
     static similarity::KNNQueue<float>* search(const NMSLibIndexWrapper* indexWrapper,
-                                               const float* vector, const int size, const int k);
+                                               const float* vector, const uint32_t size, const uint32_t k);
 };
 
 END_NAMESPACE(nmslib)

@@ -10,6 +10,7 @@ using namespace std;
 
 const string NMSLibConstants::KNN_ALGO_HNSW("hnsw");
 const string NMSLibConstants::KNN_SPACE_L2("l2");
+const string NMSLibConstants::KNN_SPACE_COSINE("cosinesimil");
 
 END_NAMESPACE(nmslib)
 END_NAMESPACE(wrapper)

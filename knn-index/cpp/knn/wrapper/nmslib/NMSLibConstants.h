@@ -18,6 +18,7 @@ private:
 public:
     const static std::string KNN_ALGO_HNSW;
     const static std::string KNN_SPACE_L2;
+    const static std::string KNN_SPACE_COSINE;
 };
 
 END_NAMESPACE(nmslib)
