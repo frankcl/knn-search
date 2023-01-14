@@ -33,8 +33,10 @@ JNIEXPORT jboolean JNICALL Java_xin_manong_search_knn_index_hnsw_HNSWIndexFactor
         vector<string> cppParams = JNIUtil::convertJavaStringArrayToCppStringArray(env, params);
         NMSLibWrapper::dump(cppSpaceType, cppParams, dataset, cppPath);
         for (auto it = dataset.begin(); it != dataset.end(); it++) delete *it;
+        return true;
     } catch (exception& e) {
         for (auto it = dataset.begin(); it != dataset.end(); it++) delete *it;
         JNIUtil::catchCppAndThrowJavaException(env, e);
+        return false;
     }
 }

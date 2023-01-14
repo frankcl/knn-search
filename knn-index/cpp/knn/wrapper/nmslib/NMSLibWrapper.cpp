@@ -20,7 +20,7 @@ using namespace std;
 using namespace similarity;
 
 void NMSLibWrapper::initLibrary() {
-    similarity::initLibrary();
+    ::similarity::initLibrary();
 }
 
 void NMSLibWrapper::dump(const string& spaceType, const vector<std::string>& params,
