@@ -1,7 +1,5 @@
 package xin.manong.search.knn.index.hnsw;
 
-import xin.manong.search.knn.index.DynamicLibraryLoader;
-
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -11,16 +9,22 @@ import java.security.PrivilegedAction;
  * @author frankcl
  * @date 2023-01-10 21:01:17
  */
-public class HNSWLoader extends DynamicLibraryLoader {
+public class HNSWLoader {
 
     public final static String JNI_LIBRARY_NAME = "HNSWIndexJNI_V2_1_1";
 
     static {
         AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
             System.loadLibrary(JNI_LIBRARY_NAME);
-            initLibrary();
             return null;
         });
+    }
+
+    /**
+     * 初始化
+     */
+    public static void init() {
+        initLibrary();
     }
 
     /**

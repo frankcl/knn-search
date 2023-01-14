@@ -21,7 +21,7 @@ public class FAISSIndex extends KNNIndex {
     private final static Logger logger = LoggerFactory.getLogger(FAISSIndex.class);
 
     static {
-        FAISSLoader.load();
+        FAISSLoader.init();
     }
 
     public FAISSIndex(FAISSIndexMeta meta) {

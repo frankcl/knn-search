@@ -1,8 +1,13 @@
 package xin.manong.search.knn.index.hnsw;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xin.manong.search.knn.index.KNNIndexData;
 import xin.manong.search.knn.index.KNNIndexFactory;
 import xin.manong.search.knn.index.KNNIndexMeta;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * HNSW索引工厂：负责构建HNSW索引
@@ -12,13 +17,28 @@ import xin.manong.search.knn.index.KNNIndexMeta;
  */
 public class HNSWIndexFactory extends KNNIndexFactory {
 
+    private final static Logger logger = LoggerFactory.getLogger(HNSWIndexFactory.class);
+
     static {
-        HNSWLoader.load();
+        HNSWLoader.init();
     }
 
     @Override
     public boolean buildIndex(KNNIndexData indexData, KNNIndexMeta indexMeta) {
-        return false;
+        if (indexData == null || !indexData.check()) {
+            logger.error("invalid HNSW index data");
+            return false;
+        }
+        HNSWIndexMeta hnswIndexMeta = (HNSWIndexMeta) indexMeta;
+        if (hnswIndexMeta == null || !hnswIndexMeta.check()) {
+            logger.error("invalid HNSW index meta");
+            return false;
+        }
+        List<String> params = new ArrayList<>();
+        params.add(String.format("%s=%d", HNSWConstants.M, hnswIndexMeta.M));
+        params.add(String.format("%s=%d", HNSWConstants.EF_CONSTRUCTION, hnswIndexMeta.efConstruction));
+        params.add(String.format("%s=%d", HNSWConstants.INDEX_THREAD_QTY, hnswIndexMeta.indexThreadQty));
+        return build(indexData.ids, indexData.data, hnswIndexMeta.space, params.toArray(new String[0]), indexMeta.path);
     }
 
     /**

@@ -21,7 +21,7 @@ public class HNSWIndex extends KNNIndex {
     private final static Logger logger = LoggerFactory.getLogger(HNSWIndex.class);
 
     static {
-        HNSWLoader.load();
+        HNSWLoader.init();
     }
 
     public HNSWIndex(HNSWIndexMeta meta) {
@@ -52,6 +52,10 @@ public class HNSWIndex extends KNNIndex {
     public void open() {
         try {
             HNSWIndexMeta indexMeta = (HNSWIndexMeta) meta;
+            if (meta == null || !meta.check()) {
+                logger.error("invalid HNSW index meta");
+                throw new RuntimeException("invalid HNSW index meta");
+            }
             pointer = open(indexMeta.path, indexMeta.efSearch, indexMeta.space);
             compute();
         } catch (Exception e) {

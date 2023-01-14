@@ -1,7 +1,5 @@
 package xin.manong.search.knn.index.faiss;
 
-import xin.manong.search.knn.index.DynamicLibraryLoader;
-
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -11,7 +9,7 @@ import java.security.PrivilegedAction;
  * @author frankcl
  * @date 2023-01-10 20:43:07
  */
-public class FAISSLoader extends DynamicLibraryLoader {
+public class FAISSLoader {
 
     public final static String JNI_LIBRARY_NAME = "FAISSIndexJNI_V1_6_3";
 
@@ -20,5 +18,11 @@ public class FAISSLoader extends DynamicLibraryLoader {
             System.loadLibrary(JNI_LIBRARY_NAME);
             return null;
         });
+    }
+
+    /**
+     * 初始化
+     */
+    public static void init() {
     }
 }

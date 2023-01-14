@@ -1,5 +1,8 @@
 package xin.manong.search.knn.index.hnsw;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xin.manong.search.knn.index.KNNIndexMeta;
 
 /**
@@ -10,12 +13,37 @@ import xin.manong.search.knn.index.KNNIndexMeta;
  */
 public class HNSWIndexMeta extends KNNIndexMeta {
 
+    private final static Logger logger = LoggerFactory.getLogger(HNSWIndexMeta.class);
+
+    public int M;
     public int efSearch;
+    public int efConstruction;
+    public int indexThreadQty;
     public String space;
 
     @Override
     public boolean check() {
         if (!super.check()) return false;
+        if (M < 2) {
+            logger.error("invalid M[{}]", M);
+            return false;
+        }
+        if (efSearch < 1) {
+            logger.error("invalid efSearch[{}]", efSearch);
+            return false;
+        }
+        if (efConstruction < 1) {
+            logger.error("invalid efConstruction[{}]", efConstruction);
+            return false;
+        }
+        if (indexThreadQty < 1) {
+            logger.error("invalid indexThreadQty[{}]", indexThreadQty);
+            return false;
+        }
+        if (StringUtils.isEmpty(space)) {
+            logger.error("space is empty");
+            return false;
+        }
         return true;
     }
 }

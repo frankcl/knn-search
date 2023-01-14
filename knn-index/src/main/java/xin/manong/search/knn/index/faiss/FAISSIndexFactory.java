@@ -20,7 +20,7 @@ public class FAISSIndexFactory extends KNNIndexFactory {
     private final static Logger logger = LoggerFactory.getLogger(FAISSIndexFactory.class);
 
     static {
-        FAISSLoader.load();
+        FAISSLoader.init();
     }
 
     @Override
