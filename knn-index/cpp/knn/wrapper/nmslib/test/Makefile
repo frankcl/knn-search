@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -g -O2 -Wall -std=c++14
 LIBS = -lstdc++ -lKNNCommon -lNonMetricSpaceLib -lgtest -lgtest_main -lpthread -ltcmalloc
 
-JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk1.8.0_341.jdk/Contents/Home/
+JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
 JNI_BASE_INCLUDE = $(JAVA_HOME)include
 JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
 NMSLIB_BASE_DIR = /Users/frankcl/Code/public/nmslib/2.1.1/nmslib-2.1.1/similarity_search/

@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -g -O2 -Wall -std=c++11
 LIBS = -lstdc++
 
-JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk1.8.0_341.jdk/Contents/Home/
+JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
 JNI_BASE_INCLUDE = $(JAVA_HOME)include
 JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
 INCLUDE_DIR = -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I$(CURRENT_DIR)/../../..
