@@ -36,11 +36,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
                 <configuration>
-                    <argLine>-Djava.library.path=${project.basedir}/cpp/knn/jni/hnsw/build -Djava.security.policy=${parent.basedir}/knn-plugin/src/main/plugin-meta/plugin-security.policy</argLine>
+                    <argLine>-Djava.library.path=${project.basedir}/cpp/knn/lib</argLine>
                     <environmentVariables>
-                        <DYLD_LIBRARY_PATH>${project.basedir}/cpp/knn/jni/hnsw/build</DYLD_LIBRARY_PATH>
+                        <DYLD_LIBRARY_PATH>${project.basedir}/cpp/knn/lib</DYLD_LIBRARY_PATH>
                     </environmentVariables>
                 </configuration>
             </plugin>

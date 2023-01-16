@@ -44,7 +44,7 @@
     </modules>
 
     <properties>
-        <jdk.version>1.8</jdk.version>
+        <jdk.version>11</jdk.version>
         <slf4j-log4j.version>1.7.25</slf4j-log4j.version>
         <junit.version>4.13.2</junit.version>
         <commons-lang3.version>3.8</commons-lang3.version>
