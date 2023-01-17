@@ -5,14 +5,14 @@
 #include "knn/wrapper/nmslib/NMSLibConstants.h"
 #include "knn/wrapper/nmslib/NMSLibWrapper.h"
 
+using namespace std;
+using namespace similarity;
+
 BEGIN_NAMESPACE(xin)
 BEGIN_NAMESPACE(manong)
 BEGIN_NAMESPACE(knn)
 BEGIN_NAMESPACE(wrapper)
 BEGIN_NAMESPACE(nmslib)
-
-using namespace std;
-using namespace similarity;
 
 class NMSLibWrapperSuite : public testing::Test {
 public:
@@ -59,7 +59,7 @@ TEST_F(NMSLibWrapperSuite, testReadWrite) {
     params.clear();
     params.push_back("efSearch=512");
     NMSLibIndexWrapper* indexWrapper = NMSLibWrapper::open(path, NMSLibConstants::KNN_SPACE_L2, params);
-    EXPECT_TRUE(indexWrapper != NULL);
+    EXPECT_TRUE(indexWrapper != nullptr);
     {
         float* vector = new float[dimension];
         vector[0] = 2.0f;
@@ -80,7 +80,7 @@ TEST_F(NMSLibWrapperSuite, testReadWrite) {
         vector[2] = 3.0f;
         KNNQueue<float>* knnQueue = NMSLibWrapper::search(indexWrapper, vector, dimension, 1);
         DELETE_ARRAY_AND_SET_NULL(vector);
-        EXPECT_TRUE(knnQueue != NULL);
+        EXPECT_TRUE(knnQueue != nullptr);
         EXPECT_EQ(1, knnQueue->Size());
         EXPECT_EQ(1, knnQueue->TopDistance());
         EXPECT_EQ(3, knnQueue->Pop()->id());

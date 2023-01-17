@@ -5,9 +5,9 @@
 #define END_NAMESPACE(n) }
 
 #define DELETE_AND_SET_NULL(object) \
-    do { delete object; object = NULL; } while(0)
+    do { delete object; object = nullptr; } while(0)
 
 #define DELETE_ARRAY_AND_SET_NULL(object) \
-    do { delete[] object; object = NULL; } while(0)
+    do { delete[] object; object = nullptr; } while(0)
 
 #endif

@@ -1,14 +1,14 @@
 #include "knn/wrapper/nmslib/NMSLibConstants.h"
 #include "knn/wrapper/nmslib/NMSLibIndexWrapper.h"
 
+using namespace std;
+using namespace similarity;
+
 BEGIN_NAMESPACE(xin)
 BEGIN_NAMESPACE(manong)
 BEGIN_NAMESPACE(knn)
 BEGIN_NAMESPACE(wrapper)
 BEGIN_NAMESPACE(nmslib)
-
-using namespace std;
-using namespace similarity;
 
 NMSLibIndexWrapper::NMSLibIndexWrapper(const string& spaceType) {
     space.reset(SpaceFactoryRegistry<float>::Instance().CreateSpace(spaceType, AnyParams()));

@@ -20,12 +20,12 @@ private:
 public:
     static void initLibrary();
     static void dump(const std::string& spaceType, const std::vector<std::string>& params,
-                     const similarity::ObjectVector& dataset, const std::string& path);
+                     const ::similarity::ObjectVector& dataset, const std::string& path);
     static NMSLibIndexWrapper* open(const std::string& path, const std::string& spaceType,
                                     const std::vector<std::string>& params);
     static void close(const NMSLibIndexWrapper* indexWrapper);
-    static similarity::KNNQueue<float>* search(const NMSLibIndexWrapper* indexWrapper,
-                                               const float* vector, const uint32_t size, const uint32_t k);
+    static ::similarity::KNNQueue<float>* search(const NMSLibIndexWrapper* indexWrapper,
+                                                 const float* vector, const uint32_t size, const uint32_t k);
 };
 
 END_NAMESPACE(nmslib)

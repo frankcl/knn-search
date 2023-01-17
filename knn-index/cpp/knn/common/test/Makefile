@@ -13,6 +13,7 @@ $(shell mkdir -p $(BUILD_DIR))
 
 $(TARGET):$(SOURCE)
 	$(CC) $(SOURCE) -o $(BUILD_DIR)$(TARGET) $(CFLAGS) $(INCLUDE_DIR) $(LIBS)
+	rm -fr $(BUILD_DIR)*.dSYM
 
 all: $(TARGET)
 

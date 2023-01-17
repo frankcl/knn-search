@@ -10,14 +10,14 @@
 #include "knn/wrapper/nmslib/NMSLibConstants.h"
 #include "knn/wrapper/nmslib/NMSLibWrapper.h"
 
+using namespace std;
+using namespace similarity;
+
 BEGIN_NAMESPACE(xin)
 BEGIN_NAMESPACE(manong)
 BEGIN_NAMESPACE(knn)
 BEGIN_NAMESPACE(wrapper)
 BEGIN_NAMESPACE(nmslib)
-
-using namespace std;
-using namespace similarity;
 
 void NMSLibWrapper::initLibrary() {
     ::similarity::initLibrary();
@@ -40,11 +40,11 @@ NMSLibIndexWrapper* NMSLibWrapper::open(const string& path, const string& spaceT
 }
 
 void NMSLibWrapper::close(const NMSLibIndexWrapper* indexWrapper) {
-    delete indexWrapper;
+    DELETE_AND_SET_NULL(indexWrapper);
 }
 
-similarity::KNNQueue<float>* NMSLibWrapper::search(const NMSLibIndexWrapper* indexWrapper,
-                                                   const float* vector, const uint32_t size, const uint32_t k) {
+KNNQueue<float>* NMSLibWrapper::search(const NMSLibIndexWrapper* indexWrapper,
+                                       const float* vector, const uint32_t size, const uint32_t k) {
     unique_ptr<const Object> queryObject(new Object(-1, -1, size * sizeof(float), vector));
     KNNQuery<float> knnQuery(*(indexWrapper->space), queryObject.get(), k);
     indexWrapper->index->Search(&knnQuery);

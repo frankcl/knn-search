@@ -17,7 +17,7 @@ JNIEXPORT void JNICALL Java_xin_manong_search_knn_index_hnsw_HNSWIndex_close
     (JNIEnv* env, jobject javaObject, jlong pointer) {
     try {
         NMSLibIndexWrapper* indexWrapper = reinterpret_cast<NMSLibIndexWrapper*>(pointer);
-        DELETE_AND_SET_NULL(indexWrapper);
+        NMSLibWrapper::close(indexWrapper);
     } catch (exception& e) {
         JNIUtil::catchCppAndThrowJavaException(env, e);
     }
@@ -43,7 +43,7 @@ JNIEXPORT jobjectArray JNICALL Java_xin_manong_search_knn_index_hnsw_HNSWIndex_s
     (JNIEnv* env, jobject javaObject, jlong pointer, jfloatArray javaVector, jint k) {
     try {
         NMSLibIndexWrapper* indexWrapper = reinterpret_cast<NMSLibIndexWrapper*>(pointer);
-        if (indexWrapper == NULL) throw runtime_error("not an object of NMSLibIndexWrapper");
+        if (indexWrapper == nullptr) throw runtime_error("not an object of NMSLibIndexWrapper");
         int size = JNIUtil::getJavaFloatArrayLength(env, javaVector);
         float* vector = env->GetFloatArrayElements(javaVector, NULL);
         unique_ptr<KNNQueue<float>> knnQueue(NMSLibWrapper::search(indexWrapper, vector, size, k));
@@ -58,6 +58,7 @@ JNIEXPORT jobjectArray JNICALL Java_xin_manong_search_knn_index_hnsw_HNSWIndex_s
             env->SetObjectArrayElement(knnResults, i, env->NewObject(javaClass, constructor, id, distance));
             JNIUtil::checkJNIException(env, "setting object array element failed");
         }
+        env->DeleteLocalRef(javaClass);
         return knnResults;
     } catch (exception& e) {
         JNIUtil::catchCppAndThrowJavaException(env, e);

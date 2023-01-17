@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <stdexcept>
+#include <unordered_map>
 #include <jni.h>
 #include "knn/common/Macro.h"
 
@@ -21,9 +21,16 @@ public:
     static void catchCppAndThrowJavaException(JNIEnv* env, const std::exception& e);
     static std::string convertJavaStringToCppString(JNIEnv* env, jstring javaString);
     static std::vector<std::string> convertJavaStringArrayToCppStringArray(JNIEnv* env, jobjectArray javaStringArray);
+    static int64_t* convertJavaIntArrayToCppInt64Array(JNIEnv* env, jintArray javaIntArray);
+    static float* convertJava2DVectorToCppVector(JNIEnv* env, jobjectArray java2DVector);
+    static std::unordered_map<std::string, int32_t> convertJavaMapToCppInt32Map(JNIEnv* env, jobject javaMap);
+    static int32_t convertJavaObjectToCppInt32(JNIEnv* env, jobject javaObject);
+    static int get2DVectorDimension(JNIEnv* env, jobjectArray java2DVector);
     static int getJavaObjectArrayLength(JNIEnv* env, jobjectArray javaArray);
     static int getJavaFloatArrayLength(JNIEnv* env, jfloatArray javaArray);
     static int getJavaIntArrayLength(JNIEnv* env, jintArray javaArray);
+    static jmethodID findMethod(JNIEnv* env, const std::string& className,
+                                const std::string& methodName, const std::string& methodSign);
 };
 
 END_NAMESPACE(common)

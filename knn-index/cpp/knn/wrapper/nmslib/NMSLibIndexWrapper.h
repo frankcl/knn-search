@@ -26,8 +26,8 @@ private:
     NMSLibIndexWrapper& operator = (const NMSLibIndexWrapper&);
 
 public:
-    std::unique_ptr<similarity::Index<float>> index;
-    std::unique_ptr<similarity::Space<float>> space;
+    std::unique_ptr<::similarity::Index<float>> index;
+    std::unique_ptr<::similarity::Space<float>> space;
 
 private:
     similarity::ObjectVector data;
