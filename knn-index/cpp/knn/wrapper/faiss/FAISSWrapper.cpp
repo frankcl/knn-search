@@ -7,6 +7,7 @@
 #include <faiss/IndexHNSW.h>
 #include <faiss/index_factory.h>
 #include <faiss/index_io.h>
+#include "knn/common/StringUtil.h"
 #include "knn/wrapper/faiss/FAISSConstants.h"
 #include "knn/wrapper/faiss/FAISSWrapper.h"
 
@@ -26,28 +27,33 @@ Index* FAISSWrapper::getInnerIndexImpl(Index* index) {
     return index;
 }
 
-void FAISSWrapper::setIndexParameters(Index* index, const unordered_map<string, int32_t>& paramMap) {
+void FAISSWrapper::configIndex(Index* index, const unordered_map<string, string>& paramMap) {
     Index* innerIndex = getInnerIndexImpl(index);
     IndexIVF* indexIVF = dynamic_cast<IndexIVF*>(innerIndex);
-    if (indexIVF != nullptr && paramMap.find(FAISSConstants::PARAM_N_PROBE) != paramMap.end() &&
-        paramMap.at(FAISSConstants::PARAM_N_PROBE) > 0) {
-        indexIVF->nprobe = paramMap.at(FAISSConstants::PARAM_N_PROBE);
+    int32_t nprobe = 0, efSearch = 0, efConstruction = 0;
+    if (indexIVF != nullptr && paramMap.find(FAISSConstants::PARAM_N_PROBE) != paramMap.end()) {
+        string value = paramMap.at(FAISSConstants::PARAM_N_PROBE);
+        if (common::StringUtil::strToInt32(value, nprobe) && nprobe > 0) indexIVF->nprobe = nprobe;
     }
     IndexHNSW* indexHNSW = dynamic_cast<IndexHNSW*>(innerIndex);
     if (indexHNSW != nullptr) {
-        if (paramMap.find(FAISSConstants::PARAM_EF_CONSTRUCTION) != paramMap.end() &&
-            paramMap.at(FAISSConstants::PARAM_EF_CONSTRUCTION) > 0) {
-            indexHNSW->hnsw.efConstruction = paramMap.at(FAISSConstants::PARAM_EF_CONSTRUCTION);
+        if (paramMap.find(FAISSConstants::PARAM_EF_CONSTRUCTION) != paramMap.end()) {
+            string value = paramMap.at(FAISSConstants::PARAM_EF_CONSTRUCTION);
+            if (common::StringUtil::strToInt32(value, efConstruction) && efConstruction > 0) {
+                indexHNSW->hnsw.efConstruction = efConstruction;
+            }
         }
-        if (paramMap.find(FAISSConstants::PARAM_EF_SEARCH) != paramMap.end() &&
-            paramMap.at(FAISSConstants::PARAM_EF_SEARCH) > 0) {
-            indexHNSW->hnsw.efSearch = paramMap.at(FAISSConstants::PARAM_EF_SEARCH);
+        if (paramMap.find(FAISSConstants::PARAM_EF_SEARCH) != paramMap.end()) {
+            string value = paramMap.at(FAISSConstants::PARAM_EF_SEARCH);
+            if (common::StringUtil::strToInt32(value, efSearch) && efSearch > 0) {
+                indexHNSW->hnsw.efSearch = efSearch;
+            }
         }
     }
 }
 
 void FAISSWrapper::dump(const string& indexDescription, const FAISSData& indexData,
-                        const unordered_map<string, int32_t>& paramMap, const string& path) {
+                        const unordered_map<string, string>& paramMap, const string& path) {
     indexData.check();
     if (indexDescription.empty()) throw runtime_error("index description is empty");
     try {
@@ -57,7 +63,7 @@ void FAISSWrapper::dump(const string& indexDescription, const FAISSData& indexDa
             ss << "create index failed for description[" << indexDescription << "]";
             throw runtime_error(ss.str());
         }
-        setIndexParameters(index.get(), paramMap);
+        configIndex(index.get(), paramMap);
         index->train(indexData.size, indexData.data);
         index->add_with_ids(indexData.size, indexData.data, indexData.ids);
         write_index(index.get(), path.c_str());

@@ -90,30 +90,31 @@ public class FAISSIndex extends KNNIndex {
         }
         fileSize = file.length() / 1024 + 1;
         FAISSIndexMeta indexMeta = (FAISSIndexMeta) meta;
-//        if (indexMeta.naming.encodeComponent != null && indexMeta.naming.encodeComponent.
-//                startsWith(FAISSIndexNameParser.COMPONENT_ENCODE_PQ)) {
-//            memorySize = indexMeta.dataNum * faissMeta.subQuantizerNum * indexMeta.encodeBits / 8;
-//            memorySize += Math.pow(2, indexMeta.encodeBits) * indexMeta.dimension * 4;
-//        } else {
-//            memorySize = indexMeta.dataNum * indexMeta.dimension * 4;
-//        }
-//        if (indexMeta.naming.searchComponent != null) {
-//            if (indexMeta.naming.searchComponent.startsWith(FAISSIndexNameParser.COMPONENT_SEARCH_IVF)) {
-//                memorySize += indexMeta.quantizerNum * indexMeta.dimension * 4;
-//            } else if (indexMeta.naming.searchComponent.startsWith(FAISSIndexNameParser.COMPONENT_SEARCH_IMI)) {
-//                memorySize += indexMeta.centroidsPerSegment * indexMeta.dimension * 4;
-//            } else if (indexMeta.naming.searchComponent.startsWith(FAISSIndexNameParser.COMPONENT_SEARCH_HNSW)) {
-//                memorySize += indexMeta.dataNum * 8 * indexMeta.M;
-//            }
-//        }
-//        if (indexMeta.naming.encodeComponent != null && indexMeta.naming.encodeComponent.
-//                startsWith(FAISSIndexNameParser.COMPONENT_ENCODE_PQ) && indexMeta.naming.searchComponent != null) {
-//            if (indexMeta.naming.searchComponent.startsWith(FAISSIndexNameParser.COMPONENT_SEARCH_IVF)) {
-//                memorySize *= 4;
-//            } else if (indexMeta.naming.searchComponent.startsWith(FAISSIndexNameParser.COMPONENT_SEARCH_IMI)) {
-//                memorySize *= 2;
-//            }
-//        }
+        FAISSDescriptor descriptor = indexMeta.descriptor;
+        memorySize = indexMeta.num * indexMeta.dimension * 4;
+        if (descriptor.encode != null && descriptor.encode.startsWith(FAISSConstants.COMPONENT_ENCODE_PQ)) {
+            int encodeBits = (int) indexMeta.parameterMap.get(FAISSConstants.ENCODE_BITS);
+            int subQuantizeNum = (int) indexMeta.parameterMap.get(FAISSConstants.SUB_QUANTIZE_NUM);
+            memorySize = indexMeta.num * subQuantizeNum * encodeBits / 8;
+            memorySize += Math.pow(2, encodeBits) * indexMeta.dimension * 4;
+        }
+        if (descriptor.search != null) {
+            if (descriptor.search.startsWith(FAISSConstants.COMPONENT_SEARCH_IVF)) {
+                int quantizeNum = (int) descriptor.parameterMap.get(FAISSConstants.QUANTIZE_NUM);
+                memorySize += quantizeNum * indexMeta.dimension * 4;
+            } else if (descriptor.search.startsWith(FAISSConstants.COMPONENT_SEARCH_IMI)) {
+                int centroidNum = (int) descriptor.parameterMap.get(FAISSConstants.CENTROID_NUM);
+                memorySize += centroidNum * indexMeta.dimension * 4;
+            } else if (descriptor.search.startsWith(FAISSConstants.COMPONENT_SEARCH_HNSW)) {
+                int M = (int) indexMeta.parameterMap.get(FAISSConstants.M);
+                memorySize += indexMeta.num * 8 * M;
+            }
+        }
+        if (descriptor.search != null && descriptor.encode != null &&
+                descriptor.encode.startsWith(FAISSConstants.COMPONENT_ENCODE_PQ)) {
+            if (descriptor.search.startsWith(FAISSConstants.COMPONENT_SEARCH_IVF)) memorySize *= 4;
+            else if (descriptor.search.startsWith(FAISSConstants.COMPONENT_SEARCH_IMI)) memorySize *= 2;
+        }
         memorySize = memorySize / 1024 + 1;
     }
 

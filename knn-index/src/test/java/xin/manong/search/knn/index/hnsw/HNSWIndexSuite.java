@@ -22,11 +22,11 @@ public class HNSWIndexSuite {
 
     @Test
     public void testReadWrite() throws Exception {
-        int[] ids = new int[]{1, 2, 3};
+        int[] ids = new int[] { 1, 2, 3 };
         float[][] data = new float[3][];
-        data[0] = new float[]{1f, 1f, 1f};
-        data[1] = new float[]{2f, 2f, 2f};
-        data[2] = new float[]{3f, 3f, 3f};
+        data[0] = new float[] { 1f, 1f, 1f };
+        data[1] = new float[] { 2f, 2f, 2f };
+        data[2] = new float[] { 3f, 3f, 3f };
         KNNIndexData indexData = new KNNIndexData(ids, data);
         HNSWIndexMeta indexMeta = new HNSWIndexMeta();
         indexMeta.efConstruction = 512;
@@ -45,6 +45,8 @@ public class HNSWIndexSuite {
 
         HNSWIndex index = new HNSWIndex(indexMeta);
         index.open();
+        Assert.assertEquals(1L, index.getFileSize());
+        Assert.assertEquals(1L, index.getMemorySize());
         {
             KNNResult[] results = index.search(data[0], 1);
             Assert.assertEquals(1, results.length);

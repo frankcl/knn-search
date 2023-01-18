@@ -49,8 +49,8 @@ JNIEXPORT jobjectArray JNICALL Java_xin_manong_search_knn_index_hnsw_HNSWIndex_s
         unique_ptr<KNNQueue<float>> knnQueue(NMSLibWrapper::search(indexWrapper, vector, size, k));
         env->ReleaseFloatArrayElements(javaVector, vector, JNI_ABORT);
         int resultSize = knnQueue->Size();
-        jclass javaClass = env->FindClass("xin/manong/search/knn/index/KNNResult");
-        jmethodID constructor = env->GetMethodID(javaClass, "<init>", "(IF)V");
+        jclass javaClass = JNIUtil::findClass(env, "xin/manong/search/knn/index/KNNResult");
+        jmethodID constructor = JNIUtil::findMethod(env, "xin/manong/search/knn/index/KNNResult", "<init>", "(IF)V");
         jobjectArray knnResults = env->NewObjectArray(resultSize, javaClass, NULL);
         for (int i = 0; i < resultSize; i++) {
             float distance = knnQueue->TopDistance();
@@ -58,7 +58,6 @@ JNIEXPORT jobjectArray JNICALL Java_xin_manong_search_knn_index_hnsw_HNSWIndex_s
             env->SetObjectArrayElement(knnResults, i, env->NewObject(javaClass, constructor, id, distance));
             JNIUtil::checkJNIException(env, "setting object array element failed");
         }
-        env->DeleteLocalRef(javaClass);
         return knnResults;
     } catch (exception& e) {
         JNIUtil::catchCppAndThrowJavaException(env, e);

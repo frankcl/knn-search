@@ -14,6 +14,10 @@ BEGIN_NAMESPACE(jni)
 BEGIN_NAMESPACE(common)
 
 class JNIUtil {
+private:
+    static std::unordered_map<std::string, jclass> cachedClasses;
+    static std::unordered_map<std::string, jmethodID> cachedMethods;
+
 public:
     static void throwJavaException(JNIEnv* env, const char* className, const char* message = "");
     static void checkJNIException(JNIEnv* env);
@@ -23,12 +27,12 @@ public:
     static std::vector<std::string> convertJavaStringArrayToCppStringArray(JNIEnv* env, jobjectArray javaStringArray);
     static int64_t* convertJavaIntArrayToCppInt64Array(JNIEnv* env, jintArray javaIntArray);
     static float* convertJava2DVectorToCppVector(JNIEnv* env, jobjectArray java2DVector);
-    static std::unordered_map<std::string, int32_t> convertJavaMapToCppInt32Map(JNIEnv* env, jobject javaMap);
-    static int32_t convertJavaObjectToCppInt32(JNIEnv* env, jobject javaObject);
+    static std::unordered_map<std::string, std::string> convertJavaMapToCppMap(JNIEnv* env, jobject javaMap);
     static int get2DVectorDimension(JNIEnv* env, jobjectArray java2DVector);
     static int getJavaObjectArrayLength(JNIEnv* env, jobjectArray javaArray);
     static int getJavaFloatArrayLength(JNIEnv* env, jfloatArray javaArray);
     static int getJavaIntArrayLength(JNIEnv* env, jintArray javaArray);
+    static jclass findClass(JNIEnv* env, const std::string& className);
     static jmethodID findMethod(JNIEnv* env, const std::string& className,
                                 const std::string& methodName, const std::string& methodSign);
 };

@@ -9,11 +9,17 @@ BEGIN_NAMESPACE(knn)
 BEGIN_NAMESPACE(jni)
 BEGIN_NAMESPACE(common)
 
+unordered_map<string, jclass> JNIUtil::cachedClasses;
+unordered_map<string, jmethodID> JNIUtil::cachedMethods;
+
 void JNIUtil::throwJavaException(JNIEnv* env, const char* className, const char* message) {
     jclass javaExceptionClass = env->FindClass(className);
     string cppClassName(className);
     checkJNIException(env, "class[" + cppClassName + "] is not found");
-    if (javaExceptionClass != NULL) env->ThrowNew(javaExceptionClass, message);
+    if (javaExceptionClass != NULL) {
+        env->ThrowNew(javaExceptionClass, message);
+        env->DeleteLocalRef(javaExceptionClass);
+    }
 }
 
 void JNIUtil::checkJNIException(JNIEnv* env) {
@@ -47,29 +53,25 @@ string JNIUtil::convertJavaStringToCppString(JNIEnv* env, jstring javaString) {
     return cppString;
 }
 
+jclass JNIUtil::findClass(JNIEnv* env, const string& className) {
+    if (cachedClasses.find(className) != cachedClasses.end()) return cachedClasses[className];
+    jclass tempLocalClassRef = env->FindClass(className.c_str());
+    cachedClasses[className] = (jclass) env->NewGlobalRef(tempLocalClassRef);
+    env->DeleteLocalRef(tempLocalClassRef);
+    return cachedClasses[className];
+}
+
 jmethodID JNIUtil::findMethod(JNIEnv* env, const string& className, const string& methodName,
                               const string& methodSign) {
-    jclass localClassRef = env->FindClass(className.c_str());
-    jmethodID javaMethod = env->GetMethodID(localClassRef, methodName.c_str(), methodSign.c_str());
-    env->DeleteLocalRef(localClassRef);
-    return javaMethod;
+    string key = className + "_" + methodName + "_" + methodSign;
+    if (cachedMethods.find(key) != cachedMethods.end()) return cachedMethods[key];
+    jclass javaClass = findClass(env, className);
+    cachedMethods[key] = env->GetMethodID(javaClass, methodName.c_str(), methodSign.c_str());
+    return cachedMethods[key];
 }
 
-int32_t JNIUtil::convertJavaObjectToCppInt32(JNIEnv* env, jobject javaObject) {
-    jclass javaIntegerClass = env->FindClass("java/lang/Integer");
-    if (!env->IsInstanceOf(javaObject, javaIntegerClass)) {
-        env->DeleteLocalRef(javaIntegerClass);
-        throw std::runtime_error("Cannot call IntMethod on non-integer class");
-    }
-    env->DeleteLocalRef(javaIntegerClass);
-    jmethodID javaIntValueMethod = findMethod(env, "java/lang/Integer", "intValue", "()I");
-    int cppInt = env->CallIntMethod(javaObject, javaIntValueMethod);
-    checkJNIException(env, "call intValue method failed for class java/lang/Integer");
-    return (int32_t) cppInt;
-}
-
-unordered_map<string, int32_t> JNIUtil::convertJavaMapToCppInt32Map(JNIEnv* env, jobject javaMap) {
-    unordered_map<string, int32_t> cppMap;
+unordered_map<string, string> JNIUtil::convertJavaMapToCppMap(JNIEnv* env, jobject javaMap) {
+    unordered_map<string, string> cppMap;
     jmethodID javaEntrySetMethod = findMethod(env, "java/util/Map", "entrySet", "()Ljava/util/Set;");
     jobject javaEntrySet = env->CallObjectMethod(javaMap, javaEntrySetMethod);
     checkJNIException(env, "call entrySet method failed for class java/util/Map");
@@ -88,11 +90,11 @@ unordered_map<string, int32_t> JNIUtil::convertJavaMapToCppInt32Map(JNIEnv* env,
         checkJNIException(env, "call next method failed for class java/util/Iterator");
         jstring javaKey = (jstring) env->CallObjectMethod(javaEntry, javaGetKeyMethod);
         checkJNIException(env, "call getKey method failed for class java/util/Map$Entry");
-        jobject javaValue = env->CallObjectMethod(javaEntry, javaGetValueMethod);
+        jstring javaValue = (jstring) env->CallObjectMethod(javaEntry, javaGetValueMethod);
         checkJNIException(env, "call getValue method failed for class java/util/Map$Entry");
         string cppKey = convertJavaStringToCppString(env, javaKey);
-        int32_t cppInt32 = convertJavaObjectToCppInt32(env, javaValue);
-        cppMap[cppKey] = cppInt32;
+        string cppValue = convertJavaStringToCppString(env, javaValue);
+        cppMap[cppKey] = cppValue;
         env->DeleteLocalRef(javaValue);
         env->DeleteLocalRef(javaKey);
         env->DeleteLocalRef(javaEntry);

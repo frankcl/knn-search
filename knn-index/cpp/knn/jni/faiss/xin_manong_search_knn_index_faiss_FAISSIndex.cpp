@@ -39,8 +39,8 @@ JNIEXPORT jobjectArray JNICALL Java_xin_manong_search_knn_index_faiss_FAISSIndex
         float* vector = env->GetFloatArrayElements(javaVector, NULL);
         unique_ptr<FAISSResult> result(FAISSWrapper::search(index, vector, k));
         env->ReleaseFloatArrayElements(javaVector, vector, JNI_ABORT);
-        jclass javaClass = env->FindClass("xin/manong/search/knn/index/KNNResult");
-        jmethodID constructor = env->GetMethodID(javaClass, "<init>", "(IF)V");
+        jclass javaClass = JNIUtil::findClass(env, "xin/manong/search/knn/index/KNNResult");
+        jmethodID constructor = JNIUtil::findMethod(env, "xin/manong/search/knn/index/KNNResult", "<init>", "(IF)V");
         jobjectArray knnResults = env->NewObjectArray(result->n, javaClass, NULL);
         for (size_t i = 0; i < result->n; i++) {
             float distance = result->distances[i];
@@ -48,7 +48,6 @@ JNIEXPORT jobjectArray JNICALL Java_xin_manong_search_knn_index_faiss_FAISSIndex
             env->SetObjectArrayElement(knnResults, i, env->NewObject(javaClass, constructor, id, distance));
             JNIUtil::checkJNIException(env, "setting object array element failed");
         }
-        env->DeleteLocalRef(javaClass);
         return knnResults;
     } catch (exception& e) {
         JNIUtil::catchCppAndThrowJavaException(env, e);

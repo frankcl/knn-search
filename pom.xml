@@ -49,6 +49,8 @@
         <junit.version>4.13.2</junit.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <guava.version>31.1-jre</guava.version>
+        <elasticsearch.version>7.17.8</elasticsearch.version>
+        <fastjson.version>2.0.12</fastjson.version>
         <knn-search.version>0.0.1</knn-search.version>
     </properties>
 
@@ -158,6 +160,16 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

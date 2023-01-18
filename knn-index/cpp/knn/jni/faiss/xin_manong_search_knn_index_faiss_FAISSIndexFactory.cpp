@@ -25,7 +25,7 @@ JNIEXPORT jboolean JNICALL Java_xin_manong_search_knn_index_faiss_FAISSIndexFact
         indexData.data = JNIUtil::convertJava2DVectorToCppVector(env, data);
         string cppDescription = JNIUtil::convertJavaStringToCppString(env, description);
         string cppPath = JNIUtil::convertJavaStringToCppString(env, path);
-        unordered_map<string, int32_t> cppParamMap = JNIUtil::convertJavaMapToCppInt32Map(env, paramMap);
+        unordered_map<string, string> cppParamMap = JNIUtil::convertJavaMapToCppMap(env, paramMap);
         FAISSWrapper::dump(cppDescription, indexData, cppParamMap, cppPath);
         return true;
     } catch (exception& e) {

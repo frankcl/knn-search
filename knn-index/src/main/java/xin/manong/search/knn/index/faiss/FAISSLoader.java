@@ -11,7 +11,7 @@ import java.security.PrivilegedAction;
  */
 public class FAISSLoader {
 
-    public final static String JNI_LIBRARY_NAME = "FAISSIndexJNI_V1_6_3";
+    public final static String JNI_LIBRARY_NAME = "FAISSIndexJNI_V1_7_3";
 
     static {
         AccessController.doPrivileged((PrivilegedAction<Void>) () -> {

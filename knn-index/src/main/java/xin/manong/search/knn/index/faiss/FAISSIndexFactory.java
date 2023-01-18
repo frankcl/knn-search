@@ -34,11 +34,23 @@ public class FAISSIndexFactory extends KNNIndexFactory {
             logger.error("invalid FAISS index meta");
             return false;
         }
-        Map<String, Integer> paramMap = new HashMap<>();
-        paramMap.put(FAISSConstants.EF_CONSTRUCTION, faissIndexMeta.efConstruction);
-        paramMap.put(FAISSConstants.EF_SEARCH, faissIndexMeta.efSearch);
-        paramMap.put(FAISSConstants.N_PROBE, faissIndexMeta.nProbe);
-        return build(indexData.ids, indexData.data, "", faissIndexMeta.path, paramMap);
+        FAISSDescriptor descriptor = FAISSDescriptorFactory.make(faissIndexMeta);
+        if (!descriptor.check()) return false;
+        faissIndexMeta.descriptor = descriptor;
+        Map<String, String> paramMap = new HashMap<>();
+        if (faissIndexMeta.parameterMap.containsKey(FAISSConstants.EF_CONSTRUCTION)) {
+            int efConstruction = (int) faissIndexMeta.parameterMap.get(FAISSConstants.EF_CONSTRUCTION);
+            if (efConstruction > 0) paramMap.put(FAISSConstants.EF_CONSTRUCTION, String.valueOf(efConstruction));
+        }
+        if (faissIndexMeta.parameterMap.containsKey(FAISSConstants.EF_SEARCH)) {
+            int efSearch = (int) faissIndexMeta.parameterMap.get(FAISSConstants.EF_SEARCH);
+            if (efSearch > 0) paramMap.put(FAISSConstants.EF_SEARCH, String.valueOf(efSearch));
+        }
+        if (faissIndexMeta.parameterMap.containsKey(FAISSConstants.N_PROBE)) {
+            int nProb = (int) faissIndexMeta.parameterMap.get(FAISSConstants.N_PROBE);
+            if (nProb > 0) paramMap.put(FAISSConstants.N_PROBE, String.valueOf(nProb));
+        }
+        return build(indexData.ids, indexData.data, descriptor.toString(), faissIndexMeta.path, paramMap);
     }
 
     /**
@@ -52,5 +64,5 @@ public class FAISSIndexFactory extends KNNIndexFactory {
      * @return 构建成功返回true，否则返回false
      */
     private native boolean build(int[] ids, float[][] data, String description,
-                                 String path, Map<String, Integer> paramMap);
+                                 String path, Map<String, String> paramMap);
 }

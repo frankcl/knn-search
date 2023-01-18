@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xin.manong.search.knn.index.KNNIndexMeta;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * FAISS索引元数据
  *
@@ -14,9 +17,8 @@ public class FAISSIndexMeta extends KNNIndexMeta {
 
     private final static Logger logger = LoggerFactory.getLogger(FAISSIndexMeta.class);
 
-    public int nProbe;
-    public int efConstruction;
-    public int efSearch;
+    public FAISSDescriptor descriptor;
+    public Map<String, Object> parameterMap = new HashMap<>();
 
     @Override
     public boolean check() {

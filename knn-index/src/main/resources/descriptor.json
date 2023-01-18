@@ -1,0 +1,30 @@
+{
+  "10000": {
+    "prefix": "IDMap",
+    "encode": "Flat"
+  },
+  "100000": {
+    "search": "IVF%d",
+    "encode": "Flat"
+  },
+  "500000": {
+    "search": "IVF%d",
+    "encode": "PQ%d"
+  },
+  "2000000": {
+    "search": "IMI2x6",
+    "encode": "PQ%d"
+  },
+  "5000000": {
+    "search": "IMI2x7",
+    "encode": "PQ%d"
+  },
+  "10000000": {
+    "search": "IMI2x8",
+    "encode": "PQ%d"
+  },
+  "-1": {
+    "search": "IMI2x9",
+    "encode": "PQ%d"
+  }
+}

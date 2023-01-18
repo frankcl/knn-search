@@ -39,7 +39,7 @@
                 <configuration>
                     <argLine>-Djava.library.path=${project.basedir}/cpp/knn/lib</argLine>
                     <environmentVariables>
-                        <DYLD_LIBRARY_PATH>${project.basedir}/cpp/knn/lib</DYLD_LIBRARY_PATH>
+                        <DYLD_LIBRARY_PATH>${project.basedir}/cpp/knn/lib:/usr/local/lib</DYLD_LIBRARY_PATH>
                     </environmentVariables>
                 </configuration>
             </plugin>
@@ -64,6 +64,10 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
         </dependency>
     </dependencies>
 </project>
