@@ -25,10 +25,6 @@ public abstract class KNNIndexFactory {
             logger.error("knn index meta is null or invalid");
             return false;
         }
-        if (indexData == null || !indexData.check()) {
-            logger.error("knn index data is null or invalid");
-            return false;
-        }
         return buildIndex(indexData, indexMeta);
     }
 

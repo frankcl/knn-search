@@ -65,6 +65,15 @@ public abstract class KNNIndex {
     }
 
     /**
+     * 获取索引元数据
+     *
+     * @return 索引元数据
+     */
+    public KNNIndexMeta getMeta() {
+        return meta;
+    }
+
+    /**
      * 向量搜索：搜索与输入向量最相近的k个结果
      *
      * @param vector 搜索向量

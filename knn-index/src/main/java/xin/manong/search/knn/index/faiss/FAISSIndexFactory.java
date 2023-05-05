@@ -25,10 +25,6 @@ public class FAISSIndexFactory extends KNNIndexFactory {
 
     @Override
     public boolean buildIndex(KNNIndexData indexData, KNNIndexMeta indexMeta) {
-        if (indexData == null || !indexData.check()) {
-            logger.error("invalid FAISS index data");
-            return false;
-        }
         FAISSIndexMeta faissIndexMeta = (FAISSIndexMeta) indexMeta;
         if (faissIndexMeta == null || !faissIndexMeta.check()) {
             logger.error("invalid FAISS index meta");
