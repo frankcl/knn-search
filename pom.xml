@@ -35,12 +35,10 @@
     </scm>
 
     <modules>
+        <module>knn-common</module>
         <module>knn-index</module>
-        <module>knn-codec-common</module>
+        <module>knn-codec</module>
         <module>knn-plugin</module>
-        <module>knn-codec-hnsw</module>
-        <module>knn-codec-faiss</module>
-        <module>knn-codec-fusion</module>
     </modules>
 
     <properties>

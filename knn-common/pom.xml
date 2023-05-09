@@ -9,11 +9,9 @@
     </parent>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
-    <name>knn-codec-fusion</name>
-    <description>fusion codec(HNSW and FAISS) implements for elastic search</description>
+    <name>knn-common</name>
+    <description>knn common module</description>
     <url>https://github.com/frankcl/knn-search</url>
-
-    <artifactId>knn-codec-fusion</artifactId>
 
     <licenses>
         <license>
@@ -31,6 +29,8 @@
         </developer>
     </developers>
 
+    <artifactId>knn-common</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -41,6 +41,14 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
         </dependency>
     </dependencies>
 </project>
