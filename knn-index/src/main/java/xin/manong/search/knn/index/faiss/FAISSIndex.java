@@ -65,12 +65,12 @@ public class FAISSIndex extends KNNIndex {
             logger.warn("knn index is not init");
             return;
         }
-        Lock writeLock = lock.writeLock();
-        writeLock.lock();
         if (closed) {
             logger.warn("knn index[{}] has been closed", meta.path);
             return;
         }
+        Lock writeLock = lock.writeLock();
+        writeLock.lock();
         try {
             close(pointer);
         } finally {

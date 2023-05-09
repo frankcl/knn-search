@@ -71,12 +71,12 @@ public class HNSWIndex extends KNNIndex {
             logger.warn("knn index is not init");
             return;
         }
-        Lock writeLock = lock.writeLock();
-        writeLock.lock();
         if (this.closed) {
             logger.warn("knn index[{}] has been closed", meta.path);
             return;
         }
+        Lock writeLock = lock.writeLock();
+        writeLock.lock();
         try {
             close(pointer);
         } finally {
