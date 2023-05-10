@@ -6,7 +6,7 @@ import org.apache.lucene.codecs.DocValuesConsumer;
 import org.apache.lucene.codecs.DocValuesProducer;
 import org.apache.lucene.index.*;
 import xin.manong.search.knn.codec.writer.KNNVectorWriter;
-import xin.manong.search.knn.codec.writer.KNNVectorWriterFactory;
+import xin.manong.search.knn.codec.writer.KNNVectorWriterSelector;
 import xin.manong.search.knn.common.KNNConstants;
 
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class KNNVectorDocValuesConsumer extends DocValuesConsumer {
             return;
         }
         String index = field.getAttribute(KNNConstants.FIELD_ATTRIBUTE_INDEX);
-        KNNVectorWriter writer = KNNVectorWriterFactory.make(knnVectorFacade.vectors.length, index);
+        KNNVectorWriter writer = KNNVectorWriterSelector.select(knnVectorFacade.vectors.length, index);
         writer.write(knnVectorFacade, state, field);
     }
 

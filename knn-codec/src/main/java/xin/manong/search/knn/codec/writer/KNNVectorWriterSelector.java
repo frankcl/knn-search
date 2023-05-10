@@ -8,25 +8,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * KNN向量写入器工厂
+ * KNN向量写入器选择器
  *
  * @author frankcl
  * @date 2023-05-10 15:59:38
  */
-public class KNNVectorWriterFactory {
+public class KNNVectorWriterSelector {
 
-    private static final Logger logger = LogManager.getLogger(KNNVectorWriterFactory.class);
+    private static final Logger logger = LogManager.getLogger(KNNVectorWriterSelector.class);
 
     private static final Map<Class<? extends KNNVectorWriter>, KNNVectorWriter> WRITER_MAP = new HashMap<>();
 
     /**
-     * 根据数据规模构建KNNVectorWriter
+     * 根据数据规模选择KNNVectorWriter
      *
      * @param n 向量数据规模
      * @param index 索引名
      * @return KNNVectorWriter
      */
-    public static KNNVectorWriter make(int n, String index) {
+    public static KNNVectorWriter select(int n, String index) {
         int max = KNNSettings.getMaxHNSWIndexVectorNum(index);
         if (n >= max) return build(FAISSVectorWriter.class);
         return build(HNSWVectorWriter.class);
