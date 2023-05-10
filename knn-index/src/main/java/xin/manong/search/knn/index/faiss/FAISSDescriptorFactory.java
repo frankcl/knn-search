@@ -3,8 +3,8 @@ package xin.manong.search.knn.index.faiss;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  */
 public class FAISSDescriptorFactory {
 
-    private final static Logger logger = LoggerFactory.getLogger(FAISSDescriptorFactory.class);
+    private final static Logger logger = LogManager.getLogger(FAISSDescriptorFactory.class);
 
     private final static int DEFAULT_ENCODE_BITS = 8;
     private final static String DESCRIPTOR_RESOURCE_FILE = "/descriptor.json";

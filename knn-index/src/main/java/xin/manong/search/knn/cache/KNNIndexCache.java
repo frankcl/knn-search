@@ -5,11 +5,11 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalNotification;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.watcher.FileWatcher;
 import org.elasticsearch.watcher.ResourceWatcherService;
 import org.elasticsearch.watcher.WatcherHandle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xin.manong.search.knn.common.KNNSettings;
 import xin.manong.search.knn.index.KNNIndex;
 import xin.manong.search.knn.index.KNNIndexMeta;
@@ -39,7 +39,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class KNNIndexCache {
 
-    private final static Logger logger = LoggerFactory.getLogger(KNNIndexCache.class);
+    private final static Logger logger = LogManager.getLogger(KNNIndexCache.class);
 
     private static KNNIndexCache instance;
 

@@ -1,8 +1,8 @@
 package xin.manong.search.knn.index.hnsw;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import xin.manong.search.knn.index.KNNIndexMeta;
 
 /**
@@ -13,7 +13,7 @@ import xin.manong.search.knn.index.KNNIndexMeta;
  */
 public class HNSWIndexMeta extends KNNIndexMeta {
 
-    private final static Logger logger = LoggerFactory.getLogger(HNSWIndexMeta.class);
+    private final static Logger logger = LogManager.getLogger(HNSWIndexMeta.class);
 
     public int M;
     public int efSearch;

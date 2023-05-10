@@ -1,8 +1,8 @@
 package xin.manong.search.knn.index;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * knn索引元数据
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KNNIndexMeta {
 
-    private final static Logger logger = LoggerFactory.getLogger(KNNIndexMeta.class);
+    private final static Logger logger = LogManager.getLogger(KNNIndexMeta.class);
 
     /**
      * 索引数据量

@@ -1,8 +1,8 @@
 package xin.manong.search.knn.cache;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.watcher.FileChangesListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 
@@ -14,7 +14,7 @@ import java.nio.file.Path;
  */
 public class KNNIndexListener implements FileChangesListener {
 
-    private final static Logger logger = LoggerFactory.getLogger(KNNIndexListener.class);
+    private final static Logger logger = LogManager.getLogger(KNNIndexListener.class);
 
     @Override
     public void onFileDeleted(Path path) {

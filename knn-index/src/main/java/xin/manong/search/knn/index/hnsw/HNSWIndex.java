@@ -1,7 +1,7 @@
 package xin.manong.search.knn.index.hnsw;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import xin.manong.search.knn.index.KNNIndex;
 import xin.manong.search.knn.index.KNNResult;
 
@@ -18,7 +18,7 @@ import java.util.concurrent.locks.Lock;
  */
 public class HNSWIndex extends KNNIndex {
 
-    private final static Logger logger = LoggerFactory.getLogger(HNSWIndex.class);
+    private final static Logger logger = LogManager.getLogger(HNSWIndex.class);
 
     static {
         HNSWLoader.init();

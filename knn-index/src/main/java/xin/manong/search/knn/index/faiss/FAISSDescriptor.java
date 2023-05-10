@@ -1,8 +1,8 @@
 package xin.manong.search.knn.index.faiss;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class FAISSDescriptor {
 
-    private final static Logger logger = LoggerFactory.getLogger(FAISSDescriptor.class);
+    private final static Logger logger = LogManager.getLogger(FAISSDescriptor.class);
 
     public String prefix;
     public String transform;

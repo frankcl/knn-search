@@ -1,7 +1,7 @@
 package xin.manong.search.knn.index.faiss;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import xin.manong.search.knn.index.KNNIndexData;
 import xin.manong.search.knn.index.KNNIndexFactory;
 import xin.manong.search.knn.index.KNNIndexMeta;
@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class FAISSIndexFactory extends KNNIndexFactory {
 
-    private final static Logger logger = LoggerFactory.getLogger(FAISSIndexFactory.class);
+    private final static Logger logger = LogManager.getLogger(FAISSIndexFactory.class);
 
     static {
         FAISSLoader.init();

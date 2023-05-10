@@ -1,7 +1,8 @@
 package xin.manong.search.knn.index;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * knn索引数据
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KNNIndexData {
 
-    private final static Logger logger = LoggerFactory.getLogger(KNNIndexData.class);
+    private final static Logger logger = LogManager.getLogger(KNNIndexData.class);
 
     public int[] ids;
     public float[][] data;
