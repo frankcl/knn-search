@@ -18,7 +18,9 @@ import java.util.concurrent.locks.Lock;
  */
 public class FAISSIndex extends KNNIndex {
 
-    private final static Logger logger = LogManager.getLogger(FAISSIndex.class);
+    private static final Logger logger = LogManager.getLogger(FAISSIndex.class);
+
+    public static final String VERSION = "173";
 
     static {
         FAISSLoader.init();

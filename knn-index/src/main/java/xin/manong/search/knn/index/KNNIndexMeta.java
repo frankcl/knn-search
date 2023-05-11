@@ -1,5 +1,6 @@
 package xin.manong.search.knn.index;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,29 +15,77 @@ public class KNNIndexMeta {
 
     private final static Logger logger = LogManager.getLogger(KNNIndexMeta.class);
 
+    public static class Builder {
+        protected KNNIndexMeta delegate = new KNNIndexMeta();
+
+        public Builder num(int num) {
+            delegate.num = num;
+            return this;
+        }
+
+        public Builder dimension(int dimension) {
+            delegate.dimension = dimension;
+            return this;
+        }
+
+        public Builder index(String index) {
+            delegate.index = index;
+            return this;
+        }
+
+        public Builder field(String field) {
+            delegate.field = field;
+            return this;
+        }
+
+        public Builder file(String file) {
+            delegate.file = file;
+            return this;
+        }
+
+        public Builder path(String path) {
+            delegate.path = path;
+            return this;
+        }
+
+        public KNNIndexMeta build() {
+            return delegate;
+        }
+    }
     /**
      * 索引数据量
      */
+    @JSONField(name = "num")
     public int num;
     /**
      * 向量维数
      */
+    @JSONField(name = "dimension")
     public int dimension;
     /**
      * 索引名
      */
+    @JSONField(name = "index")
     public String index;
     /**
      * 向量字段名
      */
+    @JSONField(name = "field")
     public String field;
+    /**
+     * 索引文件名
+     */
+    @JSONField(name = "file")
+    public String file;
     /**
      * 索引文件路径
      */
+    @JSONField(name = "path", serialize = false)
     public String path;
     /**
      * 索引类型
      */
+    @JSONField(name = "type")
     public KNNIndexType type;
 
     /**
@@ -59,6 +108,10 @@ public class KNNIndexMeta {
         }
         if (StringUtils.isEmpty(field)) {
             logger.error("knn vector field name is empty");
+            return false;
+        }
+        if (StringUtils.isEmpty(file)) {
+            logger.error("knn index file is empty");
             return false;
         }
         if (StringUtils.isEmpty(path)) {

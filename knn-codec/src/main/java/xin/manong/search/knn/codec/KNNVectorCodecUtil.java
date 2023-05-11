@@ -2,8 +2,14 @@ package xin.manong.search.knn.codec;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.lucene.codecs.CodecUtil;
 import org.apache.lucene.index.BinaryDocValues;
+import org.apache.lucene.index.SegmentWriteState;
 import org.apache.lucene.search.DocIdSetIterator;
+import org.apache.lucene.store.IndexInput;
+import org.apache.lucene.store.IndexOutput;
+import org.apache.lucene.util.IOUtils;
+import xin.manong.search.knn.common.KNNConstants;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -43,5 +49,49 @@ public class KNNVectorCodecUtil {
         }
         return new KNNVectorFacade(docs.stream().mapToInt(Integer::intValue).toArray(),
                 vectors.toArray(new float[][]{}));
+    }
+
+    /**
+     * 根据索引数据文件名构建meta文件名
+     *
+     * @param indexDataFileName 索引数据文件名
+     * @return 索引meta文件名
+     */
+    public static String buildMetaFileName(String indexDataFileName) {
+        if (indexDataFileName.endsWith(KNNConstants.HNSW_VECTOR_INDEX_DATA_EXTENSION) ||
+                indexDataFileName.endsWith(KNNConstants.HNSW_VECTOR_INDEX_DATA_EXTENSION +
+                        KNNConstants.COMPOUND_EXTENSION)) {
+            return String.format("%s%s", indexDataFileName.substring(0,
+                    indexDataFileName.lastIndexOf(KNNConstants.HNSW_VECTOR_INDEX_DATA_EXTENSION)),
+                    KNNConstants.HNSW_VECTOR_INDEX_META_EXTENSION);
+        }
+        if (indexDataFileName.endsWith(KNNConstants.FAISS_VECTOR_INDEX_DATA_EXTENSION) ||
+                indexDataFileName.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION +
+                        KNNConstants.COMPOUND_EXTENSION)) {
+            return String.format("%s%s", indexDataFileName.substring(0,
+                            indexDataFileName.lastIndexOf(KNNConstants.FAISS_VECTOR_INDEX_DATA_EXTENSION)),
+                    KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION);
+        }
+        logger.error("unexpected index data file name[{}]", indexDataFileName);
+        throw new RuntimeException(String.format("unexpected index data file name[%s]", indexDataFileName));
+    }
+
+    /**
+     * KNN索引文件添加Lucene footer
+     *
+     * @param tempFileName 临时索引文件名
+     * @param fileName 索引文件名
+     * @param writeState Lucene segment状态信息
+     * @throws IOException
+     */
+    public static void appendFooter(String tempFileName, String fileName,
+                                    SegmentWriteState writeState) throws IOException {
+        try (IndexInput is = writeState.directory.openInput(tempFileName, writeState.context);
+             IndexOutput os = writeState.directory.createOutput(fileName, writeState.context)) {
+            os.copyBytes(is, is.length());
+            CodecUtil.writeFooter(os);
+        } finally {
+            IOUtils.deleteFilesIgnoringExceptions(writeState.directory, tempFileName);
+        }
     }
 }

@@ -18,7 +18,9 @@ import java.util.concurrent.locks.Lock;
  */
 public class HNSWIndex extends KNNIndex {
 
-    private final static Logger logger = LogManager.getLogger(HNSWIndex.class);
+    private static final Logger logger = LogManager.getLogger(HNSWIndex.class);
+
+    public static final String VERSION = "211";
 
     static {
         HNSWLoader.init();

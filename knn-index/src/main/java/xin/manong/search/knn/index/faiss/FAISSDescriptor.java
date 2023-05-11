@@ -1,5 +1,6 @@
 package xin.manong.search.knn.index.faiss;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,10 +18,15 @@ public class FAISSDescriptor {
 
     private final static Logger logger = LogManager.getLogger(FAISSDescriptor.class);
 
+    @JSONField(name = "prefix")
     public String prefix;
+    @JSONField(name = "transform")
     public String transform;
+    @JSONField(name = "search")
     public String search;
+    @JSONField(name = "encode")
     public String encode;
+    @JSONField(name = "parameterMap")
     public Map<String, Object> parameterMap = new HashMap<>();
 
     /**
