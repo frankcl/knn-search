@@ -45,6 +45,7 @@ public class KNNIndexCache {
 
     private AtomicBoolean cacheCapacityReached;
     private ResourceWatcherService resourceWatcherService;
+    private KNNIndexCacheConfig config;
     private final KNNIndexListener listener;
     private final ReadWriteLock readWriteLock;
     private final Executor executor;
@@ -71,24 +72,30 @@ public class KNNIndexCache {
         listener = new KNNIndexListener();
         readWriteLock = new ReentrantReadWriteLock();
         executor = Executors.newSingleThreadExecutor();
-        build();
+        config = new KNNIndexCacheConfig();
+        config.cacheExpiredEnable = KNNSettings.getSettingValue(KNNSettings.KNN_GLOBAL_CACHE_EXPIRED_ENABLED);
+        config.cacheExpiredTimeMinutes = KNNSettings.getSettingValue(KNNSettings.KNN_GLOBAL_CACHE_EXPIRED_TIME_MINUTES);
+        config.memoryCircuitBreakerEnable = KNNSettings.getSettingValue(KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_ENABLED);
+        config.memoryCircuitBreakerLimit = KNNSettings.getSettingValue(KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT);
+        config.check();
+        build(config);
     }
 
     /**
      * 构建缓存
      */
-    private void build() {
+    private void build(KNNIndexCacheConfig config) {
+        this.config = config;
         CacheBuilder<String, KNNIndexAllocation> builder = CacheBuilder.newBuilder()
                 .recordStats()
                 .concurrencyLevel(1)
                 .removalListener(n -> onRemoval(n));
-        if (KNNSettings.state().getSettingValue(KNNSettings.KNN_MEMORY_CIRCUIT_BREAKER_ENABLED)) {
-            builder.maximumWeight(KNNSettings.getCircuitBreakerLimit().getKb()).weigher(
+        if (config.memoryCircuitBreakerEnable) {
+            builder.maximumWeight(config.memoryCircuitBreakerLimit).weigher(
                     (k, v) -> (int) v.knnIndex.getMemorySize());
         }
-        if (KNNSettings.state().getSettingValue(KNNSettings.KNN_CACHE_EXPIRED_ENABLED)) {
-            long expiredTimeMinutes = KNNSettings.state().getSettingValue(KNNSettings.KNN_CACHE_EXPIRED_TIME_MINUTES);
-            builder.expireAfterAccess(expiredTimeMinutes, TimeUnit.MINUTES);
+        if (config.cacheExpiredEnable) {
+            builder.expireAfterAccess(config.cacheExpiredTimeMinutes, TimeUnit.MINUTES);
         }
         cacheCapacityReached = new AtomicBoolean(false);
         cache = builder.build();
@@ -132,16 +139,39 @@ public class KNNIndexCache {
     }
 
     /**
+     * 判断缓存配置是否变化
+     *
+     * @param config 新缓存配置
+     * @return 变化返回true，否则返回false
+     */
+    private boolean isCacheConfigChanged(KNNIndexCacheConfig config) {
+        if (config == null) return false;
+        if (config.cacheExpiredEnable == null) config.cacheExpiredEnable = this.config.cacheExpiredEnable;
+        if (config.cacheExpiredTimeMinutes == null) config.cacheExpiredTimeMinutes = this.config.cacheExpiredTimeMinutes;
+        if (config.memoryCircuitBreakerEnable == null) config.memoryCircuitBreakerEnable = this.config.memoryCircuitBreakerEnable;
+        if (config.memoryCircuitBreakerLimit == null) config.memoryCircuitBreakerLimit = this.config.memoryCircuitBreakerLimit;
+        if (config.cacheExpiredEnable.booleanValue() != this.config.cacheExpiredEnable.booleanValue()) return true;
+        if (config.cacheExpiredTimeMinutes.intValue() != this.config.cacheExpiredTimeMinutes.intValue()) return true;
+        if (config.memoryCircuitBreakerEnable.booleanValue() != this.config.memoryCircuitBreakerEnable.booleanValue()) return true;
+        if (config.memoryCircuitBreakerLimit.longValue() != this.config.memoryCircuitBreakerLimit.longValue()) return true;
+        return false;
+    }
+
+    /**
      * 重建缓存
      */
-    public synchronized void rebuild() {
+    public synchronized void rebuild(KNNIndexCacheConfig config) {
+        if (!isCacheConfigChanged(config)) {
+            logger.info("knn index cache config is not changed, ignore rebuilding");
+            return;
+        }
         executor.execute(() -> {
             logger.info("knn index cache is rebuilding ...");
             Lock writeLock = readWriteLock.writeLock();
             writeLock.lock();
             try {
                 cache.invalidateAll();
-                build();
+                build(config);
             } finally {
                 logger.info("knn index cache rebuild success");
                 writeLock.unlock();

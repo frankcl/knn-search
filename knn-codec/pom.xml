@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>xin.manong</groupId>
-            <artifactId>knn-common</artifactId>
+            <artifactId>knn-index</artifactId>
             <version>${knn-search.version}</version>
         </dependency>
     </dependencies>

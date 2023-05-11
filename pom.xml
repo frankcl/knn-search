@@ -35,7 +35,6 @@
     </scm>
 
     <modules>
-        <module>knn-common</module>
         <module>knn-index</module>
         <module>knn-codec</module>
         <module>knn-plugin</module>

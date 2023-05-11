@@ -36,8 +36,8 @@ public class KNNVectorDocValuesConsumer extends DocValuesConsumer {
      * @return KNN向量索引字段返回true，否则返回false
      */
     private boolean isKNNVectorField(FieldInfo field) {
-        return field.attributes().containsKey(KNNConstants.KNN_FIELD) &&
-                Boolean.parseBoolean(field.getAttribute(KNNConstants.KNN_FIELD));
+        return field.attributes().containsKey(KNNConstants.FIELD_ATTRIBUTE_KNN_FIELD) &&
+                Boolean.parseBoolean(field.getAttribute(KNNConstants.FIELD_ATTRIBUTE_KNN_FIELD));
     }
 
     /**

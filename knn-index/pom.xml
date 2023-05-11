@@ -68,10 +68,5 @@
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
         </dependency>
-        <dependency>
-            <groupId>xin.manong</groupId>
-            <artifactId>knn-common</artifactId>
-            <version>${knn-search.version}</version>
-        </dependency>
     </dependencies>
 </project>
