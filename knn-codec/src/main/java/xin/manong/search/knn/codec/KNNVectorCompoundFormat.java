@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 /**
  * KNN向量compound文件format实现
+ * compound文件内容与原索引内容一致，简单copy
  *
  * @author frankcl
  * @date 2023-05-12 15:54:47
