@@ -33,6 +33,12 @@ public class KNNSettings {
     private static final int DEFAULT_HNSW_M = 16;
     private static final int DEFAULT_HNSW_EF_SEARCH = 512;
     private static final int DEFAULT_HNSW_EF_CONSTRUCTION = 512;
+    private static final int DEFAULT_FAISS_PQ_M = 16;
+    private static final int DEFAULT_FAISS_PQ_ENCODE_BITS = 8;
+    private static final int DEFAULT_FAISS_PCA_DIMENSION = 0;
+    private static final int MIN_FAISS_PQ_M = 2;
+    private static final int MIN_FAISS_PQ_ENCODE_BITS = 8;
+    private static final int MIN_FAISS_PCA_DIMENSION = 0;
     private static final String DEFAULT_MAX_MEMORY_CIRCUIT_BREAKER_LIMIT = "90%";
 
     public static final String KNN_GLOBAL_INDEX_LAZY_LOAD = "knn.global.index.lazy_load";
@@ -48,6 +54,10 @@ public class KNNSettings {
     public static final String KNN_INDEX_HNSW_M = "knn.index.hnsw.m";
     public static final String KNN_INDEX_HNSW_EF_CONSTRUCTION = "knn.index.hnsw.ef_construction";
     public static final String KNN_INDEX_HNSW_EF_SEARCH = "knn.index.hnsw.ef_search";
+
+    public static final String KNN_INDEX_FAISS_PQ_M = "knn.index.faiss.pq_m";
+    public static final String KNN_INDEX_FAISS_PQ_ENCODE_BITS = "knn.index.faiss.pq_encode_bits";
+    public static final String KNN_INDEX_FAISS_PCA_DIMENSION = "knn.index.faiss.pca_dimension";
 
     private Client client;
     private ClusterService clusterService;
@@ -69,6 +79,13 @@ public class KNNSettings {
             KNN_INDEX_HNSW_EF_SEARCH, DEFAULT_HNSW_EF_SEARCH, 2, IndexScope);
     public static final Setting<Integer> KNN_INDEX_HNSW_EF_CONSTRUCTION_SETTING = Setting.intSetting(
             KNN_INDEX_HNSW_EF_CONSTRUCTION, DEFAULT_HNSW_EF_CONSTRUCTION, 2, IndexScope);
+
+    public static final Setting<Integer> KNN_INDEX_FAISS_PQ_M_SETTING = Setting.intSetting(
+            KNN_INDEX_FAISS_PQ_M, DEFAULT_FAISS_PQ_M, MIN_FAISS_PQ_M, IndexScope);
+    public static final Setting<Integer> KNN_INDEX_FAISS_PQ_ENCODE_BITS_SETTING = Setting.intSetting(
+            KNN_INDEX_FAISS_PQ_ENCODE_BITS, DEFAULT_FAISS_PQ_ENCODE_BITS, MIN_FAISS_PQ_ENCODE_BITS, IndexScope);
+    public static final Setting<Integer> KNN_INDEX_FAISS_PCA_DIMENSION_SETTING = Setting.intSetting(
+            KNN_INDEX_FAISS_PCA_DIMENSION, DEFAULT_FAISS_PCA_DIMENSION, MIN_FAISS_PCA_DIMENSION, IndexScope);
 
     private static KNNSettings instance;
     private static OsProbe osProbe = OsProbe.getInstance();
@@ -125,7 +142,7 @@ public class KNNSettings {
      * @return 缓存熔断限制字节数
      */
     public static ByteSizeValue getCircuitBreakerLimit() {
-        return getInstance().getSettingValue(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT);
+        return getInstance().getGlobalSettingValue(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT);
     }
 
     /**
@@ -134,7 +151,7 @@ public class KNNSettings {
      * @return 索引延迟加载true，否则false
      */
     public static boolean isLazyLoad() {
-        return getInstance().getSettingValue(KNN_GLOBAL_INDEX_LAZY_LOAD);
+        return getInstance().getGlobalSettingValue(KNN_GLOBAL_INDEX_LAZY_LOAD);
     }
 
     /**
@@ -182,23 +199,56 @@ public class KNNSettings {
     }
 
     /**
-     * 获取可读setting值
+     * 获取FAISS索引PQ参数M
      *
-     * @param key setting key
-     * @return 成功返回可读setting值，否则抛出异常
-     * @param <T>
+     * @param index 索引名
+     * @return PQ参数M
      */
-    public static <T> T getSettingValue(String key) {
-        return (T) getInstance().clusterService.getClusterSettings().get(getSetting(key));
+    public static int getProductQuantizationM(String index) {
+        return getInstance().clusterService.state().metadata().index(index).
+                getSettings().getAsInt(KNN_INDEX_FAISS_PQ_M, DEFAULT_FAISS_PQ_M);
     }
 
     /**
-     * 可读setting获取
+     * 获取FAISS索引PQ参数encodeBits
+     *
+     * @param index 索引名
+     * @return PQ参数encodeBits
+     */
+    public static int getProductQuantizationEncodeBits(String index) {
+        return getInstance().clusterService.state().metadata().index(index).
+                getSettings().getAsInt(KNN_INDEX_FAISS_PQ_ENCODE_BITS, DEFAULT_FAISS_PQ_ENCODE_BITS);
+    }
+
+    /**
+     * 获取FAISS索引PCA降维维数
+     *
+     * @param index 索引名
+     * @return PCA降维维数
+     */
+    public static int getPCADimension(String index) {
+        return getInstance().clusterService.state().metadata().index(index).
+                getSettings().getAsInt(KNN_INDEX_FAISS_PCA_DIMENSION, DEFAULT_FAISS_PCA_DIMENSION);
+    }
+
+    /**
+     * 获取全局setting值
+     *
+     * @param key setting key
+     * @return 成功返回全局setting值，否则抛出异常
+     * @param <T>
+     */
+    public static <T> T getGlobalSettingValue(String key) {
+        return (T) getInstance().clusterService.getClusterSettings().get(getGlobalSetting(key));
+    }
+
+    /**
+     * 获取全局setting
      *
      * @param key setting key
      * @return 成功返回setting，否则抛出异常
      */
-    private static Setting<?> getSetting(String key) {
+    private static Setting<?> getGlobalSetting(String key) {
         if (dynamicCacheSettingMap.containsKey(key)) {
             return dynamicCacheSettingMap.get(key);
         }

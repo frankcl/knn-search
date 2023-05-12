@@ -26,6 +26,7 @@ public class FAISSDescriptorFactory {
     private final static Logger logger = LogManager.getLogger(FAISSDescriptorFactory.class);
 
     private final static int DEFAULT_ENCODE_BITS = 8;
+    private final static int MAX_N_PROBE = 512;
     private final static String DESCRIPTOR_RESOURCE_FILE = "/descriptor.json";
 
     private final static Pattern COMPONENT_SEARCH_IMI_PATTERN = Pattern.compile(
@@ -97,11 +98,11 @@ public class FAISSDescriptorFactory {
             logger.error("unexpected transform format[{}]", descriptor.transform);
             throw new RuntimeException(String.format("unexpected transform format[%s]", descriptor.transform));
         }
-        if (!meta.parameterMap.containsKey(FAISSConstants.PAC_DIMENSION)) {
-            logger.error("missing param[{}] for transforming", FAISSConstants.PAC_DIMENSION);
-            throw new RuntimeException(String.format("missing param[%s] for transforming", FAISSConstants.PAC_DIMENSION));
+        if (!meta.parameterMap.containsKey(FAISSConstants.PCA_DIMENSION)) {
+            logger.error("missing param[{}] for transforming", FAISSConstants.PCA_DIMENSION);
+            throw new RuntimeException(String.format("missing param[%s] for transforming", FAISSConstants.PCA_DIMENSION));
         }
-        int pcaDimension = (int) meta.parameterMap.get(FAISSConstants.PAC_DIMENSION);
+        int pcaDimension = (int) meta.parameterMap.get(FAISSConstants.PCA_DIMENSION);
         if (pcaDimension <= 0 || pcaDimension > meta.dimension) {
             logger.error("invalid PCA dimension[{}]", pcaDimension);
             throw new RuntimeException(String.format("invalid PCA dimension[%d]", pcaDimension));
@@ -125,6 +126,7 @@ public class FAISSDescriptorFactory {
             int quantizeNum = (int) Math.sqrt(meta.num) * 4;
             descriptor.parameterMap.put(FAISSConstants.QUANTIZE_NUM, quantizeNum);
             descriptor.parameterMap.put(FAISSConstants.CENTROID_NUM, quantizeNum);
+            descriptor.parameterMap.put(FAISSConstants.N_PROBE, predictNProb(quantizeNum, meta.num));
             descriptor.search = String.format(descriptor.search, quantizeNum);
         } else if (descriptor.search.startsWith(FAISSConstants.COMPONENT_SEARCH_IMI)) {
             Matcher m = COMPONENT_SEARCH_IMI_PATTERN.matcher(descriptor.search);
@@ -133,8 +135,10 @@ public class FAISSDescriptorFactory {
                 throw new RuntimeException(String.format("unexpected search format[%s]", descriptor.search));
             }
             int n = Integer.parseInt(m.group(1));
-            descriptor.parameterMap.put(FAISSConstants.QUANTIZE_NUM, (int) Math.pow(2, 2 * n));
+            int quantizeNum = (int) Math.pow(2, 2 * n);
+            descriptor.parameterMap.put(FAISSConstants.QUANTIZE_NUM, quantizeNum);
             descriptor.parameterMap.put(FAISSConstants.CENTROID_NUM, (int) Math.pow(2, n));
+            descriptor.parameterMap.put(FAISSConstants.N_PROBE, predictNProb(quantizeNum, meta.num));
         } else if (descriptor.search.startsWith(FAISSConstants.COMPONENT_SEARCH_HNSW)) {
             if (!descriptor.search.equals(FAISSConstants.COMPONENT_SEARCH_HNSW + "%d")) {
                 logger.error("unexpected search format[{}]", descriptor.search);
@@ -180,6 +184,19 @@ public class FAISSDescriptorFactory {
         if (descriptor.encode.equals(FAISSConstants.COMPONENT_ENCODE_PQ + "%dx%d")) {
             descriptor.encode = String.format(descriptor.encode, subQuantizeNum, encodeBits);
         }
+    }
+
+    /**
+     * 根据量化数和数据规模预测nprob
+     *
+     * @param quantizeNum 量化数
+     * @param dataNum 数据规模
+     * @return nprob
+     */
+    private static int predictNProb(int quantizeNum, int dataNum) {
+        int nprob = quantizeNum % 100 == 0 ? quantizeNum / 100 : quantizeNum / 100 + 1;
+        if (dataNum <= 500000) nprob *= 2;
+        return nprob <= 0 ? 1 : (nprob > MAX_N_PROBE ? MAX_N_PROBE : nprob);
     }
 
     /**

@@ -73,10 +73,14 @@ public class KNNIndexCache {
         readWriteLock = new ReentrantReadWriteLock();
         executor = Executors.newSingleThreadExecutor();
         config = new KNNIndexCacheConfig();
-        config.cacheExpiredEnable = KNNSettings.getSettingValue(KNNSettings.KNN_GLOBAL_CACHE_EXPIRED_ENABLED);
-        config.cacheExpiredTimeMinutes = KNNSettings.getSettingValue(KNNSettings.KNN_GLOBAL_CACHE_EXPIRED_TIME_MINUTES);
-        config.memoryCircuitBreakerEnable = KNNSettings.getSettingValue(KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_ENABLED);
-        config.memoryCircuitBreakerLimit = KNNSettings.getSettingValue(KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT);
+        config.cacheExpiredEnable = KNNSettings.getGlobalSettingValue(
+                KNNSettings.KNN_GLOBAL_CACHE_EXPIRED_ENABLED);
+        config.cacheExpiredTimeMinutes = KNNSettings.getGlobalSettingValue(
+                KNNSettings.KNN_GLOBAL_CACHE_EXPIRED_TIME_MINUTES);
+        config.memoryCircuitBreakerEnable = KNNSettings.getGlobalSettingValue(
+                KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_ENABLED);
+        config.memoryCircuitBreakerLimit = KNNSettings.getGlobalSettingValue(
+                KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT);
         config.check();
         build(config);
     }

@@ -15,7 +15,7 @@ public class FAISSConstants {
     public static final String SUB_QUANTIZE_NUM = "subQuantizeNum";
     public static final String CENTROID_NUM = "centroidNum";
     public static final String N_PROBE = "nProbe";
-    public static final String PAC_DIMENSION = "pcaDimension";
+    public static final String PCA_DIMENSION = "pcaDimension";
     public static final String ENCODE_BITS = "encodeBits";
 
 

@@ -41,7 +41,7 @@
     </modules>
 
     <properties>
-        <jdk.version>11</jdk.version>
+        <jdk.version>17</jdk.version>
         <junit.version>4.13.2</junit.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <guava.version>31.1-jre</guava.version>

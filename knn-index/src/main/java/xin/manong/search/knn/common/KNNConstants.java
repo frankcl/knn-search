@@ -1,5 +1,9 @@
 package xin.manong.search.knn.common;
 
+import com.google.common.collect.ImmutableSet;
+
+import java.util.Set;
+
 /**
  * KNN常量定义
  *
@@ -19,6 +23,8 @@ public class KNNConstants {
     public static final String HNSW_VECTOR_INDEX_META_EXTENSION = ".hvm";
     public static final String FAISS_VECTOR_INDEX_DATA_EXTENSION = ".fvd";
     public static final String FAISS_VECTOR_INDEX_META_EXTENSION = ".fvm";
+    public static final Set<String> KNN_VECTOR_EXTENSIONS = ImmutableSet.of(
+            HNSW_VECTOR_INDEX_DATA_EXTENSION, FAISS_VECTOR_INDEX_DATA_EXTENSION);
 
     public final static String HNSW_SPACE_L2 = "l2";
     public final static String HNSW_SPACE_COSINE = "cosinesimil";
