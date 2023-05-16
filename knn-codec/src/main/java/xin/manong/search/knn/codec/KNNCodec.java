@@ -13,7 +13,7 @@ import org.apache.lucene.codecs.FilterCodec;
  */
 public class KNNCodec extends FilterCodec {
 
-    public static final KNNCodecVersion VERSION = KNNCodecVersion.V95;
+    public static final KNNCodecVersion VERSION = KNNCodecVersion.CURRENT;
 
     protected KNNVectorFormatFacade formatFacade;
 

@@ -16,8 +16,8 @@ import java.util.function.Function;
 @Getter
 public enum KNNCodecVersion {
 
-    V95(
-            "KNNCodec95",
+    CURRENT(
+            "KNNCodec",
             new Lucene95Codec(),
             null,
             delegate -> new KNNVectorFormatFacade(
@@ -43,6 +43,4 @@ public enum KNNCodecVersion {
     private final PerFieldKnnVectorsFormat perFieldKnnVectorsFormat;
     private final Function<Codec, KNNVectorFormatFacade> formatFacadeSupplier;
     private final Function<Codec, Codec> codecSupplier;
-
-    public static final KNNCodecVersion CURRENT = V95;
 }
