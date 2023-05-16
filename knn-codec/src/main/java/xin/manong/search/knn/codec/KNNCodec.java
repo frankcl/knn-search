@@ -1,29 +1,27 @@
-package xin.manong.search.knn.codec.v92;
+package xin.manong.search.knn.codec;
 
 import org.apache.lucene.codecs.Codec;
 import org.apache.lucene.codecs.CompoundFormat;
 import org.apache.lucene.codecs.DocValuesFormat;
 import org.apache.lucene.codecs.FilterCodec;
-import xin.manong.search.knn.codec.KNNCodecVersion;
-import xin.manong.search.knn.codec.KNNVectorFormatFacade;
 
 /**
- * KNN92Codec实现
+ * KNNCodec实现
  *
  * @author frankcl
  * @date 2023-05-12 15:29:40
  */
-public class KNN92Codec extends FilterCodec {
+public class KNNCodec extends FilterCodec {
 
-    public static final KNNCodecVersion VERSION = KNNCodecVersion.V92;
+    public static final KNNCodecVersion VERSION = KNNCodecVersion.V95;
 
     protected KNNVectorFormatFacade formatFacade;
 
-    public KNN92Codec() {
+    public KNNCodec() {
         this(VERSION.getCodecDelegate());
     }
 
-    public KNN92Codec(Codec delegate) {
+    public KNNCodec(Codec delegate) {
         super(VERSION.getCodecName(), delegate);
         this.formatFacade = VERSION.getFormatFacadeSupplier().apply(VERSION.getCodecDelegate());
     }
