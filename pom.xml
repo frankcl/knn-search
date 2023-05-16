@@ -43,6 +43,7 @@
     <properties>
         <jdk.version>17</jdk.version>
         <junit.version>4.13.2</junit.version>
+        <lombok.version>1.18.16</lombok.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <guava.version>31.1-jre</guava.version>
         <elasticsearch.version>8.7.1</elasticsearch.version>
@@ -141,6 +142,12 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
