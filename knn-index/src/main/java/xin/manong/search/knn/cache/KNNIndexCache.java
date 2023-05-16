@@ -115,7 +115,7 @@ public class KNNIndexCache {
         if (allocation.fileWatcherHandle != null) allocation.fileWatcherHandle.stop();
         executor.execute(() -> allocation.knnIndex.close());
         if (RemovalCause.SIZE == notification.getCause()) {
-//            KNNSettings.state().updateCircuitBreakerSettings(true);
+            KNNSettings.getInstance().updateCircuitBreakerTrigger(true);
             setCacheCapacityReached(true);
         }
         logger.info("knn index[{}] has been removed, cause[{}]", notification.getKey(), notification.getCause().name());

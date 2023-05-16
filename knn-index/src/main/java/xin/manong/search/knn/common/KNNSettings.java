@@ -1,18 +1,25 @@
 package xin.manong.search.knn.common;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ElasticsearchParseException;
+import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.admin.cluster.settings.ClusterUpdateSettingsRequest;
+import org.elasticsearch.action.admin.cluster.settings.ClusterUpdateSettingsResponse;
 import org.elasticsearch.client.internal.Client;
 import org.elasticsearch.cluster.service.ClusterService;
 import org.elasticsearch.common.settings.Setting;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.core.TimeValue;
 import org.elasticsearch.monitor.jvm.JvmInfo;
 import org.elasticsearch.monitor.os.OsProbe;
+import xin.manong.search.knn.cache.KNNIndexCache;
+import xin.manong.search.knn.cache.KNNIndexCacheConfig;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.elasticsearch.common.settings.Setting.Property.*;
 import static org.elasticsearch.common.settings.Setting.Property.IndexScope;
@@ -25,6 +32,8 @@ import static org.elasticsearch.common.unit.ByteSizeValue.parseBytesSizeValue;
  * @date 2023-01-19 11:38:03
  */
 public class KNNSettings {
+
+    private static final Logger logger = LogManager.getLogger(KNNSettings.class);
 
     private static final int DEFAULT_MAX_CACHE_EXPIRED_TIME_MINUTES = 180;
     private static final int DEFAULT_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE = 85;
@@ -134,6 +143,27 @@ public class KNNSettings {
             if (instance != null) return instance;
             return instance = new KNNSettings();
         }
+    }
+
+    /**
+     * 获取所有配置信息
+     *
+     * @return 配置列表
+     */
+    public static List<Setting<?>> getSettings() {
+        List<Setting<?>> settings =  Arrays.asList(
+                KNN_GLOBAL_INDEX_LAZY_LOAD_SETTING,
+                KNN_GLOBAL_NMSLIB_INDEX_THREAD_QTY_SETTING,
+                KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED_SETTING,
+                KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE_SETTING,
+                KNN_INDEX_HNSW_M_SETTING,
+                KNN_INDEX_HNSW_EF_SEARCH_SETTING,
+                KNN_INDEX_HNSW_EF_CONSTRUCTION_SETTING,
+                KNN_INDEX_FAISS_PQ_M_SETTING,
+                KNN_INDEX_FAISS_PQ_ENCODE_BITS_SETTING,
+                KNN_INDEX_FAISS_PCA_DIMENSION_SETTING);
+        return Stream.concat(settings.stream(), dynamicCacheSettingMap.values().stream())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -276,6 +306,15 @@ public class KNNSettings {
                     updateCacheSettings.getAsBoolean(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED, null) : null;
             ByteSizeValue memoryCircuitBreakerLimit = updateCacheSettings.hasValue(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT) ?
                     updateCacheSettings.getAsBytesSize(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT, null) : null;
+            if (cacheExpiredEnable == null && cacheExpiredTimeMinutes == null &&
+                memoryCircuitBreakerEnable == null && memoryCircuitBreakerLimit == null) return;
+            KNNIndexCacheConfig config = new KNNIndexCacheConfig();
+            config.cacheExpiredEnable = cacheExpiredEnable;
+            config.cacheExpiredTimeMinutes = cacheExpiredTimeMinutes;
+            config.memoryCircuitBreakerEnable = memoryCircuitBreakerEnable;
+            config.memoryCircuitBreakerLimit = memoryCircuitBreakerLimit == null ? null :
+                    memoryCircuitBreakerLimit.getBytes();
+            KNNIndexCache.getInstance().rebuild(config);
         }, new ArrayList<>(dynamicCacheSettingMap.values()));
     }
 
@@ -304,5 +343,30 @@ public class KNNSettings {
         } catch (NumberFormatException e) {
             throw new ElasticsearchParseException("parse memory percentage[{}] failed", e, value);
         }
+    }
+
+    /**
+     * 更新熔断状态
+     *
+     * @param status 开启熔断true，取消熔断false
+     */
+    public synchronized void updateCircuitBreakerTrigger(boolean status) {
+        ClusterUpdateSettingsRequest request = new ClusterUpdateSettingsRequest();
+        Settings updateSettings = Settings.builder().put(
+                KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED, status).build();
+        request.persistentSettings(updateSettings);
+        client.admin().cluster().updateSettings(request, new ActionListener<>() {
+            @Override
+            public void onResponse(ClusterUpdateSettingsResponse response) {
+                logger.debug("update circuit breaker trigger settings[{}] success, ack[{}]",
+                        request.persistentSettings(), response.isAcknowledged());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                logger.error("update circuit breaker trigger setting[{}] failed, cause[{}]",
+                        request.persistentSettings(), e.getMessage());
+            }
+        });
     }
 }
