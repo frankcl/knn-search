@@ -6,14 +6,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.codecs.CodecUtil;
 import org.apache.lucene.index.BinaryDocValues;
-import org.apache.lucene.index.SegmentWriteState;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.lucene.util.IOUtils;
-import org.elasticsearch.common.Strings;
 import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.index.KNNIndexMeta;
 
@@ -30,6 +28,8 @@ import java.util.ArrayList;
 public class KNNVectorCodecUtil {
 
     private static final Logger logger = LogManager.getLogger(KNNVectorCodecUtil.class);
+
+    private static final String CHARSET_UTF8 = "UTF-8";
 
     /**
      * 从docValue中解析KNN向量数据
@@ -90,7 +90,7 @@ public class KNNVectorCodecUtil {
      */
     public static void writeKNNMeta(KNNIndexMeta indexMeta, String path) throws IOException {
         byte[] bytes = JSON.toJSONString(indexMeta, SerializerFeature.DisableCircularReferenceDetect,
-                SerializerFeature.PrettyFormat).getBytes(Charset.forName("UTF-8"));
+                SerializerFeature.PrettyFormat).getBytes(Charset.forName(CHARSET_UTF8));
         try (DataOutputStream output = new DataOutputStream(new FileOutputStream(path))) {
             output.writeInt(bytes.length);
             output.write(bytes, 0, bytes.length);
@@ -110,7 +110,7 @@ public class KNNVectorCodecUtil {
         try (DataInputStream input = new DataInputStream(new FileInputStream(path))){
             byte[] bytes = new byte[input.read()];
             input.read(bytes, 0, bytes.length);
-            return JSON.parseObject(new String(bytes, Charset.forName("UTF-8")), c);
+            return JSON.parseObject(new String(bytes, Charset.forName(CHARSET_UTF8)), c);
         }
     }
 
