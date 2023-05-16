@@ -1,8 +1,1 @@
-xin.manong.search.knn.codec.v80.KNN80Codec
-xin.manong.search.knn.codec.v84.KNN84Codec
-xin.manong.search.knn.codec.v86.KNN86Codec
-xin.manong.search.knn.codec.v87.KNN87Codec
-xin.manong.search.knn.codec.v91.KNN91Codec
-xin.manong.search.knn.codec.v92.KNN92Codec
-xin.manong.search.knn.codec.v94.KNN94Codec
-xin.manong.search.knn.codec.v95.KNN95Codec
+xin.manong.search.knn.codec.KNNCodec
