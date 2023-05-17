@@ -23,7 +23,7 @@ public class KNNCodec extends FilterCodec {
 
     public KNNCodec(Codec delegate) {
         super(VERSION.getCodecName(), delegate);
-        this.formatFacade = VERSION.getFormatFacadeSupplier().apply(VERSION.getCodecDelegate());
+        this.formatFacade = VERSION.getFormatFacadeSupplier().apply(delegate);
     }
 
     @Override
