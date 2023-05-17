@@ -24,9 +24,10 @@ public class FAISSDescriptorFactorySuite {
             meta.num = 100000;
             FAISSDescriptor descriptor = FAISSDescriptorFactory.make(meta);
             Assert.assertEquals("IVF1264,Flat", descriptor.toString());
-            Assert.assertEquals(2, descriptor.parameterMap.size());
+            Assert.assertEquals(3, descriptor.parameterMap.size());
             Assert.assertEquals(1264, (int) descriptor.parameterMap.get(FAISSConstants.QUANTIZE_NUM));
             Assert.assertEquals(1264, (int) descriptor.parameterMap.get(FAISSConstants.CENTROID_NUM));
+            Assert.assertEquals(26, (int) descriptor.parameterMap.get(FAISSConstants.N_PROBE));
         }
         {
             FAISSIndexMeta meta = new FAISSIndexMeta();
@@ -36,9 +37,10 @@ public class FAISSDescriptorFactorySuite {
             meta.parameterMap.put(FAISSConstants.SUB_QUANTIZE_NUM, 16);
             FAISSDescriptor descriptor = FAISSDescriptorFactory.make(meta);
             Assert.assertEquals("IVF2828,PQ16", descriptor.toString());
-            Assert.assertEquals(2, descriptor.parameterMap.size());
+            Assert.assertEquals(3, descriptor.parameterMap.size());
             Assert.assertEquals(2828, (int) descriptor.parameterMap.get(FAISSConstants.QUANTIZE_NUM));
             Assert.assertEquals(2828, (int) descriptor.parameterMap.get(FAISSConstants.CENTROID_NUM));
+            Assert.assertEquals(58, (int) descriptor.parameterMap.get(FAISSConstants.N_PROBE));
         }
         {
             FAISSIndexMeta meta = new FAISSIndexMeta();
@@ -48,9 +50,10 @@ public class FAISSDescriptorFactorySuite {
             meta.parameterMap.put(FAISSConstants.SUB_QUANTIZE_NUM, 16);
             FAISSDescriptor descriptor = FAISSDescriptorFactory.make(meta);
             Assert.assertEquals("IMI2x6,PQ16x12", descriptor.toString());
-            Assert.assertEquals(2, descriptor.parameterMap.size());
+            Assert.assertEquals(3, descriptor.parameterMap.size());
             Assert.assertEquals(4096, (int) descriptor.parameterMap.get(FAISSConstants.QUANTIZE_NUM));
             Assert.assertEquals(64, (int) descriptor.parameterMap.get(FAISSConstants.CENTROID_NUM));
+            Assert.assertEquals(41, (int) descriptor.parameterMap.get(FAISSConstants.N_PROBE));
         }
         {
             FAISSIndexMeta meta = new FAISSIndexMeta();
@@ -60,9 +63,10 @@ public class FAISSDescriptorFactorySuite {
             meta.parameterMap.put(FAISSConstants.SUB_QUANTIZE_NUM, 16);
             FAISSDescriptor descriptor = FAISSDescriptorFactory.make(meta);
             Assert.assertEquals("IMI2x9,PQ16", descriptor.toString());
-            Assert.assertEquals(2, descriptor.parameterMap.size());
+            Assert.assertEquals(3, descriptor.parameterMap.size());
             Assert.assertEquals(262144, (int) descriptor.parameterMap.get(FAISSConstants.QUANTIZE_NUM));
             Assert.assertEquals(512, (int) descriptor.parameterMap.get(FAISSConstants.CENTROID_NUM));
+            Assert.assertEquals(512, (int) descriptor.parameterMap.get(FAISSConstants.N_PROBE));
         }
     }
 }
