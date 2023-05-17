@@ -11,6 +11,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.IOUtils;
 import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.index.KNNIndexMeta;
@@ -32,6 +33,23 @@ public class KNNVectorCodecUtil {
     private static final String CHARSET_UTF8 = "UTF-8";
 
     /**
+     * 字节引用转化浮点数组
+     *
+     * @param bytesRef 字节引用
+     * @return 浮点数组
+     * @throws IOException
+     */
+    public static float[] byteRefToFloatArray(BytesRef bytesRef) throws IOException {
+        try (ByteArrayInputStream byteStream = new ByteArrayInputStream(bytesRef.bytes);
+             ObjectInputStream objectStream = new ObjectInputStream(byteStream)) {
+            return (float[]) objectStream.readObject();
+        } catch (ClassNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * 从docValue中解析KNN向量数据
      *
      * @param docValues 向量docValues
@@ -42,14 +60,7 @@ public class KNNVectorCodecUtil {
         ArrayList<float[]> vectors = new ArrayList<>();
         ArrayList<Integer> docs = new ArrayList<>();
         for (int id = docValues.nextDoc(); id != DocIdSetIterator.NO_MORE_DOCS; id = docValues.nextDoc()) {
-            byte[] values = docValues.binaryValue().bytes;
-            try (ByteArrayInputStream byteStream = new ByteArrayInputStream(values);
-                 ObjectInputStream objectStream = new ObjectInputStream(byteStream)) {
-                vectors.add((float[]) objectStream.readObject());
-            } catch (ClassNotFoundException e) {
-                logger.error(e.getMessage(), e);
-                throw new RuntimeException(e);
-            }
+            vectors.add(byteRefToFloatArray(docValues.binaryValue()));
             docs.add(id);
         }
         return new KNNVectorFacade(docs.stream().mapToInt(Integer::intValue).toArray(),

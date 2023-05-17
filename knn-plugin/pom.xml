@@ -37,5 +37,14 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>xin.manong</groupId>
+            <artifactId>knn-codec</artifactId>
+            <version>${knn-search.version}</version>
+        </dependency>
     </dependencies>
 </project>

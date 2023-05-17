@@ -8,10 +8,10 @@ package xin.manong.search.knn.index;
  */
 public class KNNResult {
 
-    public final int id;
-    public final float score;
+    public int id;
+    public float score;
 
-    public KNNResult(final int id, final float score) {
+    public KNNResult(int id, float score) {
         this.id = id;
         this.score = score;
     }
