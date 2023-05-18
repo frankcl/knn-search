@@ -1,4 +1,5 @@
 package xin.manong.search.knn.common;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ElasticsearchParseException;
@@ -26,7 +27,7 @@ import static org.elasticsearch.common.settings.Setting.Property.IndexScope;
 import static org.elasticsearch.common.unit.ByteSizeValue.parseBytesSizeValue;
 
 /**
- * knn索引设置
+ * KNN索引设置
  *
  * @author frankcl
  * @date 2023-01-19 11:38:03

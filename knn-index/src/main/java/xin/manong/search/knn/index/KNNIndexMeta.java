@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * knn索引元数据
+ * KNN索引元数据
  *
  * @author frankcl
  * @date 2023-01-10 17:28:47
@@ -95,31 +95,31 @@ public class KNNIndexMeta {
      */
     public boolean check() {
         if (num <= 0) {
-            logger.error("knn index num[{}] is invalid", num);
+            logger.error("KNN index num[{}] is invalid", num);
             return false;
         }
         if (dimension <= 0) {
-            logger.error("knn vector dimension[{}] is invalid", num);
+            logger.error("KNN vector dimension[{}] is invalid", num);
             return false;
         }
         if (StringUtils.isEmpty(index)) {
-            logger.error("knn index name is empty");
+            logger.error("KNN index name is empty");
             return false;
         }
         if (StringUtils.isEmpty(field)) {
-            logger.error("knn vector field name is empty");
+            logger.error("KNN vector field name is empty");
             return false;
         }
         if (StringUtils.isEmpty(file)) {
-            logger.error("knn index file is empty");
+            logger.error("KNN index file is empty");
             return false;
         }
         if (StringUtils.isEmpty(path)) {
-            logger.error("knn index file path is empty");
+            logger.error("KNN index file path is empty");
             return false;
         }
         if (type == null) {
-            logger.error("knn index type is null");
+            logger.error("KNN index type is null");
             return false;
         }
         return true;

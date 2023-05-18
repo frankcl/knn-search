@@ -36,7 +36,7 @@ public class HNSWIndex extends KNNIndex {
         readLock.lock();
         try {
             if (this.closed) {
-                logger.error("knn index[{}] has been closed", meta.path);
+                logger.error("HNSW index[{}] has been closed", meta.path);
                 return new KNNResult[0];
             }
             return AccessController.doPrivileged(
@@ -61,7 +61,7 @@ public class HNSWIndex extends KNNIndex {
             pointer = open(indexMeta.path, indexMeta.efSearch, indexMeta.space);
             compute();
         } catch (Exception e) {
-            logger.error("open knn index[{}] failed for type[{}]", meta.path, meta.type.name());
+            logger.error("open HNSW index[{}] failed", meta.path);
             logger.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
@@ -70,11 +70,11 @@ public class HNSWIndex extends KNNIndex {
     @Override
     public void close() {
         if (pointer == 0L) {
-            logger.warn("knn index is not init");
+            logger.warn("HNSW index is not init");
             return;
         }
         if (this.closed) {
-            logger.warn("knn index[{}] has been closed", meta.path);
+            logger.warn("HNSW index[{}] has been closed", meta.path);
             return;
         }
         Lock writeLock = lock.writeLock();
@@ -88,12 +88,12 @@ public class HNSWIndex extends KNNIndex {
     }
 
     /**
-     * 计算knn索引占用空间
+     * 计算HNSW索引占用空间
      */
     private void compute() {
         File file = new File(meta.path);
         if (!file.exists() || !file.isFile()) {
-            logger.warn("knn index[{}] is not found or not a file", meta.path);
+            logger.warn("HNSW index[{}] is not found or not a file", meta.path);
             return;
         }
         fileSize = file.length() / 1024 + 1;
@@ -101,14 +101,14 @@ public class HNSWIndex extends KNNIndex {
     }
 
     /**
-     * 本地方法：关闭knn索引
+     * 本地方法：关闭HNSW索引
      *
      * @param pointer C/C++指针
      */
     private native void close(long pointer);
 
     /**
-     * 本地方法：打开knn索引
+     * 本地方法：打开HNSW索引
      *
      * @param path 索引文件路径
      * @param efSearch HNSW参数efSearch
@@ -120,7 +120,7 @@ public class HNSWIndex extends KNNIndex {
     /**
      * 本地方法：搜索向量，返回最相似k个结果
      *
-     * @param pointer knn索引指针
+     * @param pointer HNSW索引指针
      * @param vector 搜索向量
      * @param k 最相近数量k
      * @return 搜索列表，无结果返回空数组

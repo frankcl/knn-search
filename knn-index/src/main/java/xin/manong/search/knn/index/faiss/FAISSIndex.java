@@ -36,7 +36,7 @@ public class FAISSIndex extends KNNIndex {
         readLock.lock();
         try {
             if (closed) {
-                logger.error("knn index[{}] has been closed", meta.path);
+                logger.error("FAISS index[{}] has been closed", meta.path);
                 return new KNNResult[0];
             }
             return AccessController.doPrivileged((
@@ -55,7 +55,7 @@ public class FAISSIndex extends KNNIndex {
             pointer = open(meta.path);
             compute();
         } catch (Exception e) {
-            logger.error("open knn index[{}] failed for type[{}]", meta.path, meta.type.name());
+            logger.error("open FAISS index[{}] failed", meta.path);
             logger.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
@@ -64,11 +64,11 @@ public class FAISSIndex extends KNNIndex {
     @Override
     public void close() {
         if (pointer == 0L) {
-            logger.warn("knn index is not init");
+            logger.warn("FAISS index is not init");
             return;
         }
         if (closed) {
-            logger.warn("knn index[{}] has been closed", meta.path);
+            logger.warn("FAISS index[{}] has been closed", meta.path);
             return;
         }
         Lock writeLock = lock.writeLock();
@@ -82,12 +82,12 @@ public class FAISSIndex extends KNNIndex {
     }
 
     /**
-     * 计算knn索引占用空间
+     * 计算FAISS索引占用空间
      */
     private void compute() {
         File file = new File(meta.path);
         if (!file.exists() || !file.isFile()) {
-            logger.warn("knn index[{}] is not found or not a file", meta.path);
+            logger.warn("FAISS index[{}] is not found or not a file", meta.path);
             return;
         }
         fileSize = file.length() / 1024 + 1;
@@ -121,14 +121,14 @@ public class FAISSIndex extends KNNIndex {
     }
 
     /**
-     * 本地方法：关闭knn索引
+     * 本地方法：关闭FAISS索引
      *
      * @param pointer C/C++指针
      */
     private native void close(long pointer);
 
     /**
-     * 本地方法：打开knn索引
+     * 本地方法：打开FAISS索引
      *
      * @param path 索引文件路径
      * @return 成功返回指针，否则返回0L
@@ -138,7 +138,7 @@ public class FAISSIndex extends KNNIndex {
     /**
      * 本地方法：搜索向量，返回最相似k个结果
      *
-     * @param pointer knn索引指针
+     * @param pointer FAISS索引指针
      * @param vector 搜索向量
      * @param k 最相近数量k
      * @return 搜索列表，无结果返回空数组

@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * knn索引数据
+ * KNN索引数据
  *
  * @author frankcl
  * @date 2023-01-10 19:27:55

@@ -19,7 +19,7 @@ public class KNNIndexListener implements FileChangesListener {
     @Override
     public void onFileDeleted(Path path) {
         String absolutePath = path.toString();
-        logger.info("knn index[{}] is deleted", absolutePath);
+        logger.info("KNN index file[{}] is deleted", absolutePath);
         KNNIndexCache.getInstance().remove(absolutePath);
     }
 

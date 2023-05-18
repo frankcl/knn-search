@@ -4,7 +4,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * knn索引抽象定义，具体索引定义继承该类
+ * KNN索引抽象定义，具体索引定义继承该类
  *
  * @author frankcl
  * @date 2023-01-10 17:24:40
@@ -47,7 +47,7 @@ public abstract class KNNIndex {
     }
 
     /**
-     * 获取文件大小，单位Byte
+     * 获取文件大小，单位KB
      *
      * @return 文件大小
      */
@@ -56,7 +56,7 @@ public abstract class KNNIndex {
     }
 
     /**
-     * 获取占用内容大小，单位Byte
+     * 获取占用内容大小，单位KB
      *
      * @return 占用内容大小
      */

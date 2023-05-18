@@ -1,9 +1,6 @@
 package xin.manong.search.knn.cache;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalCause;
-import com.google.common.cache.RemovalNotification;
+import com.google.common.cache.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +18,7 @@ import xin.manong.search.knn.index.hnsw.HNSWIndexMeta;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -52,7 +50,7 @@ public class KNNIndexCache {
     private Cache<String, KNNIndexAllocation> cache;
 
     /**
-     * 获取knn索引缓存实例
+     * 获取KNN索引缓存实例
      *
      * @return 缓存实例
      */
@@ -118,27 +116,28 @@ public class KNNIndexCache {
             KNNSettings.getInstance().updateCircuitBreakerTrigger(true);
             setCacheCapacityReached(true);
         }
-        logger.info("knn index[{}] has been removed, cause[{}]", notification.getKey(), notification.getCause().name());
+        logger.info("KNN index[{}] has been removed, cause[{}]",
+                notification.getKey(), notification.getCause().name());
     }
 
     /**
-     * 加载knn索引
+     * 加载KNN索引
      *
      * @param meta 索引元数据
-     * @return knn索引内存分配
+     * @return KNN索引内存分配
      */
     private KNNIndexAllocation load(KNNIndexMeta meta) throws IOException {
         Path path = Paths.get(meta.path);
         FileWatcher fileWatcher = new FileWatcher(path);
         fileWatcher.addListener(listener);
         fileWatcher.init();
-        WatcherHandle<FileWatcher> watcherHandle = resourceWatcherService != null ?
-                resourceWatcherService.add(fileWatcher) : null;
         KNNIndex index = meta instanceof FAISSIndexMeta ?
                 new FAISSIndex((FAISSIndexMeta) meta) :
                 new HNSWIndex((HNSWIndexMeta) meta);
         index.open();
-        logger.info("load knn index[{}] success for path", meta.type.name(), meta.path);
+        WatcherHandle<FileWatcher> watcherHandle = resourceWatcherService != null ?
+                resourceWatcherService.add(fileWatcher) : null;
+        logger.info("KNN index[{}] has been loaded", meta.path);
         return new KNNIndexAllocation(index, watcherHandle);
     }
 
@@ -166,35 +165,35 @@ public class KNNIndexCache {
      */
     public synchronized void rebuild(KNNIndexCacheConfig config) {
         if (!isCacheConfigChanged(config)) {
-            logger.info("knn index cache config is not changed, ignore rebuilding");
+            logger.info("KNN index cache config is not changed, ignore rebuilding");
             return;
         }
         executor.execute(() -> {
-            logger.info("knn index cache is rebuilding ...");
+            logger.info("KNN index cache is rebuilding ...");
             Lock writeLock = readWriteLock.writeLock();
             writeLock.lock();
             try {
                 cache.invalidateAll();
                 build(config);
             } finally {
-                logger.info("knn index cache rebuild success");
+                logger.info("KNN index cache rebuild success");
                 writeLock.unlock();
             }
         });
     }
 
     /**
-     * 获取knn索引
+     * 获取KNN索引
      * 1. 如果缓存中存在，返回索引内存分配
      * 2. 如果缓存中不存在，创建索引内存分配，并放入缓存
      *
      * @param meta 索引元数据
-     * @return knn索引
+     * @return KNN索引
      */
     public KNNIndex get(KNNIndexMeta meta) {
         if (meta == null || !meta.check()) {
-            logger.error("invalid knn index meta");
-            throw new IllegalStateException("invalid knn index meta");
+            logger.error("invalid KNN index meta");
+            throw new IllegalStateException("invalid KNN index meta");
         }
         Lock readLock = readWriteLock.readLock();
         readLock.lock();
@@ -202,7 +201,7 @@ public class KNNIndexCache {
             KNNIndexAllocation allocation = cache.get(meta.path, () -> load(meta));
             return allocation.knnIndex;
         } catch (ExecutionException e) {
-            logger.error("get knn index[{}] from cache failed", meta.path);
+            logger.error("get KNN index[{}] failed", meta.path);
             throw new RuntimeException(e);
         } finally {
             readLock.unlock();
@@ -210,7 +209,7 @@ public class KNNIndexCache {
     }
 
     /**
-     * 移除knn索引
+     * 移除KNN索引
      *
      * @param path 索引路径
      */
@@ -243,6 +242,58 @@ public class KNNIndexCache {
         } finally {
             writeLock.unlock();
         }
+    }
+
+    /**
+     * 获取缓存统计
+     *
+     * @return 缓存统计
+     */
+    public CacheStats getCacheStats() {
+        return cache.stats();
+    }
+
+    /**
+     * 计算缓存内存占用大小，单位KB
+     *
+     * @return 缓存内存占用大小
+     */
+    public Long getCacheMemorySizeKB() {
+        return cache.asMap().values().stream().mapToLong(
+                allocation -> allocation.knnIndex.getMemorySize()).sum();
+    }
+
+    /**
+     * 获取索引缓存占用大小，单位KB
+     *
+     * @param index 索引名
+     * @return 索引缓存占用大小
+     */
+    public Long getCacheMemorySizeKB(String index) {
+        if (StringUtils.isEmpty(index)) return 0L;
+        return cache.asMap().values().stream().filter(
+                allocation -> {
+                    String currentIndex = allocation.knnIndex.getMeta().index;
+                    return currentIndex != null && currentIndex.equals(index);
+                }).mapToLong(allocation -> allocation.knnIndex.getMemorySize()).sum();
+    }
+
+    /**
+     * 获取缓存内存占用统计信息
+     *
+     * @return 缓存内存占用统计信息
+     */
+    public Map<String, ? extends Object> getCacheMemoryStats() {
+        Map<String, Map<String, Long>> cacheMemoryStats = new HashMap<>();
+        for (KNNIndexAllocation allocation : cache.asMap().values()) {
+            KNNIndexMeta indexMeta = allocation.knnIndex.getMeta();
+            if (!cacheMemoryStats.containsKey(indexMeta.index)) cacheMemoryStats.put(indexMeta.index, new HashMap<>());
+            Map<String, Long> fieldMemoryMap = cacheMemoryStats.get(indexMeta.index);
+            if (!fieldMemoryMap.containsKey(indexMeta.field)) fieldMemoryMap.put(indexMeta.field, 0L);
+            fieldMemoryMap.put(indexMeta.field, fieldMemoryMap.get(indexMeta.field) +
+                    allocation.knnIndex.getMemorySize());
+        }
+        return cacheMemoryStats;
     }
 
     /**

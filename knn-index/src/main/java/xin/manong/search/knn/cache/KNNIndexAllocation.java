@@ -5,7 +5,7 @@ import org.elasticsearch.watcher.WatcherHandle;
 import xin.manong.search.knn.index.KNNIndex;
 
 /**
- * knn索引内存分配
+ * KNN索引内存分配
  *
  * @author frankcl
  * @date 2023-01-19 10:42:17
