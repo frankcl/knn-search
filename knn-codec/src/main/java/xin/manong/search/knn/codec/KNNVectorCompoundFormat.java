@@ -45,7 +45,7 @@ public class KNNVectorCompoundFormat extends CompoundFormat {
 
     @Override
     public void write(Directory dir, SegmentInfo si, IOContext context) throws IOException {
-        for (String extension : KNNConstants.KNN_VECTOR_EXTENSIONS) {
+        for (String extension : KNNConstants.KNN_VECTOR_INDEX_DATA_EXTENSIONS) {
             writeCompoundFiles(dir, si, context, extension);
         }
         delegate.write(dir, si, context);
