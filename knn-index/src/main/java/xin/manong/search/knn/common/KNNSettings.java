@@ -177,6 +177,24 @@ public class KNNSettings {
     }
 
     /**
+     * 获取缓存熔断重置阈值
+     *
+     * @return 缓存熔断重置阈值
+     */
+    public static double getCircuitBreakerUnsetPercentage() {
+        return getInstance().getGlobalSettingValue(KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE);
+    }
+
+    /**
+     * 缓存熔断是否触发
+     *
+     * @return 触发返回true，否则返回false
+     */
+    public static boolean isCircuitBreakerTriggered() {
+        return getInstance().getGlobalSettingValue(KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED);
+    }
+
+    /**
      * 是否索引延迟加载
      *
      * @return 索引延迟加载true，否则false

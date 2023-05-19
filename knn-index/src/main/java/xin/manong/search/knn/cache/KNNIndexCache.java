@@ -297,6 +297,15 @@ public class KNNIndexCache {
     }
 
     /**
+     * 判断缓存容量是否达到上限
+     *
+     * @return 达到上限返回true，否则返回false
+     */
+    public boolean isCacheCapacityReached() {
+        return cacheCapacityReached == null ? false : cacheCapacityReached.get();
+    }
+
+    /**
      * 设置缓存容量是否达到
      *
      * @param reached 达到true，未达到false

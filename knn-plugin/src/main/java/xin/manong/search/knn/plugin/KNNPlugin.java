@@ -16,6 +16,7 @@ import org.elasticsearch.repositories.RepositoriesService;
 import org.elasticsearch.script.ScriptService;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.watcher.ResourceWatcherService;
+import xin.manong.search.knn.breaker.KNNCircuitBreakerMonitor;
 import xin.manong.search.knn.cache.KNNIndexCache;
 import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.common.KNNSettings;
@@ -55,6 +56,9 @@ public class KNNPlugin extends Plugin implements MapperPlugin,
             Supplier<RepositoriesService> repositoriesServiceSupplier) {
         KNNSettings.getInstance().initialize(client, clusterService);
         KNNIndexCache.getInstance().setResourceWatcherService(resourceWatcherService);
+        KNNCircuitBreakerMonitor circuitBreakerMonitor = new KNNCircuitBreakerMonitor(
+                threadPool, clusterService, client);
+        circuitBreakerMonitor.start();
         return Collections.emptyList();
     }
 
