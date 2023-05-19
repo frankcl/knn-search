@@ -1,8 +1,3 @@
-/*
- * Copyright OpenSearch Contributors
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package xin.manong.search.knn.codec;
 
 import org.apache.lucene.codecs.Codec;
