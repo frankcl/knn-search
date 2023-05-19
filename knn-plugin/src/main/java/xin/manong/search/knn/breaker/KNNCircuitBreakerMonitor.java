@@ -48,8 +48,8 @@ public class KNNCircuitBreakerMonitor implements Runnable {
             KNNIndexCache knnIndexCache = KNNIndexCache.getInstance();
             Long currentMemorySize =  knnIndexCache.getCacheMemorySizeKB();
             Long circuitBreakerMemoryLimit = KNNSettings.getCircuitBreakerLimit().getKb();
-            Long circuitBreakerUnsetMemory = (long) ((KNNSettings.getCircuitBreakerUnsetPercentage() / 100) *
-                    circuitBreakerMemoryLimit);
+            Long circuitBreakerUnsetMemory = (long) (circuitBreakerMemoryLimit *
+                    KNNSettings.getCircuitBreakerUnsetPercentage() / 100);
             if (currentMemorySize <= circuitBreakerUnsetMemory) knnIndexCache.setCacheCapacityReached(false);
         }
         if (clusterService.state().nodes().isLocalNodeElectedMaster() && KNNSettings.isCircuitBreakerTriggered()) {
