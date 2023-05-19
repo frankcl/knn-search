@@ -1,6 +1,5 @@
 package xin.manong.search.knn.mapper;
 
-
 import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.search.DocValueFormat;
