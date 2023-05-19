@@ -26,8 +26,8 @@ public class KNNCircuitBreakerMonitor implements Runnable {
     private Client client;
 
     public KNNCircuitBreakerMonitor(ThreadPool threadPool,
-                                     ClusterService clusterService,
-                                     Client client) {
+                                    ClusterService clusterService,
+                                    Client client) {
         this.threadPool = threadPool;
         this.clusterService = clusterService;
         this.client = client;
