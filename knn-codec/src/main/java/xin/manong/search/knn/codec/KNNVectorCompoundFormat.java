@@ -1,8 +1,8 @@
 package xin.manong.search.knn.codec;
 
-import org.apache.lucene.backward_codecs.lucene50.Lucene50CompoundFormat;
 import org.apache.lucene.codecs.CompoundDirectory;
 import org.apache.lucene.codecs.CompoundFormat;
+import org.apache.lucene.codecs.lucene50.Lucene50CompoundFormat;
 import org.apache.lucene.index.SegmentInfo;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;

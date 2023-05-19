@@ -12,6 +12,10 @@ import java.util.Set;
  */
 public class KNNConstants {
 
+    public static final int MAX_DIMENSION = 10000;
+
+    public static final String MAPPED_FIELD_TYPE = "knn_vector";
+
     public static final String FIELD_ATTRIBUTE_KNN_FIELD = "knn_field";
     public static final String FIELD_ATTRIBUTE_INDEX = "index";
     public static final String FIELD_ATTRIBUTE_DIMENSION = "dimension";

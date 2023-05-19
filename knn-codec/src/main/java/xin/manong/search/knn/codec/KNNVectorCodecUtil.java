@@ -50,6 +50,21 @@ public class KNNVectorCodecUtil {
     }
 
     /**
+     * 浮点数组转换字节数组
+     *
+     * @param floats 浮点数组
+     * @return 字节数组
+     * @throws IOException
+     */
+    public static byte[] floatArrayToByteArray(float[] floats) throws IOException {
+        try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+             ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);) {
+            objectStream.writeObject(floats);
+            return byteStream.toByteArray();
+        }
+    }
+
+    /**
      * 从docValue中解析KNN向量数据
      *
      * @param docValues 向量docValues

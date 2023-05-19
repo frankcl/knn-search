@@ -3,10 +3,7 @@ package xin.manong.search.knn.query;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.lucene.index.BinaryDocValues;
-import org.apache.lucene.index.FilterLeafReader;
-import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.index.SegmentReader;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Scorer;
@@ -15,7 +12,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.FilterDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.DocIdSetBuilder;
-import org.elasticsearch.core.PathUtils;
+import org.elasticsearch.common.io.PathUtils;
 import xin.manong.search.knn.cache.KNNIndexCache;
 import xin.manong.search.knn.codec.KNNVectorCodecUtil;
 import xin.manong.search.knn.common.KNNConstants;
@@ -75,6 +72,10 @@ public class KNNWeight extends Weight {
     @Override
     public boolean isCacheable(LeafReaderContext context) {
         return true;
+    }
+
+    @Override
+    public void extractTerms(Set<Term> terms) {
     }
 
     /**

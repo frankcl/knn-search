@@ -46,7 +46,7 @@
         <lombok.version>1.18.16</lombok.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <guava.version>31.1-jre</guava.version>
-        <elasticsearch.version>8.7.1</elasticsearch.version>
+        <elasticsearch.version>7.10.2</elasticsearch.version>
         <fastjson.version>2.0.12</fastjson.version>
         <knn-search.version>0.0.1</knn-search.version>
     </properties>

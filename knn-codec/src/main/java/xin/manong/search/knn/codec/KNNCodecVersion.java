@@ -2,8 +2,7 @@ package xin.manong.search.knn.codec;
 
 import lombok.Getter;
 import org.apache.lucene.codecs.Codec;
-import org.apache.lucene.codecs.lucene95.Lucene95Codec;
-import org.apache.lucene.codecs.perfield.PerFieldKnnVectorsFormat;
+import org.apache.lucene.codecs.lucene87.Lucene87Codec;
 
 import java.util.function.Function;
 
@@ -18,8 +17,7 @@ public enum KNNCodecVersion {
 
     CURRENT(
             "KNNCodec",
-            new Lucene95Codec(),
-            null,
+            new Lucene87Codec(),
             delegate -> new KNNVectorFormatFacade(
                     new KNNVectorDocValuesFormat(delegate.docValuesFormat()),
                     new KNNVectorCompoundFormat(delegate.compoundFormat())),
@@ -28,19 +26,16 @@ public enum KNNCodecVersion {
 
     KNNCodecVersion(String codecName,
                     Codec codecDelegate,
-                    PerFieldKnnVectorsFormat perFieldKnnVectorsFormat,
                     Function<Codec, KNNVectorFormatFacade> formatFacadeSupplier,
                     Function<Codec, Codec> codecSupplier) {
         this.codecName = codecName;
         this.codecDelegate = codecDelegate;
-        this.perFieldKnnVectorsFormat = perFieldKnnVectorsFormat;
         this.formatFacadeSupplier = formatFacadeSupplier;
         this.codecSupplier = codecSupplier;
     }
 
     private final String codecName;
     private final Codec codecDelegate;
-    private final PerFieldKnnVectorsFormat perFieldKnnVectorsFormat;
     private final Function<Codec, KNNVectorFormatFacade> formatFacadeSupplier;
     private final Function<Codec, Codec> codecSupplier;
 }

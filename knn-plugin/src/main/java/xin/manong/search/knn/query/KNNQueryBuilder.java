@@ -17,16 +17,15 @@ package xin.manong.search.knn.query;
 
 import lombok.Getter;
 import org.apache.lucene.search.Query;
-import org.elasticsearch.TransportVersion;
+import org.elasticsearch.common.ParseField;
 import org.elasticsearch.common.ParsingException;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.query.AbstractQueryBuilder;
-import org.elasticsearch.index.query.SearchExecutionContext;
-import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.XContentBuilder;
-import org.elasticsearch.xcontent.XContentParser;
+import org.elasticsearch.index.query.QueryShardContext;
 import xin.manong.search.knn.util.KNNUtil;
 
 import java.io.IOException;
@@ -97,7 +96,7 @@ public class KNNQueryBuilder extends AbstractQueryBuilder<KNNQueryBuilder> {
     }
 
     @Override
-    protected Query doToQuery(SearchExecutionContext context) throws IOException {
+    protected Query doToQuery(QueryShardContext context) throws IOException {
         String index = context.index().getName();
         return new KNNQuery(k, vector, index, field);
     }
@@ -117,11 +116,6 @@ public class KNNQueryBuilder extends AbstractQueryBuilder<KNNQueryBuilder> {
     @Override
     public String getWriteableName() {
         return QUERY_NAME;
-    }
-
-    @Override
-    public TransportVersion getMinimalSupportedVersion() {
-        return TransportVersion.MINIMUM_COMPATIBLE;
     }
 
     /**
