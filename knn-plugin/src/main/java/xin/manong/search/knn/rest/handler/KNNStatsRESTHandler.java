@@ -73,14 +73,14 @@ public class KNNStatsRESTHandler extends BaseRestHandler {
         KNNStatsRequest statsRequest = new KNNStatsRequest(knnStats.getStatMap().keySet());
         KNNStatsNodesRequest nodesRequest = new KNNStatsNodesRequest(statsRequest, nodeIds);
         nodesRequest.timeout(request.param(KNNConstants.REST_REQUEST_TIMEOUT));
-        String[] stats = parseStrings(request.param(KNNConstants.REST_REQUEST_STAT));
-        Set<String> requestStats = stats == null ? null : new HashSet<>(Arrays.asList(stats));
-        if (requestStats == null || requestStats.contains(KNNStatsRequest.ALL_STATS)) {
+        String[] array = parseStrings(request.param(KNNConstants.REST_REQUEST_STAT));
+        Set<String> stats = array == null ? null : new HashSet<>(Arrays.asList(array));
+        if (stats == null || stats.contains(KNNStatsRequest.ALL_STATS)) {
             statsRequest.addAllRequestStats();
         } else {
-            for (String statKey : requestStats) {
-                if (statsRequest.addRequestStat(statKey)) continue;
-                logger.warn("request stat key[{}] is not valid", statKey);
+            for (String stat : stats) {
+                if (statsRequest.addRequestStat(stat)) continue;
+                logger.warn("request stat key[{}] is not valid", stat);
             }
         }
         return nodesRequest;
