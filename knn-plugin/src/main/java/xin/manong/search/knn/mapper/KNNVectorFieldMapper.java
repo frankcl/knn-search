@@ -73,6 +73,7 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
         private final Parameter<Map<String, String>> meta = Parameter.metaParam();
 
         protected Boolean ignoreMalformed;
+        protected String index;
 
         public Builder(String name) {
             super(name);
@@ -116,6 +117,8 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
                 throws MapperParsingException {
             Builder builder = new KNNVectorFieldMapper.Builder(name);
             builder.parse(name, parserContext, node);
+            builder.index = parserContext.mapperService().getIndexSettings().
+                    getIndexMetadata().getIndex().getName();
             if (builder.dimension.getValue() == -1) {
                 throw new IllegalArgumentException(String.format("dimension is missing for KNN vector[%s]", name));
             }
@@ -137,6 +140,7 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
         this.dimension = builder.dimension.getValue();
         this.ignoreMalformed = ignoreMalformed;
         this.fieldType = new FieldType(Defaults.FIELD_TYPE);
+        this.fieldType.putAttribute(KNNConstants.FIELD_ATTRIBUTE_INDEX, builder.index);
         this.fieldType.putAttribute(KNNConstants.FIELD_ATTRIBUTE_DIMENSION,
                 String.valueOf(dimension.intValue()));
         this.fieldType.freeze();

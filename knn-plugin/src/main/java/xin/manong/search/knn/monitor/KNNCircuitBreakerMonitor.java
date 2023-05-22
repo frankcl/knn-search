@@ -1,4 +1,4 @@
-package xin.manong.search.knn.breaker;
+package xin.manong.search.knn.monitor;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,6 +40,7 @@ public class KNNCircuitBreakerMonitor implements Runnable {
         threadPool.scheduleWithFixedDelay(this,
                 TimeValue.timeValueSeconds(CHECK_TIME_INTERVAL_SECONDS),
                 ThreadPool.Names.GENERIC);
+        logger.info("KNN circuit breaker monitor has been started");
     }
 
     @Override
@@ -51,7 +52,10 @@ public class KNNCircuitBreakerMonitor implements Runnable {
             Long circuitBreakerMemoryLimit = KNNSettings.getCircuitBreakerLimit().getKb();
             Long circuitBreakerUnsetMemory = (long) (circuitBreakerMemoryLimit *
                     KNNSettings.getCircuitBreakerUnsetPercentage() / 100);
-            if (currentMemorySize <= circuitBreakerUnsetMemory) knnIndexCache.setCacheCapacityReached(false);
+            if (currentMemorySize <= circuitBreakerUnsetMemory) {
+                knnIndexCache.setCacheCapacityReached(false);
+                logger.info("KNN index cache circuit breaker has been recovered");
+            }
         }
         if (clusterService.state().nodes().isLocalNodeElectedMaster() &&
                 KNNSettings.isCircuitBreakerTriggered()) {

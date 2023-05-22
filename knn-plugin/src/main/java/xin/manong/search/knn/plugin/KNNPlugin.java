@@ -16,7 +16,7 @@ import org.elasticsearch.repositories.RepositoriesService;
 import org.elasticsearch.script.ScriptService;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.watcher.ResourceWatcherService;
-import xin.manong.search.knn.breaker.KNNCircuitBreakerMonitor;
+import xin.manong.search.knn.monitor.KNNCircuitBreakerMonitor;
 import xin.manong.search.knn.cache.KNNIndexCache;
 import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.common.KNNSettings;
