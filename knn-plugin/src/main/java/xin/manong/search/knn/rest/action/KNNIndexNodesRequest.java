@@ -7,25 +7,25 @@ import org.elasticsearch.common.io.stream.StreamOutput;
 import java.io.IOException;
 
 /**
- * KNN集群级别统计请求定义
+ * KNN集群级别索引请求定义
  *
  * @author frankcl
  * @date 2023-05-22 14:45:53
  */
-public class KNNStatsNodesRequest extends BaseNodesRequest<KNNStatsNodesRequest> {
+public class KNNIndexNodesRequest extends BaseNodesRequest<KNNIndexNodesRequest> {
 
-    private KNNStatsRequest request;
+    private KNNIndexRequest request;
 
-    public KNNStatsNodesRequest() {
+    public KNNIndexNodesRequest() {
         super((String[]) null);
     }
 
-    public KNNStatsNodesRequest(StreamInput input) throws IOException {
+    public KNNIndexNodesRequest(StreamInput input) throws IOException {
         super(input);
-        request = new KNNStatsRequest(input);
+        request = new KNNIndexRequest(input);
     }
 
-    public KNNStatsNodesRequest(KNNStatsRequest request, String... nodesIds) {
+    public KNNIndexNodesRequest(KNNIndexRequest request, String... nodesIds) {
         super(nodesIds);
         this.request = request;
     }
@@ -37,11 +37,11 @@ public class KNNStatsNodesRequest extends BaseNodesRequest<KNNStatsNodesRequest>
     }
 
     /**
-     * 获取统计请求对象
+     * 获取索引请求对象
      *
-     * @return 统计请求对象
+     * @return 索引请求对象
      */
-    public KNNStatsRequest getRequest() {
+    public KNNIndexRequest getRequest() {
         return request;
     }
 }

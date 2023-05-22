@@ -32,11 +32,25 @@ public class KNNConstants {
     public static final String HNSW_SPACE_L2 = "l2";
     public static final String HNSW_SPACE_COSINE = "cosinesimil";
 
+    /**
+     * KNN RESTFul相关常量定义
+     */
     public static final String KNN_BASE_URL = "knn";
     public static final String REST_ACTION_STATS = "knn_stats_action";
+    public static final String REST_ACTION_INDEX = "knn_index_action";
     public static final String REST_REQUEST_NODE_ID = "node_id";
     public static final String REST_REQUEST_STAT = "stat";
     public static final String REST_REQUEST_TIMEOUT = "timeout";
+    public static final String REST_REQUEST_INDEX = "index";
+    public static final String REST_REQUEST_SIZE = "size";
+    public static final String REST_REQUEST_OPERATION = "operation";
+
+    /**
+     * 索引操作定义
+     */
+    public static final String OPERATION_VIEW = "view";
+    public static final String OPERATION_EVICT = "evict";
+    public static final String OPERATION_WARM = "warm";
 
     /**
      * 统计常量定义

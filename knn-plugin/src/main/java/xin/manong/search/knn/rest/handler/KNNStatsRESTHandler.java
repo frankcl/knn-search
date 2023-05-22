@@ -30,9 +30,7 @@ public class KNNStatsRESTHandler extends BaseRestHandler {
 
     private KNNStats knnStats;
 
-    public KNNStatsRESTHandler(Settings settings,
-                               RestController controller,
-                               KNNStats knnStats) {
+    public KNNStatsRESTHandler(KNNStats knnStats) {
         this.knnStats = knnStats;
     }
 

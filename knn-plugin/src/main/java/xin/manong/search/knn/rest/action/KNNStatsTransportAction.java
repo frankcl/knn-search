@@ -34,14 +34,14 @@ import java.util.Set;
 /**
  *  KNN统计TransportNodesAction定义
  */
-public class KNNStatsTransportNodesAction extends TransportNodesAction<
+public class KNNStatsTransportAction extends TransportNodesAction<
         KNNStatsNodesRequest, KNNStatsNodesResponse,
         KNNStatsNodeRequest, KNNStatsNodeResponse> {
 
     private KNNStats knnStats;
 
     @Inject
-    public KNNStatsTransportNodesAction(
+    public KNNStatsTransportAction(
             ThreadPool threadPool,
             ClusterService clusterService,
             TransportService transportService,

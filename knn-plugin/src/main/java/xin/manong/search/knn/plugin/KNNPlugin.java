@@ -28,8 +28,11 @@ import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.common.KNNSettings;
 import xin.manong.search.knn.mapper.KNNVectorFieldMapper;
 import xin.manong.search.knn.query.KNNQueryBuilder;
+import xin.manong.search.knn.rest.action.KNNIndexAction;
+import xin.manong.search.knn.rest.action.KNNIndexTransportAction;
 import xin.manong.search.knn.rest.action.KNNStatsAction;
-import xin.manong.search.knn.rest.action.KNNStatsTransportNodesAction;
+import xin.manong.search.knn.rest.action.KNNStatsTransportAction;
+import xin.manong.search.knn.rest.handler.KNNIndexRESTHandler;
 import xin.manong.search.knn.rest.handler.KNNStatsRESTHandler;
 import xin.manong.search.knn.stat.KNNStats;
 import xin.manong.search.knn.stat.KNNStatsConfig;
@@ -62,7 +65,8 @@ public class KNNPlugin extends Plugin implements MapperPlugin,
     @Override
     public List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> getActions() {
         return Arrays.asList(
-                new ActionHandler<>(KNNStatsAction.INSTANCE, KNNStatsTransportNodesAction.class)
+                new ActionHandler<>(KNNStatsAction.INSTANCE, KNNStatsTransportAction.class),
+                new ActionHandler<>(KNNIndexAction.INSTANCE, KNNIndexTransportAction.class)
         );
     }
 
@@ -75,7 +79,8 @@ public class KNNPlugin extends Plugin implements MapperPlugin,
                                              IndexNameExpressionResolver indexNameExpressionResolver,
                                              Supplier<DiscoveryNodes> nodesInCluster) {
         return Arrays.asList(
-                new KNNStatsRESTHandler(settings, restController, knnStats)
+                new KNNStatsRESTHandler(knnStats),
+                new KNNIndexRESTHandler()
         );
     }
 

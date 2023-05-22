@@ -227,18 +227,22 @@ public class KNNIndexCache {
      * 移除指定索引所有缓存
      *
      * @param index 索引名
+     * @return 移除索引内存大小
      */
-    public void removeByIndex(String index) {
-        if (StringUtils.isEmpty(index)) return;
+    public Long removeByIndex(String index) {
+        if (StringUtils.isEmpty(index)) return 0L;
         Lock writeLock = readWriteLock.writeLock();
         writeLock.lock();
         try {
+            Long size = 0L;
             for (Map.Entry<String, KNNIndexAllocation> entry : cache.asMap().entrySet()) {
                 KNNIndexAllocation allocation = entry.getValue();
                 KNNIndexMeta meta = allocation.knnIndex.getMeta();
                 if (meta.index == null || !meta.index.equals(index)) continue;
+                size += allocation.knnIndex.getMemorySize();
                 cache.invalidate(entry.getKey());
             }
+            return size;
         } finally {
             writeLock.unlock();
         }
