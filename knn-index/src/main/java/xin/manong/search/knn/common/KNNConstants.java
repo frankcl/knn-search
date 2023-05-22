@@ -29,6 +29,26 @@ public class KNNConstants {
     public static final Set<String> KNN_VECTOR_INDEX_DATA_EXTENSIONS = ImmutableSet.of(
             HNSW_VECTOR_INDEX_DATA_EXTENSION, FAISS_VECTOR_INDEX_DATA_EXTENSION);
 
-    public final static String HNSW_SPACE_L2 = "l2";
-    public final static String HNSW_SPACE_COSINE = "cosinesimil";
+    public static final String HNSW_SPACE_L2 = "l2";
+    public static final String HNSW_SPACE_COSINE = "cosinesimil";
+
+    public static final String KNN_BASE_URL = "knn";
+    public static final String REST_ACTION_STATS = "knn_stats_action";
+    public static final String REST_REQUEST_NODE_ID = "node_id";
+    public static final String REST_REQUEST_STAT = "stat";
+    public static final String REST_REQUEST_TIMEOUT = "timeout";
+
+    /**
+     * 统计常量定义
+     */
+    public static final String HIT_COUNT = "hit_count";
+    public static final String MISS_COUNT = "miss_count";
+    public static final String EVICT_COUNT = "evict_count";
+    public static final String LOAD_SUCCESS_COUNT = "load_success_count";
+    public static final String LOAD_FAIL_COUNT = "load_fail_count";
+    public static final String TOTAL_LOAD_TIME = "total_load_time";
+    public static final String MEMORY_SIZE = "memory_size";
+    public static final String MEMORY_STATS = "memory_stats";
+    public static final String CACHE_CAPACITY_REACHED = "cache_capacity_reached";
+    public static final String CIRCUIT_BREAKER_TRIGGERED = "circuit_breaker_triggered";
 }

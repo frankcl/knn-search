@@ -1,10 +1,14 @@
 package xin.manong.search.knn.plugin;
 
+import com.google.common.collect.ImmutableList;
+import org.elasticsearch.action.ActionRequest;
+import org.elasticsearch.action.ActionResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
+import org.elasticsearch.cluster.node.DiscoveryNodes;
 import org.elasticsearch.cluster.service.ClusterService;
 import org.elasticsearch.common.io.stream.NamedWriteableRegistry;
-import org.elasticsearch.common.settings.Setting;
+import org.elasticsearch.common.settings.*;
 import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.env.NodeEnvironment;
@@ -13,6 +17,8 @@ import org.elasticsearch.index.engine.EngineFactory;
 import org.elasticsearch.index.mapper.Mapper;
 import org.elasticsearch.plugins.*;
 import org.elasticsearch.repositories.RepositoriesService;
+import org.elasticsearch.rest.RestController;
+import org.elasticsearch.rest.RestHandler;
 import org.elasticsearch.script.ScriptService;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.watcher.ResourceWatcherService;
@@ -22,6 +28,11 @@ import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.common.KNNSettings;
 import xin.manong.search.knn.mapper.KNNVectorFieldMapper;
 import xin.manong.search.knn.query.KNNQueryBuilder;
+import xin.manong.search.knn.rest.action.KNNStatsAction;
+import xin.manong.search.knn.rest.action.KNNStatsTransportNodesAction;
+import xin.manong.search.knn.rest.handler.KNNStatsRESTHandler;
+import xin.manong.search.knn.stat.KNNStats;
+import xin.manong.search.knn.stat.KNNStatsConfig;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -35,6 +46,8 @@ import java.util.function.Supplier;
 public class KNNPlugin extends Plugin implements MapperPlugin,
         SearchPlugin, ActionPlugin, EnginePlugin {
 
+    private KNNStats knnStats;
+
     @Override
     public Map<String, Mapper.TypeParser> getMappers() {
         return Collections.singletonMap(KNNConstants.MAPPED_FIELD_TYPE, new KNNVectorFieldMapper.TypeParser());
@@ -44,6 +57,26 @@ public class KNNPlugin extends Plugin implements MapperPlugin,
     public List<QuerySpec<?>> getQueries() {
         return Collections.singletonList(new QuerySpec<>(KNNQueryBuilder.QUERY_NAME,
                 KNNQueryBuilder::new, KNNQueryBuilder::fromXContent));
+    }
+
+    @Override
+    public List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> getActions() {
+        return Arrays.asList(
+                new ActionHandler<>(KNNStatsAction.INSTANCE, KNNStatsTransportNodesAction.class)
+        );
+    }
+
+    @Override
+    public List<RestHandler> getRestHandlers(Settings settings,
+                                             RestController restController,
+                                             ClusterSettings clusterSettings,
+                                             IndexScopedSettings indexScopedSettings,
+                                             SettingsFilter settingsFilter,
+                                             IndexNameExpressionResolver indexNameExpressionResolver,
+                                             Supplier<DiscoveryNodes> nodesInCluster) {
+        return Arrays.asList(
+                new KNNStatsRESTHandler(settings, restController, knnStats)
+        );
     }
 
     @Override
@@ -59,7 +92,8 @@ public class KNNPlugin extends Plugin implements MapperPlugin,
         KNNCircuitBreakerMonitor circuitBreakerMonitor = new KNNCircuitBreakerMonitor(
                 threadPool, clusterService, client);
         circuitBreakerMonitor.start();
-        return Collections.emptyList();
+        knnStats = new KNNStats(KNNStatsConfig.KNN_STATS);
+        return ImmutableList.of(knnStats);
     }
 
     @Override

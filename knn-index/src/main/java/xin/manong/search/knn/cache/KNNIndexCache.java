@@ -283,7 +283,7 @@ public class KNNIndexCache {
      *
      * @return 缓存内存占用统计信息
      */
-    public Map<String, ? extends Object> getCacheMemoryStats() {
+    public Map<String, ? extends Object> getCacheMemoryStatMap() {
         Map<String, Map<String, Long>> cacheMemoryStats = new HashMap<>();
         for (KNNIndexAllocation allocation : cache.asMap().values()) {
             KNNIndexMeta indexMeta = allocation.knnIndex.getMeta();
