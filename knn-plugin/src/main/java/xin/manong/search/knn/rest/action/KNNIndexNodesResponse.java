@@ -36,7 +36,7 @@ public class KNNIndexNodesResponse extends BaseNodesResponse<KNNIndexNodeRespons
                                  List<FailedNodeException> exceptions,
                                  Long size) {
         super(clusterName, nodeResponses, exceptions);
-        this.size = size;
+        this.size = size == null ? 0L : size;
     }
 
     @Override

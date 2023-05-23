@@ -22,7 +22,7 @@ public class KNNIndexNodeResponse extends BaseNodeResponse implements ToXContent
 
     public KNNIndexNodeResponse(DiscoveryNode node, Long size) {
         super(node);
-        this.size = size;
+        this.size = size == null ? 0L : size;
     }
 
     public KNNIndexNodeResponse(StreamInput input) throws IOException {
