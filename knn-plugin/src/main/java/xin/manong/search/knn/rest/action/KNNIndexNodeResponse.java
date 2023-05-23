@@ -19,30 +19,26 @@ import java.io.IOException;
 public class KNNIndexNodeResponse extends BaseNodeResponse implements ToXContentFragment {
 
     private Long size;
-    private String operation;
 
-    public KNNIndexNodeResponse(DiscoveryNode node, Long size, String operation) {
+    public KNNIndexNodeResponse(DiscoveryNode node, Long size) {
         super(node);
         this.size = size;
-        this.operation = operation;
     }
 
     public KNNIndexNodeResponse(StreamInput input) throws IOException {
         super(input);
-        this.operation = input.readString();
         this.size = input.readLong();
     }
 
     @Override
     public void writeTo(StreamOutput output) throws IOException {
         super.writeTo(output);
-        output.writeString(operation);
         output.writeLong(size == null ? 0L : size.longValue());
     }
 
+    @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-        builder.field(KNNConstants.REST_REQUEST_OPERATION, operation);
-        builder.field(KNNConstants.REST_REQUEST_SIZE, size);
+        builder.field(KNNConstants.REST_RESPONSE_SIZE, size);
         return builder;
     }
 
@@ -53,14 +49,5 @@ public class KNNIndexNodeResponse extends BaseNodeResponse implements ToXContent
      */
     public Long getSize() {
         return size;
-    }
-
-    /**
-     * 获取索引操作
-     *
-     * @return 索引操作
-     */
-    public String getOperation() {
-        return operation;
     }
 }

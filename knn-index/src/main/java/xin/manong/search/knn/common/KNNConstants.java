@@ -38,12 +38,13 @@ public class KNNConstants {
     public static final String KNN_BASE_URL = "knn";
     public static final String REST_ACTION_STATS = "knn_stats_action";
     public static final String REST_ACTION_INDEX = "knn_index_action";
+    public static final String REST_ACTION_WARM = "knn_warm_action";
     public static final String REST_REQUEST_NODE_ID = "node_id";
     public static final String REST_REQUEST_STAT = "stat";
     public static final String REST_REQUEST_TIMEOUT = "timeout";
     public static final String REST_REQUEST_INDEX = "index";
-    public static final String REST_REQUEST_SIZE = "size";
     public static final String REST_REQUEST_OPERATION = "operation";
+    public static final String REST_RESPONSE_SIZE = "size";
 
     /**
      * 索引操作定义

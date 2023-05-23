@@ -24,28 +24,23 @@ public class KNNIndexTransportAction extends
         TransportNodesAction<KNNIndexNodesRequest, KNNIndexNodesResponse,
         KNNIndexNodeRequest, KNNIndexNodeResponse> {
 
-    private String operation;
-
     @Inject
     public KNNIndexTransportAction(ThreadPool threadPool,
                                    ClusterService clusterService,
                                    TransportService transportService,
-                                   ActionFilters actionFilters,
-                                   String operation) {
+                                   ActionFilters actionFilters) {
         super(KNNIndexAction.NAME, threadPool, clusterService, transportService, actionFilters,
                 KNNIndexNodesRequest::new, KNNIndexNodeRequest::new, ThreadPool.Names.MANAGEMENT,
                 KNNIndexNodeResponse.class);
-        this.operation = operation;
     }
 
     @Override
     protected KNNIndexNodesResponse newResponse(KNNIndexNodesRequest request,
-                                           List<KNNIndexNodeResponse> responses,
-                                           List<FailedNodeException> exceptions) {
+                                                List<KNNIndexNodeResponse> responses,
+                                                List<FailedNodeException> exceptions) {
         Long size = 0L;
         for (KNNIndexNodeResponse nodeResponse : responses) size += nodeResponse.getSize();
-        return new KNNIndexNodesResponse(clusterService.getClusterName(), responses, exceptions,
-                request.getRequest().getOperation(), size);
+        return new KNNIndexNodesResponse(clusterService.getClusterName(), responses, exceptions, size);
     }
 
     @Override
@@ -79,6 +74,6 @@ public class KNNIndexTransportAction extends
         } else {
             logger.warn("unsupported operation[{}]", operation);
         }
-        return new KNNIndexNodeResponse(clusterService.localNode(), size, operation);
+        return new KNNIndexNodeResponse(clusterService.localNode(), size);
     }
 }

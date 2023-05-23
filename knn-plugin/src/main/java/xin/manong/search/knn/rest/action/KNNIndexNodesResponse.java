@@ -24,28 +24,24 @@ public class KNNIndexNodesResponse extends BaseNodesResponse<KNNIndexNodeRespons
     private static final String NODES_KEY = "nodes";
 
     private Long size;
-    private String operation;
 
     public KNNIndexNodesResponse(StreamInput input) throws IOException {
         super(new ClusterName(input), input.readList(in -> new KNNIndexNodeResponse(in)),
                 input.readList(FailedNodeException::new));
-        operation = input.readString();
         size = input.readLong();
     }
 
     public KNNIndexNodesResponse(ClusterName clusterName,
                                  List<KNNIndexNodeResponse> nodeResponses,
                                  List<FailedNodeException> exceptions,
-                                 String operation, Long size) {
+                                 Long size) {
         super(clusterName, nodeResponses, exceptions);
-        this.operation = operation;
         this.size = size;
     }
 
     @Override
     public void writeTo(StreamOutput output) throws IOException {
         super.writeTo(output);
-        output.writeString(operation);
         output.writeLong(size);
     }
 
@@ -61,8 +57,7 @@ public class KNNIndexNodesResponse extends BaseNodesResponse<KNNIndexNodeRespons
 
     @Override
     public XContentBuilder toXContent(XContentBuilder xContentBuilder, Params params) throws IOException {
-        xContentBuilder.field(KNNConstants.REST_REQUEST_OPERATION, operation);
-        xContentBuilder.field(KNNConstants.REST_REQUEST_SIZE, size);
+        xContentBuilder.field(KNNConstants.REST_RESPONSE_SIZE, size);
         xContentBuilder.startObject(NODES_KEY);
         for (KNNIndexNodeResponse nodeResponse : getNodes()) {
             DiscoveryNode node = nodeResponse.getNode();

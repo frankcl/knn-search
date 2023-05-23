@@ -48,6 +48,11 @@ public class KNNIndexRESTHandler extends BaseRestHandler {
             throw new IllegalArgumentException(String.format(
                     "operation is not found for request[%s]", request.path()));
         }
+        String index = request.param(KNNConstants.REST_REQUEST_INDEX);
+        if (Strings.isNullOrEmpty(index)) {
+            throw new IllegalArgumentException(String.format(
+                    "index is not found for request[%s]", request.path()));
+        }
         ActionRequest actionRequest = operation.equals(KNNConstants.OPERATION_WARM) ?
                 buildWarmRequest(request) : buildNodesRequest(request);
         return channel -> client.execute(KNNIndexAction.INSTANCE, actionRequest,
@@ -61,7 +66,8 @@ public class KNNIndexRESTHandler extends BaseRestHandler {
      * @return KNN索引预热请求
      */
     private ActionRequest buildWarmRequest(RestRequest request) {
-        return null;
+        String index = request.param(KNNConstants.REST_REQUEST_INDEX);
+        return new KNNWarmRequest(index);
     }
 
     /**
@@ -72,10 +78,6 @@ public class KNNIndexRESTHandler extends BaseRestHandler {
      */
     private ActionRequest buildNodesRequest(RestRequest request) {
         String index = request.param(KNNConstants.REST_REQUEST_INDEX);
-        if (Strings.isNullOrEmpty(index)) {
-            throw new IllegalArgumentException(String.format(
-                    "index is not found for request[%s]", request.path()));
-        }
         String operation = request.param(KNNConstants.REST_REQUEST_OPERATION);
         if (!operation.equals(KNNConstants.OPERATION_VIEW) &&
                 !operation.equals(KNNConstants.OPERATION_EVICT)) {
