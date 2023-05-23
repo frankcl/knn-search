@@ -7,7 +7,15 @@ import org.elasticsearch.cluster.service.ClusterService;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.threadpool.ThreadPool;
 import xin.manong.search.knn.cache.KNNIndexCache;
+import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.common.KNNSettings;
+import xin.manong.search.knn.rest.action.*;
+import xin.manong.search.knn.stat.KNNStatsConfig;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * KNN熔断监控
@@ -59,6 +67,30 @@ public class KNNCircuitBreakerMonitor implements Runnable {
         }
         if (clusterService.state().nodes().isLocalNodeElectedMaster() &&
                 KNNSettings.isCircuitBreakerTriggered()) {
+            KNNStatsRequest knnStatsRequest = new KNNStatsRequest(KNNStatsConfig.KNN_STATS.keySet());
+            knnStatsRequest.addRequestStat(KNNConstants.CACHE_CAPACITY_REACHED);
+            KNNStatsNodesRequest request = new KNNStatsNodesRequest(knnStatsRequest);
+            request.timeout(new TimeValue(10, TimeUnit.SECONDS));
+            try {
+                KNNStatsNodesResponse response = client.execute(KNNStatsAction.INSTANCE, request).get();
+                List<KNNStatsNodeResponse> nodeResponses = response.getNodes();
+                List<String> reachedCapacityNodes = new ArrayList<>();
+                for (KNNStatsNodeResponse nodeResponse : nodeResponses) {
+                    Map<String, Object> nodeStatMap = nodeResponse.getNodeStatMap();
+                    if ((Boolean) nodeStatMap.get(KNNConstants.CACHE_CAPACITY_REACHED)) {
+                        reachedCapacityNodes.add(nodeResponse.getNode().getId());
+                    }
+                }
+                if (!reachedCapacityNodes.isEmpty()) {
+                    logger.info("KNN memory circuit breaker is triggered on nodes[{}]",
+                            String.join(",", reachedCapacityNodes));
+                } else {
+                    logger.info("KNN cluster memory circuit breaker is unset");
+                    KNNSettings.getInstance().updateCircuitBreakerTrigger(false);
+                }
+            } catch (Exception e) {
+                logger.warn(e.getMessage(), e);
+            }
         }
     }
 }
