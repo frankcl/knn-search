@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+    <id>package</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <files>
+        <file>
+            <source>src/main/plugin-meta/plugin-security.policy</source>
+            <outputDirectory>./</outputDirectory>
+        </file>
+        <file>
+            <source>${parent.basedir}/knn-index/cpp/knn/lib/libKNNCommon.dylib</source>
+            <outputDirectory>./</outputDirectory>
+        </file>
+        <file>
+            <source>${parent.basedir}/knn-index/cpp/knn/lib/libHNSWIndexJNI_V2_1_1.dylib</source>
+            <outputDirectory>./</outputDirectory>
+        </file>
+        <file>
+            <source>${parent.basedir}/knn-index/cpp/knn/lib/libFAISSIndexJNI_V1_7_3.dylib</source>
+            <outputDirectory>./</outputDirectory>
+        </file>
+    </files>
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>true</useProjectArtifact>
+            <outputDirectory>./</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+</assembly>
