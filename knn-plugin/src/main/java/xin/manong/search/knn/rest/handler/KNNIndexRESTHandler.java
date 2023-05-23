@@ -9,6 +9,7 @@ import org.elasticsearch.common.Strings;
 import org.elasticsearch.rest.BaseRestHandler;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.action.RestActions;
+import org.elasticsearch.rest.action.RestToXContentListener;
 import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.rest.action.*;
 
@@ -53,9 +54,11 @@ public class KNNIndexRESTHandler extends BaseRestHandler {
             throw new IllegalArgumentException(String.format(
                     "index is not found for request[%s]", request.path()));
         }
-        ActionRequest actionRequest = operation.equals(KNNConstants.OPERATION_WARM) ?
-                buildWarmRequest(request) : buildNodesRequest(request);
-        return channel -> client.execute(KNNIndexAction.INSTANCE, actionRequest,
+        if (operation.equals(KNNConstants.OPERATION_WARM)) {
+            return channel -> client.execute(KNNWarmAction.INSTANCE, buildWarmRequest(request),
+                    new RestToXContentListener<>(channel));
+        }
+        return channel -> client.execute(KNNIndexAction.INSTANCE, buildNodesRequest(request),
                 new RestActions.NodesResponseRestListener<>(channel));
     }
 

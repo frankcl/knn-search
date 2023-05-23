@@ -28,10 +28,7 @@ import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.common.KNNSettings;
 import xin.manong.search.knn.mapper.KNNVectorFieldMapper;
 import xin.manong.search.knn.query.KNNQueryBuilder;
-import xin.manong.search.knn.rest.action.KNNIndexAction;
-import xin.manong.search.knn.rest.action.KNNIndexTransportAction;
-import xin.manong.search.knn.rest.action.KNNStatsAction;
-import xin.manong.search.knn.rest.action.KNNStatsTransportAction;
+import xin.manong.search.knn.rest.action.*;
 import xin.manong.search.knn.rest.handler.KNNIndexRESTHandler;
 import xin.manong.search.knn.rest.handler.KNNStatsRESTHandler;
 import xin.manong.search.knn.stat.KNNStats;
@@ -66,7 +63,8 @@ public class KNNPlugin extends Plugin implements MapperPlugin,
     public List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> getActions() {
         return Arrays.asList(
                 new ActionHandler<>(KNNStatsAction.INSTANCE, KNNStatsTransportAction.class),
-                new ActionHandler<>(KNNIndexAction.INSTANCE, KNNIndexTransportAction.class)
+                new ActionHandler<>(KNNIndexAction.INSTANCE, KNNIndexTransportAction.class),
+                new ActionHandler<>(KNNWarmAction.INSTANCE, KNNWarmTransportAction.class)
         );
     }
 
