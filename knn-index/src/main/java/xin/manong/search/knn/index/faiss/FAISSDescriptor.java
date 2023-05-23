@@ -1,9 +1,9 @@
 package xin.manong.search.knn.index.faiss;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.common.Strings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,11 +50,11 @@ public class FAISSDescriptor {
      * @return 合法返回true，否则返回false
      */
     public boolean check() {
-        if (StringUtils.isEmpty(search) && StringUtils.isEmpty(prefix)) {
+        if (Strings.isNullOrEmpty(search) && Strings.isNullOrEmpty(prefix)) {
             logger.error("prefix and search component are empty");
             return false;
         }
-        if (StringUtils.isEmpty(encode)) {
+        if (Strings.isNullOrEmpty(encode)) {
             logger.error("encode component is empty");
             return false;
         }
@@ -64,16 +64,16 @@ public class FAISSDescriptor {
     @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
-        if (!StringUtils.isEmpty(prefix)) buffer.append(prefix);
-        if (!StringUtils.isEmpty(transform)) {
+        if (!Strings.isNullOrEmpty(prefix)) buffer.append(prefix);
+        if (!Strings.isNullOrEmpty(transform)) {
             if (buffer.length() > 0) buffer.append(",");
             buffer.append(transform);
         }
-        if (!StringUtils.isEmpty(search)) {
+        if (!Strings.isNullOrEmpty(search)) {
             if (buffer.length() > 0) buffer.append(",");
             buffer.append(search);
         }
-        if (!StringUtils.isEmpty(encode)) {
+        if (!Strings.isNullOrEmpty(encode)) {
             if (buffer.length() > 0) buffer.append(",");
             buffer.append(encode);
         }

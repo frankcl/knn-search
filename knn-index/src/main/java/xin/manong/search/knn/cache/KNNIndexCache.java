@@ -1,9 +1,9 @@
 package xin.manong.search.knn.cache;
 
 import com.google.common.cache.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.watcher.FileWatcher;
 import org.elasticsearch.watcher.ResourceWatcherService;
 import org.elasticsearch.watcher.WatcherHandle;
@@ -230,7 +230,7 @@ public class KNNIndexCache {
      * @return 移除索引内存大小
      */
     public Long removeByIndex(String index) {
-        if (StringUtils.isEmpty(index)) return 0L;
+        if (Strings.isNullOrEmpty(index)) return 0L;
         Lock writeLock = readWriteLock.writeLock();
         writeLock.lock();
         try {
@@ -274,7 +274,7 @@ public class KNNIndexCache {
      * @return 索引缓存占用大小
      */
     public Long getCacheMemorySizeKB(String index) {
-        if (StringUtils.isEmpty(index)) return 0L;
+        if (Strings.isNullOrEmpty(index)) return 0L;
         return cache.asMap().values().stream().filter(
                 allocation -> {
                     String currentIndex = allocation.knnIndex.getMeta().index;

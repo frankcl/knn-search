@@ -1,9 +1,9 @@
 package xin.manong.search.knn.index.hnsw;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.common.Strings;
 import xin.manong.search.knn.index.KNNIndexMeta;
 import xin.manong.search.knn.index.KNNIndexType;
 
@@ -84,7 +84,7 @@ public class HNSWIndexMeta extends KNNIndexMeta {
             logger.error("invalid indexThreadQty[{}]", indexThreadQty);
             return false;
         }
-        if (StringUtils.isEmpty(space)) {
+        if (Strings.isNullOrEmpty(space)) {
             logger.error("space is empty");
             return false;
         }

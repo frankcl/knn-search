@@ -2,9 +2,9 @@ package xin.manong.search.knn.index.faiss;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.common.Strings;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -93,7 +93,7 @@ public class FAISSDescriptorFactory {
      * @param meta 索引元数据
      */
     private static void parseTransformComponent(FAISSDescriptor descriptor, FAISSIndexMeta meta) {
-        if (StringUtils.isEmpty(descriptor.transform)) return;
+        if (Strings.isNullOrEmpty(descriptor.transform)) return;
         if (!descriptor.transform.equals(FAISSConstants.COMPONENT_TRANSFORM_PCA + "%d")) {
             logger.error("unexpected transform format[{}]", descriptor.transform);
             throw new RuntimeException(String.format("unexpected transform format[%s]", descriptor.transform));
@@ -117,7 +117,7 @@ public class FAISSDescriptorFactory {
      * @param meta 索引元数据
      */
     private static void parseSearchComponent(FAISSDescriptor descriptor, FAISSIndexMeta meta) {
-        if (StringUtils.isEmpty(descriptor.search)) return;
+        if (Strings.isNullOrEmpty(descriptor.search)) return;
         if (descriptor.search.startsWith(FAISSConstants.COMPONENT_SEARCH_IVF)) {
             if (!descriptor.search.equals(FAISSConstants.COMPONENT_SEARCH_IVF + "%d")) {
                 logger.error("unexpected search format[{}]", descriptor.search);
@@ -164,7 +164,7 @@ public class FAISSDescriptorFactory {
      * @param meta 索引元数据
      */
     private static void parseEncodeComponent(FAISSDescriptor descriptor, FAISSIndexMeta meta) {
-        if (StringUtils.isEmpty(descriptor.encode)) return;
+        if (Strings.isNullOrEmpty(descriptor.encode)) return;
         if (!descriptor.encode.startsWith(FAISSConstants.COMPONENT_ENCODE_PQ)) return;
         if (!meta.parameterMap.containsKey(FAISSConstants.ENCODE_BITS)) {
             logger.error("missing param[{}]", FAISSConstants.ENCODE_BITS);

@@ -1,9 +1,9 @@
 package xin.manong.search.knn.index;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.common.Strings;
 
 /**
  * KNN索引元数据
@@ -102,19 +102,19 @@ public class KNNIndexMeta {
             logger.error("KNN vector dimension[{}] is invalid", num);
             return false;
         }
-        if (StringUtils.isEmpty(index)) {
+        if (Strings.isNullOrEmpty(index)) {
             logger.error("KNN index name is empty");
             return false;
         }
-        if (StringUtils.isEmpty(field)) {
+        if (Strings.isNullOrEmpty(field)) {
             logger.error("KNN vector field name is empty");
             return false;
         }
-        if (StringUtils.isEmpty(file)) {
+        if (Strings.isNullOrEmpty(file)) {
             logger.error("KNN index file is empty");
             return false;
         }
-        if (StringUtils.isEmpty(path)) {
+        if (Strings.isNullOrEmpty(path)) {
             logger.error("KNN index file path is empty");
             return false;
         }

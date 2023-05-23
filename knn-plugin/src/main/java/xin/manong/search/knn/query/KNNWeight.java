@@ -1,6 +1,5 @@
 package xin.manong.search.knn.query;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.*;
@@ -12,6 +11,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.FilterDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.DocIdSetBuilder;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.io.PathUtils;
 import xin.manong.search.knn.cache.KNNIndexCache;
 import xin.manong.search.knn.codec.KNNVectorCodecUtil;
@@ -57,7 +57,7 @@ public class KNNWeight extends Weight {
         SegmentReader reader = (SegmentReader) FilterLeafReader.unwrap(context.reader());
         String directory = ((FSDirectory) FilterDirectory.unwrap(reader.directory())).getDirectory().toString();
         String metaFile = findKNNVectorMetaFile(reader);
-        if (StringUtils.isEmpty(metaFile)) return null;
+        if (Strings.isNullOrEmpty(metaFile)) return null;
         String metaFilePath = PathUtils.get(directory, metaFile).toString();
         KNNIndexMeta indexMeta = metaFile.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION) ?
                 KNNVectorCodecUtil.readKNNMeta(metaFilePath, FAISSIndexMeta.class) :
