@@ -81,6 +81,61 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
             }
             return value;
         }, m -> toType(m).dimensionAfterPCA);
+        private final Parameter<Integer> M = new Parameter<>(
+                KNNConstants.M,
+                false, () -> null, (n, c, o) -> {
+            if (o == null) return null;
+            int value = XContentMapValues.nodeIntegerValue(o);
+            if (value < KNNConstants.MIN_M) {
+                throw new IllegalArgumentException(String.format(
+                        "M[%d] must be greater than %d", value, KNNConstants.MIN_M));
+            }
+            return value;
+        }, m -> toType(m).M);
+        private final Parameter<Integer> efSearch = new Parameter<>(
+                KNNConstants.EF_SEARCH,
+                false, () -> null, (n, c, o) -> {
+            if (o == null) return null;
+            int value = XContentMapValues.nodeIntegerValue(o);
+            if (value < KNNConstants.MIN_EF_SEARCH) {
+                throw new IllegalArgumentException(String.format(
+                        "efSearch[%d] must be greater than %d", value, KNNConstants.MIN_EF_SEARCH));
+            }
+            return value;
+        }, m -> toType(m).efSearch);
+        private final Parameter<Integer> efConstruction = new Parameter<>(
+                KNNConstants.EF_CONSTRUCTION,
+                false, () -> null, (n, c, o) -> {
+            if (o == null) return null;
+            int value = XContentMapValues.nodeIntegerValue(o);
+            if (value < KNNConstants.MIN_EF_CONSTRUCTION) {
+                throw new IllegalArgumentException(String.format(
+                        "efConstruction[%d] must be greater than %d", value, KNNConstants.MIN_EF_CONSTRUCTION));
+            }
+            return value;
+        }, m -> toType(m).efConstruction);
+        private final Parameter<Integer> productQuantizationM = new Parameter<>(
+                KNNConstants.PRODUCT_QUANTIZATION_M,
+                false, () -> null, (n, c, o) -> {
+            if (o == null) return null;
+            int value = XContentMapValues.nodeIntegerValue(o);
+            if (value < KNNConstants.MIN_PQ_M) {
+                throw new IllegalArgumentException(String.format(
+                        "productQuantizationM[%d] must be greater than %d", value, KNNConstants.MIN_PQ_M));
+            }
+            return value;
+        }, m -> toType(m).productQuantizationM);
+        private final Parameter<Integer> encodeBits = new Parameter<>(
+                KNNConstants.ENCODE_BITS,
+                false, () -> null, (n, c, o) -> {
+            if (o == null) return null;
+            int value = XContentMapValues.nodeIntegerValue(o);
+            if (value < KNNConstants.MIN_PQ_ENCODE_BITS) {
+                throw new IllegalArgumentException(String.format(
+                        "encodeBits[%d] must be greater than %d", value, KNNConstants.MIN_PQ_ENCODE_BITS));
+            }
+            return value;
+        }, m -> toType(m).encodeBits);
         private final Parameter<Map<String, String>> meta = Parameter.metaParam();
 
         protected Boolean ignoreMalformed;
@@ -108,7 +163,8 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
 
         @Override
         protected List<Parameter<?>> getParameters() {
-            return Arrays.asList(stored, hasDocValues, dimension, meta);
+            return Arrays.asList(stored, hasDocValues, dimension, dimensionAfterPCA,
+                    M, efSearch, efConstruction, productQuantizationM, encodeBits, meta);
         }
 
         @Override
@@ -130,8 +186,21 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
             builder.parse(name, parserContext, node);
             builder.index = parserContext.mapperService().getIndexSettings().
                     getIndexMetadata().getIndex().getName();
-            if (builder.dimension.getValue() == -1) {
+            int dimension = builder.dimension.getValue();
+            if (dimension == -1) {
                 throw new IllegalArgumentException(String.format("dimension is missing for KNN vector[%s]", name));
+            }
+            if (builder.dimensionAfterPCA.getValue() != null &&
+                    builder.dimensionAfterPCA.getValue() > dimension) {
+                throw new IllegalArgumentException(String.format(
+                        "dimensionAfterPCA[%d] is greater than dimension[%d] for KNN vector[%s]",
+                        builder.dimensionAfterPCA.getValue(), dimension, name));
+            }
+            if (builder.M.getValue() != null &&
+                    dimension % builder.M.getValue() != 0) {
+                throw new IllegalArgumentException(String.format(
+                        "productQuantizationM[%d] can not be divided by dimension[%d] for KNN vector[%s]",
+                        builder.M.getValue(), dimension, name));
             }
             return builder;
         }
@@ -139,6 +208,11 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
 
     private final boolean stored;
     private final boolean hasDocValues;
+    private final Integer M;
+    private final Integer efSearch;
+    private final Integer efConstruction;
+    private final Integer productQuantizationM;
+    private final Integer encodeBits;
     private final Integer dimension;
     private final Integer dimensionAfterPCA;
     protected Explicit<Boolean> ignoreMalformed;
@@ -151,6 +225,11 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
         this.hasDocValues = builder.hasDocValues.getValue();
         this.dimension = builder.dimension.getValue();
         this.dimensionAfterPCA = builder.dimensionAfterPCA.getValue();
+        this.M = builder.M.getValue();
+        this.efSearch = builder.efSearch.getValue();
+        this.efConstruction = builder.efConstruction.getValue();
+        this.productQuantizationM = builder.productQuantizationM.getValue();
+        this.encodeBits = builder.encodeBits.getValue();
         this.ignoreMalformed = ignoreMalformed;
         this.fieldType = new FieldType(Defaults.FIELD_TYPE);
         this.fieldType.putAttribute(KNNConstants.FIELD_ATTRIBUTE_INDEX, builder.index);
@@ -160,6 +239,11 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
             fieldType.putAttribute(KNNConstants.FIELD_ATTRIBUTE_DIMENSION_AFTER_PCA,
                     String.valueOf(dimensionAfterPCA.intValue()));
         }
+        if (M != null) fieldType.putAttribute(KNNConstants.M, String.valueOf(M.intValue()));
+        if (efSearch != null) fieldType.putAttribute(KNNConstants.EF_SEARCH, String.valueOf(efSearch.intValue()));
+        if (efConstruction != null) fieldType.putAttribute(KNNConstants.EF_CONSTRUCTION, String.valueOf(efConstruction.intValue()));
+        if (productQuantizationM != null) fieldType.putAttribute(KNNConstants.PRODUCT_QUANTIZATION_M, String.valueOf(productQuantizationM.intValue()));
+        if (encodeBits != null) fieldType.putAttribute(KNNConstants.ENCODE_BITS, String.valueOf(encodeBits.intValue()));
         this.fieldType.freeze();
     }
 

@@ -36,12 +36,16 @@ public class KNNConstants {
     /**
      * 向量算法参数定义
      */
+    public static final int MIN_M = 2;
+    public static final int MIN_EF_SEARCH = 2;
+    public static final int MIN_EF_CONSTRUCTION = 2;
+    public static final int MIN_PQ_M = 2;
+    public static final int MIN_PQ_ENCODE_BITS = 8;
     public static final String M = "M";
     public static final String EF_SEARCH = "efSearch";
     public static final String EF_CONSTRUCTION = "efConstruction";
     public static final String PRODUCT_QUANTIZATION_M = "productQuantizationM";
     public static final String ENCODE_BITS = "encodeBits";
-    public static final String DIMENSION_AFTER_PCA = "dimensionAfterPCA";
 
     /**
      * KNN RESTFul相关常量定义

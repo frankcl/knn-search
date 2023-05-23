@@ -7,6 +7,9 @@ import org.elasticsearch.index.codec.CodecService;
  * KNNCodecService
  * 1. 缺省为KNNCodec
  * 2. 其余为KNNCodec封装，内部为name指定Codec，向量索引使用KNNCodec实现
+ *
+ * @author frankcl
+ * @date 2023-05-12 15:29:40
  */
 public class KNNCodecService extends CodecService {
 

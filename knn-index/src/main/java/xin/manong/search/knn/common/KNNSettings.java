@@ -47,11 +47,6 @@ public class KNNSettings {
     private static final int DEFAULT_HNSW_EF_CONSTRUCTION = 512;
     private static final int DEFAULT_FAISS_PQ_M = 16;
     private static final int DEFAULT_FAISS_PQ_ENCODE_BITS = 8;
-    private static final int MIN_HNSW_M = 2;
-    private static final int MIN_HNSW_EF_SEARCH = 2;
-    private static final int MIN_HNSW_EF_CONSTRUCTION = 2;
-    private static final int MIN_FAISS_PQ_M = 2;
-    private static final int MIN_FAISS_PQ_ENCODE_BITS = 8;
     private static final String DEFAULT_MAX_MEMORY_CIRCUIT_BREAKER_LIMIT = "90%";
 
     public static final String KNN_GLOBAL_INDEX_LAZY_LOAD = "knn.global.index.lazy_load";
@@ -94,16 +89,16 @@ public class KNNSettings {
             0, 100, NodeScope, Dynamic);
 
     public static final Setting<Integer> KNN_INDEX_M_SETTING = Setting.intSetting(
-            KNN_INDEX_M, DEFAULT_HNSW_M, MIN_HNSW_M, IndexScope);
+            KNN_INDEX_M, DEFAULT_HNSW_M, KNNConstants.MIN_M, IndexScope);
     public static final Setting<Integer> KNN_INDEX_EF_SEARCH_SETTING = Setting.intSetting(
-            KNN_INDEX_EF_SEARCH, DEFAULT_HNSW_EF_SEARCH, MIN_HNSW_EF_SEARCH, IndexScope);
+            KNN_INDEX_EF_SEARCH, DEFAULT_HNSW_EF_SEARCH, KNNConstants.MIN_EF_SEARCH, IndexScope);
     public static final Setting<Integer> KNN_INDEX_EF_CONSTRUCTION_SETTING = Setting.intSetting(
-            KNN_INDEX_EF_CONSTRUCTION, DEFAULT_HNSW_EF_CONSTRUCTION, MIN_HNSW_EF_CONSTRUCTION, IndexScope);
+            KNN_INDEX_EF_CONSTRUCTION, DEFAULT_HNSW_EF_CONSTRUCTION, KNNConstants.MIN_EF_CONSTRUCTION, IndexScope);
 
     public static final Setting<Integer> KNN_INDEX_PQ_M_SETTING = Setting.intSetting(
-            KNN_INDEX_PQ_M, DEFAULT_FAISS_PQ_M, MIN_FAISS_PQ_M, IndexScope);
+            KNN_INDEX_PQ_M, DEFAULT_FAISS_PQ_M, KNNConstants.MIN_PQ_M, IndexScope);
     public static final Setting<Integer> KNN_INDEX_PQ_ENCODE_BITS_SETTING = Setting.intSetting(
-            KNN_INDEX_PQ_ENCODE_BITS, DEFAULT_FAISS_PQ_ENCODE_BITS, MIN_FAISS_PQ_ENCODE_BITS, IndexScope);
+            KNN_INDEX_PQ_ENCODE_BITS, DEFAULT_FAISS_PQ_ENCODE_BITS, KNNConstants.MIN_PQ_ENCODE_BITS, IndexScope);
 
     private static KNNSettings instance;
     private static OsProbe osProbe = OsProbe.getInstance();
