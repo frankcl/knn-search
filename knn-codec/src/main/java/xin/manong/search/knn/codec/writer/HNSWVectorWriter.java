@@ -36,10 +36,10 @@ public class HNSWVectorWriter extends KNNVectorWriter {
                 getDirectory().toString(), tempFileName).toString();
         HNSWIndexMeta.Builder builder = new HNSWIndexMeta.Builder();
         builder.space(KNNConstants.HNSW_SPACE_COSINE).
-                M(KNNSettings.getM(index)).
-                efSearch(KNNSettings.getEfSearch(index)).
-                efConstruction(KNNSettings.getEfConstruction(index)).
-                indexThreadQty(KNNSettings.getGlobalSettingValue(KNNSettings.KNN_GLOBAL_NMSLIB_INDEX_THREAD_QTY));
+                M(getIndexParameter(field, KNNConstants.M)).
+                efSearch(getIndexParameter(field, KNNConstants.EF_SEARCH)).
+                efConstruction(getIndexParameter(field, KNNConstants.EF_CONSTRUCTION)).
+                indexThreadQty(KNNSettings.getGlobalSettingValue(KNNSettings.KNN_GLOBAL_INDEX_THREAD_QUANTITY));
         builder.index(index).
                 field(field.name).
                 file(fileName).

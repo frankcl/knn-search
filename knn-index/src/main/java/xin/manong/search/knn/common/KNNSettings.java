@@ -8,6 +8,7 @@ import org.elasticsearch.action.admin.cluster.settings.ClusterUpdateSettingsRequ
 import org.elasticsearch.action.admin.cluster.settings.ClusterUpdateSettingsResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.service.ClusterService;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.ByteSizeUnit;
@@ -19,6 +20,7 @@ import xin.manong.search.knn.cache.KNNIndexCache;
 import xin.manong.search.knn.cache.KNNIndexCacheConfig;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,37 +47,45 @@ public class KNNSettings {
     private static final int DEFAULT_HNSW_EF_CONSTRUCTION = 512;
     private static final int DEFAULT_FAISS_PQ_M = 16;
     private static final int DEFAULT_FAISS_PQ_ENCODE_BITS = 8;
-    private static final int DEFAULT_FAISS_PCA_DIMENSION = 0;
+    private static final int MIN_HNSW_M = 2;
+    private static final int MIN_HNSW_EF_SEARCH = 2;
+    private static final int MIN_HNSW_EF_CONSTRUCTION = 2;
     private static final int MIN_FAISS_PQ_M = 2;
     private static final int MIN_FAISS_PQ_ENCODE_BITS = 8;
-    private static final int MIN_FAISS_PCA_DIMENSION = 0;
     private static final String DEFAULT_MAX_MEMORY_CIRCUIT_BREAKER_LIMIT = "90%";
 
     public static final String KNN_GLOBAL_INDEX_LAZY_LOAD = "knn.global.index.lazy_load";
+    public static final String KNN_GLOBAL_INDEX_THREAD_QUANTITY = "knn.global.index.thread_quantity";
     public static final String KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_ENABLED = "knn.global.memory.circuit_breaker.enabled";
     public static final String KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT = "knn.global.memory.circuit_breaker.limit";
     public static final String KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED = "knn.global.memory.circuit_breaker.triggered";
     public static final String KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE = "knn.global.memory.circuit_breaker.unset_percentage";
     public static final String KNN_GLOBAL_CACHE_EXPIRED_ENABLED = "knn.global.cache.expired_enabled";
     public static final String KNN_GLOBAL_CACHE_EXPIRED_TIME_MINUTES = "knn.global.cache.expired_minutes";
-    public static final String KNN_GLOBAL_NMSLIB_INDEX_THREAD_QTY = "knn.global.nmslib.index_thread_qty";
 
-    public static final String KNN_INDEX_MAX_HNSW_VECTOR_NUM = "knn.index.max_hnsw_vector_num";
-    public static final String KNN_INDEX_HNSW_M = "knn.index.hnsw.m";
-    public static final String KNN_INDEX_HNSW_EF_CONSTRUCTION = "knn.index.hnsw.ef_construction";
-    public static final String KNN_INDEX_HNSW_EF_SEARCH = "knn.index.hnsw.ef_search";
+    public static final String KNN_INDEX_MAX_HNSW_VECTOR_NUM = "index.knn.max_hnsw_vector_num";
+    public static final String KNN_INDEX_M = "index.knn.M";
+    public static final String KNN_INDEX_EF_SEARCH = "index.knn.efSearch";
+    public static final String KNN_INDEX_EF_CONSTRUCTION = "index.knn.efConstruction";
 
-    public static final String KNN_INDEX_FAISS_PQ_M = "knn.index.faiss.pq_m";
-    public static final String KNN_INDEX_FAISS_PQ_ENCODE_BITS = "knn.index.faiss.pq_encode_bits";
-    public static final String KNN_INDEX_FAISS_PCA_DIMENSION = "knn.index.faiss.pca_dimension";
+    public static final String KNN_INDEX_PQ_M = "index.knn.productQuantizationM";
+    public static final String KNN_INDEX_PQ_ENCODE_BITS = "index.knn.encodeBits";
 
     private Client client;
     private ClusterService clusterService;
 
+    private static final Map<String, Function<String, Object>> KNN_INDEX_PARAMETER_MAP = new HashMap<>() {{
+        put(KNNConstants.M, KNNSettings::getM);
+        put(KNNConstants.EF_SEARCH, KNNSettings::getEfSearch);
+        put(KNNConstants.EF_CONSTRUCTION, KNNSettings::getEfConstruction);
+        put(KNNConstants.PRODUCT_QUANTIZATION_M, KNNSettings::getProductQuantizationM);
+        put(KNNConstants.ENCODE_BITS, KNNSettings::getProductQuantizationEncodeBits);
+    }};
+
     public static final Setting<Boolean> KNN_GLOBAL_INDEX_LAZY_LOAD_SETTING = Setting.boolSetting(
             KNN_GLOBAL_INDEX_LAZY_LOAD, false, NodeScope, Dynamic);
-    public static final Setting<Integer> KNN_GLOBAL_NMSLIB_INDEX_THREAD_QTY_SETTING = Setting.intSetting(
-            KNN_GLOBAL_NMSLIB_INDEX_THREAD_QTY, Math.min(1, Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)),
+    public static final Setting<Integer> KNN_GLOBAL_INDEX_THREAD_QUANTITY_SETTING = Setting.intSetting(
+            KNN_GLOBAL_INDEX_THREAD_QUANTITY, Math.min(1, Math.max(Runtime.getRuntime().availableProcessors() / 2, 1)),
             1, MAX_NMSLIB_INDEX_THREAD_QTY, NodeScope, Dynamic);
     public static final Setting<Boolean> KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED_SETTING = Setting.boolSetting(
             KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED, false, NodeScope, Dynamic);
@@ -83,19 +93,17 @@ public class KNNSettings {
             KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE, DEFAULT_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE,
             0, 100, NodeScope, Dynamic);
 
-    public static final Setting<Integer> KNN_INDEX_HNSW_M_SETTING = Setting.intSetting(
-            KNN_INDEX_HNSW_M, DEFAULT_HNSW_M, 2, IndexScope);
-    public static final Setting<Integer> KNN_INDEX_HNSW_EF_SEARCH_SETTING = Setting.intSetting(
-            KNN_INDEX_HNSW_EF_SEARCH, DEFAULT_HNSW_EF_SEARCH, 2, IndexScope);
-    public static final Setting<Integer> KNN_INDEX_HNSW_EF_CONSTRUCTION_SETTING = Setting.intSetting(
-            KNN_INDEX_HNSW_EF_CONSTRUCTION, DEFAULT_HNSW_EF_CONSTRUCTION, 2, IndexScope);
+    public static final Setting<Integer> KNN_INDEX_M_SETTING = Setting.intSetting(
+            KNN_INDEX_M, DEFAULT_HNSW_M, MIN_HNSW_M, IndexScope);
+    public static final Setting<Integer> KNN_INDEX_EF_SEARCH_SETTING = Setting.intSetting(
+            KNN_INDEX_EF_SEARCH, DEFAULT_HNSW_EF_SEARCH, MIN_HNSW_EF_SEARCH, IndexScope);
+    public static final Setting<Integer> KNN_INDEX_EF_CONSTRUCTION_SETTING = Setting.intSetting(
+            KNN_INDEX_EF_CONSTRUCTION, DEFAULT_HNSW_EF_CONSTRUCTION, MIN_HNSW_EF_CONSTRUCTION, IndexScope);
 
-    public static final Setting<Integer> KNN_INDEX_FAISS_PQ_M_SETTING = Setting.intSetting(
-            KNN_INDEX_FAISS_PQ_M, DEFAULT_FAISS_PQ_M, MIN_FAISS_PQ_M, IndexScope);
-    public static final Setting<Integer> KNN_INDEX_FAISS_PQ_ENCODE_BITS_SETTING = Setting.intSetting(
-            KNN_INDEX_FAISS_PQ_ENCODE_BITS, DEFAULT_FAISS_PQ_ENCODE_BITS, MIN_FAISS_PQ_ENCODE_BITS, IndexScope);
-    public static final Setting<Integer> KNN_INDEX_FAISS_PCA_DIMENSION_SETTING = Setting.intSetting(
-            KNN_INDEX_FAISS_PCA_DIMENSION, DEFAULT_FAISS_PCA_DIMENSION, MIN_FAISS_PCA_DIMENSION, IndexScope);
+    public static final Setting<Integer> KNN_INDEX_PQ_M_SETTING = Setting.intSetting(
+            KNN_INDEX_PQ_M, DEFAULT_FAISS_PQ_M, MIN_FAISS_PQ_M, IndexScope);
+    public static final Setting<Integer> KNN_INDEX_PQ_ENCODE_BITS_SETTING = Setting.intSetting(
+            KNN_INDEX_PQ_ENCODE_BITS, DEFAULT_FAISS_PQ_ENCODE_BITS, MIN_FAISS_PQ_ENCODE_BITS, IndexScope);
 
     private static KNNSettings instance;
     private static OsProbe osProbe = OsProbe.getInstance();
@@ -154,15 +162,14 @@ public class KNNSettings {
     public static List<Setting<?>> getSettings() {
         List<Setting<?>> settings =  Arrays.asList(
                 KNN_GLOBAL_INDEX_LAZY_LOAD_SETTING,
-                KNN_GLOBAL_NMSLIB_INDEX_THREAD_QTY_SETTING,
+                KNN_GLOBAL_INDEX_THREAD_QUANTITY_SETTING,
                 KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED_SETTING,
                 KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE_SETTING,
-                KNN_INDEX_HNSW_M_SETTING,
-                KNN_INDEX_HNSW_EF_SEARCH_SETTING,
-                KNN_INDEX_HNSW_EF_CONSTRUCTION_SETTING,
-                KNN_INDEX_FAISS_PQ_M_SETTING,
-                KNN_INDEX_FAISS_PQ_ENCODE_BITS_SETTING,
-                KNN_INDEX_FAISS_PCA_DIMENSION_SETTING);
+                KNN_INDEX_M_SETTING,
+                KNN_INDEX_EF_SEARCH_SETTING,
+                KNN_INDEX_EF_CONSTRUCTION_SETTING,
+                KNN_INDEX_PQ_M_SETTING,
+                KNN_INDEX_PQ_ENCODE_BITS_SETTING);
         return Stream.concat(settings.stream(), dynamicCacheSettingMap.values().stream())
                 .collect(Collectors.toList());
     }
@@ -222,7 +229,7 @@ public class KNNSettings {
      */
     public static int getM(String index) {
         return getInstance().clusterService.state().metadata().index(index).
-                getSettings().getAsInt(KNN_INDEX_HNSW_M, DEFAULT_HNSW_M);
+                getSettings().getAsInt(KNN_INDEX_M, DEFAULT_HNSW_M);
     }
 
     /**
@@ -233,7 +240,7 @@ public class KNNSettings {
      */
     public static int getEfSearch(String index) {
         return getInstance().clusterService.state().metadata().index(index).
-                getSettings().getAsInt(KNN_INDEX_HNSW_EF_SEARCH, DEFAULT_HNSW_EF_SEARCH);
+                getSettings().getAsInt(KNN_INDEX_EF_SEARCH, DEFAULT_HNSW_EF_SEARCH);
     }
 
     /**
@@ -244,7 +251,7 @@ public class KNNSettings {
      */
     public static int getEfConstruction(String index) {
         return getInstance().clusterService.state().metadata().index(index).
-                getSettings().getAsInt(KNN_INDEX_HNSW_EF_CONSTRUCTION, DEFAULT_HNSW_EF_CONSTRUCTION);
+                getSettings().getAsInt(KNN_INDEX_EF_CONSTRUCTION, DEFAULT_HNSW_EF_CONSTRUCTION);
     }
 
     /**
@@ -255,7 +262,7 @@ public class KNNSettings {
      */
     public static int getProductQuantizationM(String index) {
         return getInstance().clusterService.state().metadata().index(index).
-                getSettings().getAsInt(KNN_INDEX_FAISS_PQ_M, DEFAULT_FAISS_PQ_M);
+                getSettings().getAsInt(KNN_INDEX_PQ_M, DEFAULT_FAISS_PQ_M);
     }
 
     /**
@@ -266,18 +273,26 @@ public class KNNSettings {
      */
     public static int getProductQuantizationEncodeBits(String index) {
         return getInstance().clusterService.state().metadata().index(index).
-                getSettings().getAsInt(KNN_INDEX_FAISS_PQ_ENCODE_BITS, DEFAULT_FAISS_PQ_ENCODE_BITS);
+                getSettings().getAsInt(KNN_INDEX_PQ_ENCODE_BITS, DEFAULT_FAISS_PQ_ENCODE_BITS);
     }
 
     /**
-     * 获取FAISS索引PCA降维维数
+     * 获取KNN索引参数值
      *
-     * @param index 索引名
-     * @return PCA降维维数
+     * @param index
+     * @param key
+     * @return
      */
-    public static int getPCADimension(String index) {
-        return getInstance().clusterService.state().metadata().index(index).
-                getSettings().getAsInt(KNN_INDEX_FAISS_PCA_DIMENSION, DEFAULT_FAISS_PCA_DIMENSION);
+    public static Object getKNNIndexParameter(String index, String key) {
+        if (Strings.isNullOrEmpty(index)) {
+            logger.error("index is empty");
+            return null;
+        }
+        if (!KNN_INDEX_PARAMETER_MAP.containsKey(key)) {
+            logger.error("unsupported parameter[{}]", key);
+            return null;
+        }
+        return KNN_INDEX_PARAMETER_MAP.get(key).apply(index);
     }
 
     /**
@@ -308,7 +323,7 @@ public class KNNSettings {
             return KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE_SETTING;
         }
         if (KNN_GLOBAL_INDEX_LAZY_LOAD.equals(key)) return KNN_GLOBAL_INDEX_LAZY_LOAD_SETTING;
-        if (KNN_GLOBAL_NMSLIB_INDEX_THREAD_QTY.equals(key)) return KNN_GLOBAL_NMSLIB_INDEX_THREAD_QTY_SETTING;
+        if (KNN_GLOBAL_INDEX_THREAD_QUANTITY.equals(key)) return KNN_GLOBAL_INDEX_THREAD_QUANTITY_SETTING;
         throw new IllegalArgumentException(String.format("setting is not found for key[%s]", key));
     }
 

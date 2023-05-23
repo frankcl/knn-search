@@ -6,7 +6,6 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.FilterDirectory;
 import xin.manong.search.knn.codec.KNNVectorFacade;
 import xin.manong.search.knn.common.KNNConstants;
-import xin.manong.search.knn.common.KNNSettings;
 import xin.manong.search.knn.index.KNNIndexMeta;
 import xin.manong.search.knn.index.faiss.FAISSConstants;
 import xin.manong.search.knn.index.faiss.FAISSIndex;
@@ -38,11 +37,15 @@ public class FAISSVectorWriter extends KNNVectorWriter {
         String tempFilePath = Paths.get(((FSDirectory) (FilterDirectory.unwrap(writeState.directory))).
                 getDirectory().toString(), tempFileName).toString();
         Map<String, Object> parameterMap = new HashMap<>();
-        parameterMap.put(FAISSConstants.EF_SEARCH, KNNSettings.getEfSearch(index));
-        parameterMap.put(FAISSConstants.EF_CONSTRUCTION, KNNSettings.getEfConstruction(index));
-        parameterMap.put(FAISSConstants.PCA_DIMENSION, KNNSettings.getPCADimension(index));
-        parameterMap.put(FAISSConstants.SUB_QUANTIZE_NUM, KNNSettings.getProductQuantizationM(index));
-        parameterMap.put(FAISSConstants.ENCODE_BITS, KNNSettings.getProductQuantizationEncodeBits(index));
+        parameterMap.put(FAISSConstants.EF_SEARCH, getIndexParameter(field, KNNConstants.EF_SEARCH));
+        parameterMap.put(FAISSConstants.EF_CONSTRUCTION, getIndexParameter(field, KNNConstants.EF_CONSTRUCTION));
+        parameterMap.put(FAISSConstants.SUB_QUANTIZE_NUM, getIndexParameter(field, KNNConstants.PRODUCT_QUANTIZATION_M));
+        parameterMap.put(FAISSConstants.ENCODE_BITS, getIndexParameter(field, KNNConstants.ENCODE_BITS));
+        if (field.attributes().containsKey(KNNConstants.FIELD_ATTRIBUTE_DIMENSION_AFTER_PCA)) {
+            int dimensionAfterPCA = Integer.parseInt(field.attributes().
+                    get(KNNConstants.FIELD_ATTRIBUTE_DIMENSION_AFTER_PCA));
+            if (dimensionAfterPCA > 0) parameterMap.put(FAISSConstants.PCA_DIMENSION, dimensionAfterPCA);
+        }
         FAISSIndexMeta.Builder builder = new FAISSIndexMeta.Builder();
         builder.parameterMap(parameterMap);
         builder.index(index).

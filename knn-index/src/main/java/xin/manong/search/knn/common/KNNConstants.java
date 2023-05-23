@@ -19,6 +19,7 @@ public class KNNConstants {
     public static final String FIELD_ATTRIBUTE_KNN_FIELD = "knn_field";
     public static final String FIELD_ATTRIBUTE_INDEX = "index";
     public static final String FIELD_ATTRIBUTE_DIMENSION = "dimension";
+    public static final String FIELD_ATTRIBUTE_DIMENSION_AFTER_PCA = "dimensionAfterPCA";
 
     public static final String COMPOUND_EXTENSION = "c";
     public static final String TEMP_EXTENSION = ".temp";
@@ -31,6 +32,16 @@ public class KNNConstants {
 
     public static final String HNSW_SPACE_L2 = "l2";
     public static final String HNSW_SPACE_COSINE = "cosinesimil";
+
+    /**
+     * 向量算法参数定义
+     */
+    public static final String M = "M";
+    public static final String EF_SEARCH = "efSearch";
+    public static final String EF_CONSTRUCTION = "efConstruction";
+    public static final String PRODUCT_QUANTIZATION_M = "productQuantizationM";
+    public static final String ENCODE_BITS = "encodeBits";
+    public static final String DIMENSION_AFTER_PCA = "dimensionAfterPCA";
 
     /**
      * KNN RESTFul相关常量定义

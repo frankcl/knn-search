@@ -75,6 +75,23 @@ public abstract class KNNVectorWriter {
     }
 
     /**
+     * 获取索引参数
+     * 1. 从字段配置中获取
+     * 2. 从索引配置中获取
+     *
+     * @param fieldInfo 字段信息
+     * @param key 参数key
+     * @return 参数值
+     */
+    protected Integer getIndexParameter(FieldInfo fieldInfo, String key) {
+        if (fieldInfo.attributes().containsKey(key)) return Integer.parseInt(fieldInfo.attributes().get(key));
+        String index = fieldInfo.attributes().get(KNNConstants.FIELD_ATTRIBUTE_INDEX);
+        Integer v = (Integer) KNNSettings.getKNNIndexParameter(index, key);
+        if (v == null) throw new RuntimeException(String.format("index parameter[%s] is not found", key));
+        return v;
+    }
+
+    /**
      * KNN向量写入
      *
      * @param knnVectorFacade 向量数据封装

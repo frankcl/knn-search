@@ -70,6 +70,17 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
                     }
                     return value;
                 }, m -> toType(m).dimension);
+        private final Parameter<Integer> dimensionAfterPCA = new Parameter<>(
+                KNNConstants.FIELD_ATTRIBUTE_DIMENSION_AFTER_PCA,
+                false, () -> -1, (n, c, o) -> {
+            if (o == null) return -1;
+            int value = XContentMapValues.nodeIntegerValue(o);
+            if (value <= 0 || value > KNNConstants.MAX_DIMENSION) {
+                throw new IllegalArgumentException(String.format(
+                        "PCA dimension[%d] is not in range(0-%d]", value, KNNConstants.MAX_DIMENSION));
+            }
+            return value;
+        }, m -> toType(m).dimensionAfterPCA);
         private final Parameter<Map<String, String>> meta = Parameter.metaParam();
 
         protected Boolean ignoreMalformed;
@@ -129,6 +140,7 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
     private final boolean stored;
     private final boolean hasDocValues;
     private final Integer dimension;
+    private final Integer dimensionAfterPCA;
     protected Explicit<Boolean> ignoreMalformed;
 
     protected KNNVectorFieldMapper(String simpleName, MappedFieldType mappedFieldType,
@@ -138,11 +150,16 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
         this.stored = builder.stored.getValue();
         this.hasDocValues = builder.hasDocValues.getValue();
         this.dimension = builder.dimension.getValue();
+        this.dimensionAfterPCA = builder.dimensionAfterPCA.getValue();
         this.ignoreMalformed = ignoreMalformed;
         this.fieldType = new FieldType(Defaults.FIELD_TYPE);
         this.fieldType.putAttribute(KNNConstants.FIELD_ATTRIBUTE_INDEX, builder.index);
         this.fieldType.putAttribute(KNNConstants.FIELD_ATTRIBUTE_DIMENSION,
                 String.valueOf(dimension.intValue()));
+        if (dimensionAfterPCA != null && dimensionAfterPCA > 0) {
+            fieldType.putAttribute(KNNConstants.FIELD_ATTRIBUTE_DIMENSION_AFTER_PCA,
+                    String.valueOf(dimensionAfterPCA.intValue()));
+        }
         this.fieldType.freeze();
     }
 
