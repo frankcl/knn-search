@@ -15,7 +15,7 @@ public class KNNIndexCacheConfig {
 
     public Boolean cacheExpiredEnable;
     public Boolean memoryCircuitBreakerEnable;
-    public Integer cacheExpiredTimeMinutes;
+    public Long cacheExpiredTimeMinutes;
     public Long memoryCircuitBreakerLimit;
 
     /**

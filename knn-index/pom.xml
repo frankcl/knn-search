@@ -37,7 +37,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-Djava.library.path=${project.basedir}/cpp/knn/lib</argLine>
+                    <argLine>-Djava.library.path=${project.basedir}/cpp/knn/lib -Djava.security.policy=${parent.basedir}/knn-plugin/src/main/plugin-meta/plugin-security.policy</argLine>
                     <environmentVariables>
                         <DYLD_LIBRARY_PATH>${project.basedir}/cpp/knn/lib:/usr/local/lib</DYLD_LIBRARY_PATH>
                     </environmentVariables>
@@ -47,10 +47,14 @@
     </build>
 
     <dependencies>
+
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -63,6 +67,10 @@
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.test</groupId>
+            <artifactId>framework</artifactId>
         </dependency>
     </dependencies>
 </project>

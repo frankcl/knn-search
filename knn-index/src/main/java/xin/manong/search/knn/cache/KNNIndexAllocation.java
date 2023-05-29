@@ -12,8 +12,8 @@ import xin.manong.search.knn.index.KNNIndex;
  */
 public class KNNIndexAllocation {
 
-    public final KNNIndex knnIndex;
-    public final WatcherHandle<FileWatcher> fileWatcherHandle;
+    public KNNIndex knnIndex;
+    public WatcherHandle<FileWatcher> fileWatcherHandle;
 
     public KNNIndexAllocation(KNNIndex knnIndex, WatcherHandle<FileWatcher> fileWatcherHandle) {
         this.knnIndex = knnIndex;

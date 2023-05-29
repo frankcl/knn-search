@@ -4,6 +4,8 @@ import com.google.common.cache.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.unit.ByteSizeValue;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.watcher.FileWatcher;
 import org.elasticsearch.watcher.ResourceWatcherService;
 import org.elasticsearch.watcher.WatcherHandle;
@@ -20,10 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -46,7 +45,7 @@ public class KNNIndexCache {
     private KNNIndexCacheConfig config;
     private final KNNIndexListener listener;
     private final ReadWriteLock readWriteLock;
-    private final Executor executor;
+    private final ExecutorService executorService;
     private Cache<String, KNNIndexAllocation> cache;
 
     /**
@@ -64,21 +63,29 @@ public class KNNIndexCache {
     }
 
     /**
+     * 销毁缓存
+     */
+    public void destroy() {
+        cache.invalidateAll();
+        executorService.shutdown();
+    }
+
+    /**
      * 私有化构造函数
      */
     private KNNIndexCache() {
         listener = new KNNIndexListener();
         readWriteLock = new ReentrantReadWriteLock();
-        executor = Executors.newSingleThreadExecutor();
+        executorService = Executors.newSingleThreadExecutor();
         config = new KNNIndexCacheConfig();
         config.cacheExpiredEnable = KNNSettings.getGlobalSettingValue(
                 KNNSettings.KNN_GLOBAL_CACHE_EXPIRED_ENABLED);
-        config.cacheExpiredTimeMinutes = KNNSettings.getGlobalSettingValue(
-                KNNSettings.KNN_GLOBAL_CACHE_EXPIRED_TIME_MINUTES);
+        config.cacheExpiredTimeMinutes = ((TimeValue) KNNSettings.getGlobalSettingValue(
+                KNNSettings.KNN_GLOBAL_CACHE_EXPIRED_TIME_MINUTES)).getMinutes();
         config.memoryCircuitBreakerEnable = KNNSettings.getGlobalSettingValue(
                 KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_ENABLED);
-        config.memoryCircuitBreakerLimit = KNNSettings.getGlobalSettingValue(
-                KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT);
+        config.memoryCircuitBreakerLimit = ((ByteSizeValue) KNNSettings.getGlobalSettingValue(
+                KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT)).getKb();
         config.check();
         build(config);
     }
@@ -111,7 +118,7 @@ public class KNNIndexCache {
     private void onRemoval(RemovalNotification<String, KNNIndexAllocation> notification) {
         KNNIndexAllocation allocation = notification.getValue();
         if (allocation.fileWatcherHandle != null) allocation.fileWatcherHandle.stop();
-        executor.execute(() -> allocation.knnIndex.close());
+        executorService.execute(() -> allocation.knnIndex.close());
         if (RemovalCause.SIZE == notification.getCause()) {
             KNNSettings.getInstance().updateCircuitBreakerTrigger(true);
             setCacheCapacityReached(true);
@@ -127,16 +134,18 @@ public class KNNIndexCache {
      * @return KNN索引内存分配
      */
     private KNNIndexAllocation load(KNNIndexMeta meta) throws IOException {
-        Path path = Paths.get(meta.path);
-        FileWatcher fileWatcher = new FileWatcher(path);
-        fileWatcher.addListener(listener);
-        fileWatcher.init();
         KNNIndex index = meta instanceof FAISSIndexMeta ?
                 new FAISSIndex((FAISSIndexMeta) meta) :
                 new HNSWIndex((HNSWIndexMeta) meta);
         index.open();
-        WatcherHandle<FileWatcher> watcherHandle = resourceWatcherService != null ?
-                resourceWatcherService.add(fileWatcher) : null;
+        WatcherHandle<FileWatcher> watcherHandle = null;
+        if (resourceWatcherService != null) {
+            Path path = Paths.get(meta.path);
+            FileWatcher fileWatcher = new FileWatcher(path);
+            fileWatcher.addListener(listener);
+            fileWatcher.init();
+            watcherHandle = resourceWatcherService.add(fileWatcher);
+        }
         logger.info("KNN index[{}] has been loaded", meta.path);
         return new KNNIndexAllocation(index, watcherHandle);
     }
@@ -168,7 +177,7 @@ public class KNNIndexCache {
             logger.info("KNN index cache config is not changed, ignore rebuilding");
             return;
         }
-        executor.execute(() -> {
+        executorService.execute(() -> {
             logger.info("KNN index cache is rebuilding ...");
             Lock writeLock = readWriteLock.writeLock();
             writeLock.lock();

@@ -1,6 +1,9 @@
 grant {
     permission java.lang.RuntimePermission "loadLibrary.HNSWIndexJNI_V2_1_1";
-    permission java.lang.RuntimePermission "loadLibrary.FAISSIndexJNI_V1_6_3";
+    permission java.lang.RuntimePermission "loadLibrary.FAISSIndexJNI_V1_7_3";
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.misc";
+    permission java.lang.RuntimePermission "accessDeclaredMembers";
     permission java.lang.RuntimePermission "getClassLoader";
-    permission java.io.FilePermission "<<ALL FILES>>", "read,write";
+    permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+    permission java.io.FilePermission "<<ALL FILES>>", "read,write,delete";
 };

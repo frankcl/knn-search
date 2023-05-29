@@ -38,7 +38,8 @@ public class HNSWIndexSuite {
         indexMeta.dimension = 3;
         indexMeta.field = "test_field";
         indexMeta.num = 3;
-        indexMeta.path = "./test_index.hnsw";
+        indexMeta.path = "./test_index.hvd";
+        indexMeta.file = "test_index.hvd";
         indexMeta.type = KNNIndexType.HNSW;
         HNSWIndexFactory factory = new HNSWIndexFactory();
         Assert.assertTrue(factory.buildIndex(indexData, indexMeta));
