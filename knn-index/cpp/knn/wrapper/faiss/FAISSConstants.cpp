@@ -11,6 +11,7 @@ using namespace std;
 const string FAISSConstants::PARAM_EF_CONSTRUCTION("efConstruction");
 const string FAISSConstants::PARAM_EF_SEARCH("efSearch");
 const string FAISSConstants::PARAM_N_PROBE("nProbe");
+const string FAISSConstants::PARAM_INDEX_THREAD_QUANTITY("indexThreadQuantity");
 
 END_NAMESPACE(faiss)
 END_NAMESPACE(wrapper)

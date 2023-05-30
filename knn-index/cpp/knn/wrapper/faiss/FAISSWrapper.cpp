@@ -50,6 +50,13 @@ void FAISSWrapper::configIndex(Index* index, const unordered_map<string, string>
             }
         }
     }
+    if (paramMap.find(FAISSConstants::PARAM_INDEX_THREAD_QUANTITY) != paramMap.end()) {
+        int32_t threadCount = 0;
+        string value = paramMap.at(FAISSConstants::PARAM_INDEX_THREAD_QUANTITY);
+        if (common::StringUtil::strToInt32(value, threadCount) && threadCount > 1) {
+            omp_set_num_threads(threadCount);
+        }
+    }
 }
 
 void FAISSWrapper::dump(const string& indexDescription, const FAISSData& indexData,

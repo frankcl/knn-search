@@ -42,6 +42,11 @@ public class FAISSIndexFactory extends KNNIndexFactory {
             int efSearch = (int) faissIndexMeta.parameterMap.get(FAISSConstants.EF_SEARCH);
             if (efSearch > 0) paramMap.put(FAISSConstants.EF_SEARCH, String.valueOf(efSearch));
         }
+        if (faissIndexMeta.parameterMap.containsKey(FAISSConstants.INDEX_THREAD_QUANTITY)) {
+            int indexThreadQuantity = (int) faissIndexMeta.parameterMap.get(FAISSConstants.INDEX_THREAD_QUANTITY);
+            if (indexThreadQuantity > 1) paramMap.put(FAISSConstants.INDEX_THREAD_QUANTITY,
+                    String.valueOf(indexThreadQuantity));
+        }
         if (descriptor.parameterMap.containsKey(FAISSConstants.N_PROBE)) {
             int nProb = (int) descriptor.parameterMap.get(FAISSConstants.N_PROBE);
             if (nProb > 0) paramMap.put(FAISSConstants.N_PROBE, String.valueOf(nProb));

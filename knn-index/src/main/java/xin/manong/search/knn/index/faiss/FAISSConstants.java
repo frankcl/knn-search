@@ -17,7 +17,7 @@ public class FAISSConstants {
     public static final String N_PROBE = "nProbe";
     public static final String PCA_DIMENSION = "pcaDimension";
     public static final String ENCODE_BITS = "encodeBits";
-
+    public static final String INDEX_THREAD_QUANTITY = "indexThreadQuantity";
 
     /**
      * 前缀组件

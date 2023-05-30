@@ -19,6 +19,7 @@ public:
     const static std::string PARAM_EF_CONSTRUCTION;
     const static std::string PARAM_EF_SEARCH;
     const static std::string PARAM_N_PROBE;
+    const static std::string PARAM_INDEX_THREAD_QUANTITY;
 };
 
 END_NAMESPACE(faiss)
