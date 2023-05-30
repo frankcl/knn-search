@@ -7,6 +7,10 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <files>
         <file>
+            <source>src/main/plugin-meta/plugin-descriptor.properties</source>
+            <outputDirectory>./</outputDirectory>
+        </file>
+        <file>
             <source>src/main/plugin-meta/plugin-security.policy</source>
             <outputDirectory>./</outputDirectory>
         </file>
