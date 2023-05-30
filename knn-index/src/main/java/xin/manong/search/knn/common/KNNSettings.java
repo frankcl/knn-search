@@ -335,7 +335,7 @@ public class KNNSettings {
             Long cacheExpiredTimeMinutes = updateCacheSettings.hasValue(KNN_GLOBAL_CACHE_EXPIRED_TIME_MINUTES) ?
                     updateCacheSettings.getAsLong(KNN_GLOBAL_CACHE_EXPIRED_TIME_MINUTES, null) : null;
             Boolean memoryCircuitBreakerEnable = updateCacheSettings.hasValue(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_ENABLED) ?
-                    updateCacheSettings.getAsBoolean(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED, null) : null;
+                    updateCacheSettings.getAsBoolean(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_ENABLED, null) : null;
             ByteSizeValue memoryCircuitBreakerLimit = updateCacheSettings.hasValue(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT) ?
                     updateCacheSettings.getAsBytesSize(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_LIMIT, null) : null;
             if (cacheExpiredEnable == null && cacheExpiredTimeMinutes == null &&
@@ -345,7 +345,7 @@ public class KNNSettings {
             config.cacheExpiredTimeMinutes = cacheExpiredTimeMinutes;
             config.memoryCircuitBreakerEnable = memoryCircuitBreakerEnable;
             config.memoryCircuitBreakerLimit = memoryCircuitBreakerLimit == null ? null :
-                    memoryCircuitBreakerLimit.getBytes();
+                    memoryCircuitBreakerLimit.getKb();
             KNNIndexCache.getInstance().rebuild(config);
         }, new ArrayList<>(dynamicCacheSettingMap.values()));
     }

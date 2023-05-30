@@ -1,5 +1,6 @@
 package xin.manong.search.knn.codec;
 
+import org.apache.lucene.util.BytesRef;
 import org.junit.Assert;
 import org.junit.Test;
 import xin.manong.search.knn.common.KNNConstants;
@@ -42,6 +43,18 @@ public class KNNUtilSuite {
         Assert.assertEquals(2, floats.length);
         Assert.assertEquals(1f, floats[0], 0.1f);
         Assert.assertEquals(10f, floats[1], 0.1f);
+    }
+
+    @Test
+    public void testFloatArrayByteRefConversion() throws IOException {
+        float[] floatArray = new float[] { 1f, 2f, 3f };
+        byte[] byteArray = KNNUtil.floatArrayToByteArray(floatArray);
+        BytesRef bytesRef = new BytesRef(byteArray);
+        float[] floats = KNNUtil.byteRefToFloatArray(bytesRef);
+        Assert.assertEquals(3, floats.length);
+        Assert.assertEquals(1f, floats[0], 0.1f);
+        Assert.assertEquals(2f, floats[1], 0.1f);
+        Assert.assertEquals(3f, floats[2], 0.1f);
     }
 
     @Test

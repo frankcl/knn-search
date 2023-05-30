@@ -20,8 +20,8 @@ import org.elasticsearch.search.sort.SortOrder;
  */
 public class KNNVectorIndexFieldData implements IndexFieldData<KNNVectorLeafFieldData> {
 
-    private final String fieldName;
-    private final ValuesSourceType valuesSourceType;
+    private String fieldName;
+    private ValuesSourceType valuesSourceType;
 
     public KNNVectorIndexFieldData(String fieldName, ValuesSourceType valuesSourceType) {
         this.fieldName = fieldName;

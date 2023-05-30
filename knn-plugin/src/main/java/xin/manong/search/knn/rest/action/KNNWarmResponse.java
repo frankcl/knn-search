@@ -40,7 +40,7 @@ public class KNNWarmResponse extends BroadcastResponse implements ToXContentObje
     @Override
     public void writeTo(StreamOutput output) throws IOException {
         super.writeTo(output);
-        output.writeLong(size);
+        output.writeLong(size == null ? 0L : size.longValue());
     }
 
     @Override

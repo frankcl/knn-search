@@ -196,11 +196,11 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
                         "dimensionAfterPCA[%d] is greater than dimension[%d] for KNN vector[%s]",
                         builder.dimensionAfterPCA.getValue(), dimension, name));
             }
-            if (builder.M.getValue() != null &&
-                    dimension % builder.M.getValue() != 0) {
+            if (builder.productQuantizationM.getValue() != null &&
+                    dimension % builder.productQuantizationM.getValue() != 0) {
                 throw new IllegalArgumentException(String.format(
                         "productQuantizationM[%d] can not be divided by dimension[%d] for KNN vector[%s]",
-                        builder.M.getValue(), dimension, name));
+                        builder.productQuantizationM.getValue(), dimension, name));
             }
             return builder;
         }
@@ -310,7 +310,7 @@ public class KNNVectorFieldMapper extends ParametrizedFieldMapper {
                     vector.size(), fieldType().dimension));
         }
         float[] array = new float[vector.size()];
-        for (int i = 0; i < vector.size(); i++) array[i++] = vector.get(i);
+        for (int i = 0; i < vector.size(); i++) array[i] = vector.get(i);
         KNNVectorField point = new KNNVectorField(name(), array, fieldType);
         parseContext.doc().add(point);
         if (fieldType.stored()) parseContext.doc().add(new StoredField(name(), point.toString()));
