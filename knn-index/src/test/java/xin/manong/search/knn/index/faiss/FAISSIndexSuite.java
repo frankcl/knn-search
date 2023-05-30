@@ -37,6 +37,7 @@ public class FAISSIndexSuite {
         indexMeta.type = KNNIndexType.FAISS;
         indexMeta.path = "./test_index.fvd";
         indexMeta.file = "test_index.fvd";
+        indexMeta.parameterMap.put(FAISSConstants.INDEX_THREAD_QUANTITY, 2);
         FAISSIndexFactory factory = new FAISSIndexFactory();
         Assert.assertTrue(factory.buildIndex(indexData, indexMeta));
 
