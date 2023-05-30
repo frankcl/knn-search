@@ -66,8 +66,14 @@ public class KNNIndexCache {
      * 销毁缓存
      */
     public void destroy() {
-        cache.invalidateAll();
-        executorService.shutdown();
+        Lock writeLock = readWriteLock.writeLock();
+        writeLock.lock();
+        try {
+            cache.invalidateAll();
+            executorService.shutdown();
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     /**
