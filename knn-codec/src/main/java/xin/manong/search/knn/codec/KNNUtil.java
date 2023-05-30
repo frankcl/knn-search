@@ -19,6 +19,7 @@ import xin.manong.search.knn.index.KNNIndexMeta;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * KNN向量编码工具
@@ -26,11 +27,46 @@ import java.util.ArrayList;
  * @author frankcl
  * @date 2023-05-10 14:28:10
  */
-public class KNNVectorCodecUtil {
+public class KNNUtil {
 
-    private static final Logger logger = LogManager.getLogger(KNNVectorCodecUtil.class);
+    private static final Logger logger = LogManager.getLogger(KNNUtil.class);
 
     private static final String CHARSET_UTF8 = "UTF-8";
+
+    /**
+     * 计算cosine距离
+     *
+     * @param vector1
+     * @param vector2
+     * @return cosine距离
+     */
+    public static float computeCosineDistance(float[] vector1, float[] vector2) {
+        if (vector1.length != vector2.length) {
+            throw new RuntimeException(String.format("length is not consistent for vector1[%d] and vector2[%d]",
+                    vector1.length, vector2.length));
+        }
+        float m = 0f, s1 = 0f, s2 = 0f;
+        for (int k = 0; k < vector1.length; k++) {
+            m += vector1[k] * vector2[k];
+            s1 += vector1[k] * vector1[k];
+            s2 += vector2[k] * vector2[k];
+        }
+        s1 = (float) Math.sqrt(s1);
+        s2 = (float) Math.sqrt(s2);
+        return 1f - m / (s1 * s2);
+    }
+
+    /**
+     * 对象列表转化浮点数列表
+     *
+     * @param objects 对象列表
+     * @return 浮点数列表
+     */
+    public static float[] objectsToFloatArray(List<Object> objects) {
+        float[] floats = new float[objects.size()];
+        for (int i = 0; i < objects.size(); i++) floats[i] = ((Number) objects.get(i)).floatValue();
+        return floats;
+    }
 
     /**
      * 字节引用转化浮点数组
@@ -97,7 +133,7 @@ public class KNNVectorCodecUtil {
                     KNNConstants.HNSW_VECTOR_INDEX_META_EXTENSION);
         }
         if (indexDataFileName.endsWith(KNNConstants.FAISS_VECTOR_INDEX_DATA_EXTENSION) ||
-                indexDataFileName.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION +
+                indexDataFileName.endsWith(KNNConstants.FAISS_VECTOR_INDEX_DATA_EXTENSION +
                         KNNConstants.COMPOUND_EXTENSION)) {
             return String.format("%s%s", indexDataFileName.substring(0,
                             indexDataFileName.lastIndexOf(KNNConstants.FAISS_VECTOR_INDEX_DATA_EXTENSION)),
@@ -134,7 +170,7 @@ public class KNNVectorCodecUtil {
      */
     public static <T extends KNNIndexMeta> T readKNNMeta(String path, Class<T> c) throws IOException {
         try (DataInputStream input = new DataInputStream(new FileInputStream(path))){
-            byte[] bytes = new byte[input.read()];
+            byte[] bytes = new byte[input.readInt()];
             input.read(bytes, 0, bytes.length);
             return JSON.parseObject(new String(bytes, Charset.forName(CHARSET_UTF8)), c);
         }

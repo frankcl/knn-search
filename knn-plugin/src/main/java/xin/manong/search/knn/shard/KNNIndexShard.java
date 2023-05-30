@@ -12,7 +12,7 @@ import org.elasticsearch.common.io.PathUtils;
 import org.elasticsearch.index.engine.Engine;
 import org.elasticsearch.index.shard.IndexShard;
 import xin.manong.search.knn.cache.KNNIndexCache;
-import xin.manong.search.knn.codec.KNNVectorCodecUtil;
+import xin.manong.search.knn.codec.KNNUtil;
 import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.index.KNNIndex;
 import xin.manong.search.knn.index.KNNIndexMeta;
@@ -76,8 +76,8 @@ public class KNNIndexShard {
             for (String metaFile : metaFiles) {
                 String metaFilePath = PathUtils.get(directory, metaFile).toString();
                 KNNIndexMeta indexMeta = metaFile.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION) ?
-                        KNNVectorCodecUtil.readKNNMeta(metaFilePath, FAISSIndexMeta.class) :
-                        KNNVectorCodecUtil.readKNNMeta(metaFilePath, HNSWIndexMeta.class);
+                        KNNUtil.readKNNMeta(metaFilePath, FAISSIndexMeta.class) :
+                        KNNUtil.readKNNMeta(metaFilePath, HNSWIndexMeta.class);
                 indexMeta.path = PathUtils.get(directory, indexMeta.file).toString();
                 indexMetas.add(indexMeta);
             }

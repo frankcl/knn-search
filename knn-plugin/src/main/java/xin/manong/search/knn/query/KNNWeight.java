@@ -14,14 +14,13 @@ import org.apache.lucene.util.DocIdSetBuilder;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.io.PathUtils;
 import xin.manong.search.knn.cache.KNNIndexCache;
-import xin.manong.search.knn.codec.KNNVectorCodecUtil;
+import xin.manong.search.knn.codec.KNNUtil;
 import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.index.KNNIndex;
 import xin.manong.search.knn.index.KNNIndexMeta;
 import xin.manong.search.knn.index.KNNResult;
 import xin.manong.search.knn.index.faiss.FAISSIndexMeta;
 import xin.manong.search.knn.index.hnsw.HNSWIndexMeta;
-import xin.manong.search.knn.util.KNNUtil;
 
 import java.io.IOException;
 import java.util.*;
@@ -60,8 +59,8 @@ public class KNNWeight extends Weight {
         if (Strings.isNullOrEmpty(metaFile)) return null;
         String metaFilePath = PathUtils.get(directory, metaFile).toString();
         KNNIndexMeta indexMeta = metaFile.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION) ?
-                KNNVectorCodecUtil.readKNNMeta(metaFilePath, FAISSIndexMeta.class) :
-                KNNVectorCodecUtil.readKNNMeta(metaFilePath, HNSWIndexMeta.class);
+                KNNUtil.readKNNMeta(metaFilePath, FAISSIndexMeta.class) :
+                KNNUtil.readKNNMeta(metaFilePath, HNSWIndexMeta.class);
         indexMeta.path = PathUtils.get(directory, indexMeta.file).toString();
         KNNIndex index = KNNIndexCache.getInstance().get(indexMeta);
         KNNResult[] results = index.search(query.vector, query.k);
@@ -113,8 +112,8 @@ public class KNNWeight extends Weight {
                 throw new IOException(String.format("advanced locating doc id[%d] failed", result.id));
             }
             BytesRef bytesRef = docValues.binaryValue();
-            float[] vector = KNNVectorCodecUtil.byteRefToFloatArray(bytesRef);
-            result.score = KNNUtil.cosineScore(query.vector, vector);
+            float[] vector = KNNUtil.byteRefToFloatArray(bytesRef);
+            result.score = KNNUtil.computeCosineDistance(query.vector, vector);
         }
     }
 

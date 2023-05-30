@@ -32,6 +32,21 @@
 
     <artifactId>knn-codec</artifactId>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Djava.library.path=${parent.basedir}/knn-index/cpp/knn/lib -Djava.security.policy=${parent.basedir}/knn-plugin/src/main/plugin-meta/plugin-security.policy</argLine>
+                    <environmentVariables>
+                        <DYLD_LIBRARY_PATH>${parent.basedir}/knn-index/cpp/knn/lib:/usr/local/lib</DYLD_LIBRARY_PATH>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

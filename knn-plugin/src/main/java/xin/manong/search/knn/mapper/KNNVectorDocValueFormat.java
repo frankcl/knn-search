@@ -3,7 +3,7 @@ package xin.manong.search.knn.mapper;
 import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.search.DocValueFormat;
-import xin.manong.search.knn.codec.KNNVectorCodecUtil;
+import xin.manong.search.knn.codec.KNNUtil;
 import xin.manong.search.knn.common.KNNConstants;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class KNNVectorDocValueFormat implements DocValueFormat {
     @Override
     public Object format(BytesRef value) {
         try {
-            return KNNVectorCodecUtil.byteRefToFloatArray(value);
+            return KNNUtil.byteRefToFloatArray(value);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

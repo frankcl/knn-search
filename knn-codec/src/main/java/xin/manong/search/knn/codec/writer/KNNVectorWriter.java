@@ -7,7 +7,7 @@ import org.apache.lucene.index.SegmentWriteState;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.FilterDirectory;
 import xin.manong.search.knn.cache.KNNIndexCache;
-import xin.manong.search.knn.codec.KNNVectorCodecUtil;
+import xin.manong.search.knn.codec.KNNUtil;
 import xin.manong.search.knn.codec.KNNVectorFacade;
 import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.common.KNNSettings;
@@ -42,12 +42,12 @@ public abstract class KNNVectorWriter {
      */
     protected void writeMeta(KNNIndexMeta indexMeta,
                              SegmentWriteState writeState) throws IOException {
-        String metaFile = KNNVectorCodecUtil.buildMetaFileName(indexMeta.file);
+        String metaFile = KNNUtil.buildMetaFileName(indexMeta.file);
         String tempMetaFile = String.format("%s%s", metaFile, KNNConstants.TEMP_EXTENSION);
         String tempMetaFilePath = Paths.get(((FSDirectory) (FilterDirectory.unwrap(writeState.directory))).
                 getDirectory().toString(), tempMetaFile).toString();
-        KNNVectorCodecUtil.writeKNNMeta(indexMeta, tempMetaFilePath);
-        KNNVectorCodecUtil.appendFooter(tempMetaFile, metaFile, writeState.directory, writeState.context);
+        KNNUtil.writeKNNMeta(indexMeta, tempMetaFilePath);
+        KNNUtil.appendFooter(tempMetaFile, metaFile, writeState.directory, writeState.context);
     }
 
     /**
@@ -71,7 +71,7 @@ public abstract class KNNVectorWriter {
                     indexMeta.index, indexMeta.field, indexMeta.file));
         }
         String tempFile = Path.of(indexMeta.path).getFileName().toString();
-        KNNVectorCodecUtil.appendFooter(tempFile, indexMeta.file, writeState.directory, writeState.context);
+        KNNUtil.appendFooter(tempFile, indexMeta.file, writeState.directory, writeState.context);
     }
 
     /**

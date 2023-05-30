@@ -11,8 +11,8 @@ import org.apache.lucene.codecs.DocValuesFormat;
  */
 public class KNNVectorFormatFacade {
 
-    private final DocValuesFormat docValuesFormat;
-    private final CompoundFormat compoundFormat;
+    private DocValuesFormat docValuesFormat;
+    private CompoundFormat compoundFormat;
 
     public KNNVectorFormatFacade(final DocValuesFormat docValuesFormat, final CompoundFormat compoundFormat) {
         this.docValuesFormat = docValuesFormat;

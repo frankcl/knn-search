@@ -37,6 +37,7 @@ public class FAISSVectorWriter extends KNNVectorWriter {
         String tempFilePath = Paths.get(((FSDirectory) (FilterDirectory.unwrap(writeState.directory))).
                 getDirectory().toString(), tempFileName).toString();
         Map<String, Object> parameterMap = new HashMap<>();
+        parameterMap.put(FAISSConstants.M, getIndexParameter(field, KNNConstants.M));
         parameterMap.put(FAISSConstants.EF_SEARCH, getIndexParameter(field, KNNConstants.EF_SEARCH));
         parameterMap.put(FAISSConstants.EF_CONSTRUCTION, getIndexParameter(field, KNNConstants.EF_CONSTRUCTION));
         parameterMap.put(FAISSConstants.SUB_QUANTIZE_NUM, getIndexParameter(field, KNNConstants.PRODUCT_QUANTIZATION_M));

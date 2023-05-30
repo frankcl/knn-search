@@ -2,7 +2,7 @@ package xin.manong.search.knn.mapper;
 
 import org.apache.lucene.index.BinaryDocValues;
 import org.elasticsearch.index.fielddata.ScriptDocValues;
-import xin.manong.search.knn.codec.KNNVectorCodecUtil;
+import xin.manong.search.knn.codec.KNNUtil;
 
 import java.io.IOException;
 
@@ -37,7 +37,7 @@ public final class KNNVectorScriptDocValues extends ScriptDocValues<float[]> {
             throw new IllegalStateException(String.format("document does not hava value for field[%s]", fieldName));
         }
         try {
-            return KNNVectorCodecUtil.byteRefToFloatArray(binaryDocValues.binaryValue());
+            return KNNUtil.byteRefToFloatArray(binaryDocValues.binaryValue());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

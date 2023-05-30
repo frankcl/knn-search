@@ -11,7 +11,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.query.AbstractQueryBuilder;
 import org.elasticsearch.index.query.QueryShardContext;
-import xin.manong.search.knn.util.KNNUtil;
+import xin.manong.search.knn.codec.KNNUtil;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -125,7 +125,7 @@ public class KNNQueryBuilder extends AbstractQueryBuilder<KNNQueryBuilder> {
                         currentField = parser.currentName();
                     } else if (token.isValue() || token == XContentParser.Token.START_ARRAY) {
                         if (FIELD_VECTOR.match(currentField, parser.getDeprecationHandler())) {
-                            builder.vector = KNNUtil.objectsToFloats(parser.list());
+                            builder.vector = KNNUtil.objectsToFloatArray(parser.list());
                         } else if (BOOST_FIELD.match(currentField, parser.getDeprecationHandler())) {
                             builder.boost = parser.floatValue();
                         } else if (FIELD_K.match(currentField, parser.getDeprecationHandler())) {
@@ -146,7 +146,7 @@ public class KNNQueryBuilder extends AbstractQueryBuilder<KNNQueryBuilder> {
                 throwParsingExceptionOnMultipleFields(QUERY_NAME, parser.getTokenLocation(),
                         builder.field, parser.currentName());
                 builder.field = parser.currentName();
-                builder.vector = KNNUtil.objectsToFloats(parser.list());
+                builder.vector = KNNUtil.objectsToFloatArray(parser.list());
             }
         }
         return builder;

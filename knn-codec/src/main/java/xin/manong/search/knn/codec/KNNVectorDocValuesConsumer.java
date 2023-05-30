@@ -48,7 +48,7 @@ public class KNNVectorDocValuesConsumer extends DocValuesConsumer {
      */
     private void addKNNVectorBinaryField(FieldInfo field, DocValuesProducer producer) throws IOException {
         BinaryDocValues docValues = producer.getBinary(field);
-        KNNVectorFacade knnVectorFacade = KNNVectorCodecUtil.parseKNNVectors(docValues);
+        KNNVectorFacade knnVectorFacade = KNNUtil.parseKNNVectors(docValues);
         if (knnVectorFacade.vectors.length == 0 || knnVectorFacade.docIDs.length == 0) {
             logger.warn("skip KNN index building as no vector data in segment[{}] for field[{}]",
                     state.segmentInfo.name, field.name);

@@ -27,7 +27,7 @@ public class KNNVectorWriterSelector {
      * @return KNNVectorWriter
      */
     public static KNNVectorWriter select(int n, String index) {
-        int max = KNNSettings.getMaxHNSWIndexVectorNum(index);
+        int max = KNNSettings.getMaxHNSWIndexScale(index);
         if (n >= max) return build(FAISSVectorWriter.class);
         return build(HNSWVectorWriter.class);
     }

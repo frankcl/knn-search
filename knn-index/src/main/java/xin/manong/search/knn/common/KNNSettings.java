@@ -41,7 +41,7 @@ public class KNNSettings {
     private static final int DEFAULT_MAX_CACHE_EXPIRED_TIME_MINUTES = 180;
     private static final int DEFAULT_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE = 85;
     private static final int MAX_INDEX_THREAD_QUANTITY = 32;
-    private static final int MAX_HNSW_INDEX_SCALE = 500000;
+    private static final int DEFAULT_HNSW_INDEX_SCALE = 500000;
     private static final int DEFAULT_M = 16;
     private static final int DEFAULT_EF_SEARCH = 512;
     private static final int DEFAULT_EF_CONSTRUCTION = 512;
@@ -212,8 +212,9 @@ public class KNNSettings {
      * @return 最大HNSW索引向量数量
      */
     public static int getMaxHNSWIndexScale(String index) {
+        if (getInstance().clusterService == null) return DEFAULT_HNSW_INDEX_SCALE;
         return getInstance().clusterService.state().metadata().index(index).
-                getSettings().getAsInt(KNN_INDEX_MAX_HNSW_INDEX_SCALE, MAX_HNSW_INDEX_SCALE);
+                getSettings().getAsInt(KNN_INDEX_MAX_HNSW_INDEX_SCALE, DEFAULT_HNSW_INDEX_SCALE);
     }
 
     /**

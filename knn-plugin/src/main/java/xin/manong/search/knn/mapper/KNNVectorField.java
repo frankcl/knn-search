@@ -3,7 +3,7 @@ package xin.manong.search.knn.mapper;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexableFieldType;
 import org.apache.lucene.util.BytesRef;
-import xin.manong.search.knn.codec.KNNVectorCodecUtil;
+import xin.manong.search.knn.codec.KNNUtil;
 
 /**
  * KNN向量字段定义
@@ -16,7 +16,7 @@ public class KNNVectorField extends Field {
     public KNNVectorField(String name, float[] value, IndexableFieldType type) {
         super(name, new BytesRef(), type);
         try {
-            this.setBytesValue(KNNVectorCodecUtil.floatArrayToByteArray(value));
+            this.setBytesValue(KNNUtil.floatArrayToByteArray(value));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
