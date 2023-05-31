@@ -69,7 +69,8 @@ public class KNNSettings {
     private Client client;
     private ClusterService clusterService;
 
-    private static final Map<String, Function<String, Object>> KNN_INDEX_PARAMETER_MAP = new HashMap<>() {{
+    private static final Map<String, Function<String, Object>> KNN_INDEX_PARAMETER_MAP =
+            new HashMap<String, Function<String, Object>>() {{
         put(KNNConstants.M, KNNSettings::getM);
         put(KNNConstants.EF_SEARCH, KNNSettings::getEfSearch);
         put(KNNConstants.EF_CONSTRUCTION, KNNSettings::getEfConstruction);
@@ -102,7 +103,7 @@ public class KNNSettings {
 
     private static KNNSettings instance;
     private static OsProbe osProbe = OsProbe.getInstance();
-    private static Map<String, Setting<?>> dynamicCacheSettingMap = new HashMap<>() {
+    private static Map<String, Setting<?>> dynamicCacheSettingMap = new HashMap<String, Setting<?>>() {
         {
             put(KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_ENABLED, Setting.boolSetting(
                     KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_ENABLED, true, NodeScope, Dynamic));
@@ -385,7 +386,7 @@ public class KNNSettings {
         Settings updateSettings = Settings.builder().put(
                 KNNSettings.KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED, status).build();
         request.persistentSettings(updateSettings);
-        client.admin().cluster().updateSettings(request, new ActionListener<>() {
+        client.admin().cluster().updateSettings(request, new ActionListener<ClusterUpdateSettingsResponse>() {
             @Override
             public void onResponse(ClusterUpdateSettingsResponse response) {
                 logger.debug("update circuit breaker trigger settings[{}] success, ack[{}]",

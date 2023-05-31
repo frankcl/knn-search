@@ -1,3 +1,4 @@
+#include <memory>
 #include <string>
 #include <stdexcept>
 #include "knn/common/Macro.h"

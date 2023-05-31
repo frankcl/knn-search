@@ -16,7 +16,6 @@ import xin.manong.search.knn.index.KNNIndexFactory;
 import xin.manong.search.knn.index.KNNIndexMeta;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -70,7 +69,7 @@ public abstract class KNNVectorWriter {
             throw new IOException(String.format("build KNN index failed for index[%s], field[%s] and file[%s]",
                     indexMeta.index, indexMeta.field, indexMeta.file));
         }
-        String tempFile = Path.of(indexMeta.path).getFileName().toString();
+        String tempFile = Paths.get(indexMeta.path).getFileName().toString();
         KNNUtil.appendFooter(tempFile, indexMeta.file, writeState.directory, writeState.context);
     }
 

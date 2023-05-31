@@ -41,7 +41,7 @@
     </modules>
 
     <properties>
-        <jdk.version>17</jdk.version>
+        <jdk.version>8</jdk.version>
         <junit.version>4.13.2</junit.version>
         <log4j.version>2.20.0</log4j.version>
         <lombok.version>1.18.26</lombok.version>
