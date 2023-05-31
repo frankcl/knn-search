@@ -5,21 +5,25 @@ VERSION = V2_1_1
 CC = gcc
 CFLAGS = -g -O2 -Wall -std=c++11
 LIBS = -lstdc++ -lKNNCommon -lNonMetricSpaceLib
-
-JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
-JNI_BASE_INCLUDE = $(JAVA_HOME)include
-JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
 NMSLIB_BASE_DIR = /Users/frankcl/Code/public/nmslib/2.1.1/nmslib-2.1.1/similarity_search/
-INCLUDE_DIR = -I$(NMSLIB_BASE_DIR)include -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I$(CURRENT_DIR)/../../..
+#NMSLIB_BASE_DIR = /home/admin/tools/nmslib-2.1.1/similarity_search/
+JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
+#JAVA_HOME = /usr/lib/jvm/java/
+JNI_BASE_INCLUDE = $(JAVA_HOME)include
 LIBS_DIR = -L$(NMSLIB_BASE_DIR)release -L$(CURRENT_DIR)/../common/build
 BUILD_DIR = ./build/
-SOURCE = $(wildcard ./*cpp ../../wrapper/nmslib/*cpp)
 
 ifeq ($(ARCH),Darwin)
+	JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
 	SHARED_TARGET = libHNSWIndexJNI_$(VERSION).dylib
 else
+	JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/linux
 	SHARED_TARGET = libHNSWIndexJNI_$(VERSION).so
 endif
+
+INCLUDE_DIR = -I$(NMSLIB_BASE_DIR)include -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I$(CURRENT_DIR)/../../..
+
+SOURCE = $(wildcard ./*cpp ../../wrapper/nmslib/*cpp)
 
 $(shell mkdir -p $(BUILD_DIR))
 

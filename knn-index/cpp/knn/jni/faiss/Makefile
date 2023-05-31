@@ -4,23 +4,26 @@ CURRENT_DIR = $(CURDIR)
 VERSION = V1_7_3
 CC = gcc
 CFLAGS = -g -O2 -Wall -std=c++11
-LIBS = -lstdc++ -lKNNCommon -lfaiss -lomp
-
 JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
+#JAVA_HOME = /usr/lib/jvm/java/
 JNI_BASE_INCLUDE = $(JAVA_HOME)include
-JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
-INCLUDE_DIR = -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I$(CURRENT_DIR)/../../..
-LIBS_DIR = -L$(CURRENT_DIR)/../common/build
-BUILD_DIR = ./build/
-SOURCE = $(wildcard ./*cpp ../../wrapper/faiss/*cpp)
 
 ifeq ($(ARCH),Darwin)
-	SHARED_TARGET = libFAISSIndexJNI_$(VERSION).dylib
+	LIBS = -lstdc++ -lKNNCommon -lfaiss -lomp
+	JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
 	INCLUDE_DIR = -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I/opt/homebrew/opt/libomp/include -I$(CURRENT_DIR)/../../..
 	LIBS_DIR = -L/opt/homebrew/opt/libomp/lib -L$(CURRENT_DIR)/../common/build
+	SHARED_TARGET = libFAISSIndexJNI_$(VERSION).dylib
 else
+	LIBS = -lstdc++ -lKNNCommon -lfaiss
+	JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/linux
+	INCLUDE_DIR = -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I$(CURRENT_DIR)/../../..
+	LIBS_DIR = -L$(CURRENT_DIR)/../common/build
 	SHARED_TARGET = libFAISSIndexJNI_$(VERSION).so
 endif
+
+BUILD_DIR = ./build/
+SOURCE = $(wildcard ./*cpp ../../wrapper/faiss/*cpp)
 
 $(shell mkdir -p $(BUILD_DIR))
 

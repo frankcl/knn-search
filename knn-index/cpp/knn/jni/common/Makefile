@@ -4,19 +4,21 @@ CURRENT_DIR = $(CURDIR)
 CC = gcc
 CFLAGS = -g -O2 -Wall -std=c++11
 LIBS = -lstdc++
-
 JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
+#JAVA_HOME = /usr/lib/jvm/java/
 JNI_BASE_INCLUDE = $(JAVA_HOME)include
-JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
+
+ifeq ($(ARCH),Darwin)
+	JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
+	SHARED_TARGET = libKNNCommon.dylib
+else
+	JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/linux
+	SHARED_TARGET = libKNNCommon.so
+endif
+
 INCLUDE_DIR = -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I$(CURRENT_DIR)/../../..
 BUILD_DIR = ./build/
 SOURCE = $(wildcard ./*cpp)
-
-ifeq ($(ARCH),Darwin)
-	SHARED_TARGET = libKNNCommon.dylib
-else
-	SHARED_TARGET = libKNNCommon.so
-endif
 
 $(shell mkdir -p $(BUILD_DIR))
 
