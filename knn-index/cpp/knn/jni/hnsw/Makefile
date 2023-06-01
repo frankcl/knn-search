@@ -1,14 +1,14 @@
-ARCH = $(shell uname -s)
+NMSLIB_BASE_DIR = /Users/frankcl/Code/public/nmslib/2.1.1/nmslib-2.1.1/similarity_search/
+#NMSLIB_BASE_DIR = /home/admin/tools/nmslib-2.1.1/similarity_search/
+JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
+#JAVA_HOME = /usr/lib/jvm/java/
 
+ARCH = $(shell uname -s)
 CURRENT_DIR = $(CURDIR)
 VERSION = V2_1_1
 CC = gcc
 CFLAGS = -g -O2 -Wall -std=c++11
 LIBS = -lstdc++ -lKNNCommon -lNonMetricSpaceLib
-NMSLIB_BASE_DIR = /Users/frankcl/Code/public/nmslib/2.1.1/nmslib-2.1.1/similarity_search/
-#NMSLIB_BASE_DIR = /home/admin/tools/nmslib-2.1.1/similarity_search/
-JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
-#JAVA_HOME = /usr/lib/jvm/java/
 JNI_BASE_INCLUDE = $(JAVA_HOME)include
 LIBS_DIR = -L$(NMSLIB_BASE_DIR)release -L$(CURRENT_DIR)/../common/build
 BUILD_DIR = ./build/

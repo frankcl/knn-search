@@ -1,11 +1,11 @@
-ARCH = $(shell uname -s)
+JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
+#JAVA_HOME = /usr/lib/jvm/java/
 
+ARCH = $(shell uname -s)
 CURRENT_DIR = $(CURDIR)
 VERSION = V1_7_3
 CC = gcc
 CFLAGS = -g -O2 -Wall -std=c++11
-JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
-#JAVA_HOME = /usr/lib/jvm/java/
 JNI_BASE_INCLUDE = $(JAVA_HOME)include
 
 ifeq ($(ARCH),Darwin)

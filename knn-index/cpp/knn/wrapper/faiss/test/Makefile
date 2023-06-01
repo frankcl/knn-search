@@ -1,9 +1,9 @@
-ARCH = $(shell uname -s)
-
-CC = gcc
-CFLAGS = -g -O2 -Wall -std=c++14
 JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
 #JAVA_HOME = /usr/lib/jvm/java/
+
+ARCH = $(shell uname -s)
+CC = gcc
+CFLAGS = -g -O2 -Wall -std=c++14
 JNI_BASE_INCLUDE = $(JAVA_HOME)include
 BUILD_DIR = ./build/
 SOURCE = $(wildcard ./*cpp ../*cpp)
