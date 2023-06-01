@@ -31,7 +31,7 @@ protected:
         float* data = new float[indexData.size * indexData.dimension];
         indexData.ids = ids;
         indexData.data = data;
-        for (int32_t i = 0; i < indexData.size; i++) {
+        for (uint32_t i = 0; i < indexData.size; i++) {
             ids[i] = (int64_t) i;
             for (uint32_t j = 0; j < indexData.dimension; j++) {
                 size_t pos = i * indexData.dimension + j;
