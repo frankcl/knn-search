@@ -14,19 +14,17 @@
             <source>src/main/plugin-meta/plugin-security.policy</source>
             <outputDirectory>./</outputDirectory>
         </file>
-        <file>
-            <source>${parent.basedir}/knn-index/cpp/knn/lib/libKNNCommon.dylib</source>
-            <outputDirectory>./</outputDirectory>
-        </file>
-        <file>
-            <source>${parent.basedir}/knn-index/cpp/knn/lib/libHNSWIndexJNI_V2_1_1.dylib</source>
-            <outputDirectory>./</outputDirectory>
-        </file>
-        <file>
-            <source>${parent.basedir}/knn-index/cpp/knn/lib/libFAISSIndexJNI_V1_7_3.dylib</source>
-            <outputDirectory>./</outputDirectory>
-        </file>
     </files>
+    <fileSets>
+        <fileSet>
+            <directory>${parent.basedir}/knn-index/cpp/knn/lib/${os.name}/</directory>
+            <outputDirectory>./</outputDirectory>
+            <includes>
+                <include>*.dylib</include>
+                <include>*.so</include>
+            </includes>
+        </fileSet>
+    </fileSets>
     <dependencySets>
         <dependencySet>
             <useProjectArtifact>true</useProjectArtifact>

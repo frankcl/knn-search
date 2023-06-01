@@ -9,7 +9,7 @@ NMSLIB_BASE_DIR = /Users/frankcl/Code/public/nmslib/2.1.1/nmslib-2.1.1/similarit
 BUILD_DIR = ./build/
 LIBS_DIR = -L$(NMSLIB_BASE_DIR)release -L../../../jni/common/build
 JNI_BASE_INCLUDE = $(JAVA_HOME)include
-LIBS = -lstdc++ -lKNNCommon -lNonMetricSpaceLib -lgtest -lgtest_main -lpthread -ltcmalloc
+LIBS = -lstdc++ -lKNNCommon -lNonMetricSpaceLib -lm -lgtest -lgtest_main -lpthread -ltcmalloc
 
 ifeq ($(ARCH),Darwin)
     JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin

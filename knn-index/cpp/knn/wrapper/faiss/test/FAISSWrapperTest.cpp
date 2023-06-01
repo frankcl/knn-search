@@ -60,6 +60,7 @@ TEST_F(FAISSWrapperSuite, testFlatIndex) {
     EXPECT_EQ(432.0f, result->distances[2]);
     DELETE_AND_SET_NULL(result);
     DELETE_AND_SET_NULL(index);
+    DELETE_ARRAY_AND_SET_NULL(vector);
     remove(indexFile.c_str());
 }
 
@@ -83,6 +84,7 @@ TEST_F(FAISSWrapperSuite, testIVFFlatIndex) {
     EXPECT_EQ(432.0f, result->distances[2]);
     DELETE_AND_SET_NULL(result);
     DELETE_AND_SET_NULL(index);
+    DELETE_ARRAY_AND_SET_NULL(vector);
     remove(indexFile.c_str());
 }
 
@@ -107,6 +109,7 @@ TEST_F(FAISSWrapperSuite, testHNSWIndex) {
     EXPECT_EQ(432.0f, result->distances[2]);
     DELETE_AND_SET_NULL(result);
     DELETE_AND_SET_NULL(index);
+    DELETE_ARRAY_AND_SET_NULL(vector);
     remove(indexFile.c_str());
 }
 

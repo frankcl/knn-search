@@ -17,6 +17,7 @@ ifeq ($(ARCH),Darwin)
     LIBS_DIR = -L/opt/homebrew/opt/libomp/lib -L../../../jni/common/build
     LIBS = -lstdc++ -lKNNCommon -lfaiss -lomp -lgtest -lgtest_main -lpthread -ltcmalloc
 else
+    CFLAGS = -g -O2 -Wall -std=c++14 -fopenmp
     JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/linux
     INCLUDE_DIR = -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I../../../..
     LIBS_DIR = -L../../../jni/common/build
