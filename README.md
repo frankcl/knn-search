@@ -43,7 +43,7 @@ make
 ```
 
 #### 安装faiss
-不适用GPU，不支持python接口，生成动态链接库
+不使用GPU，不支持python接口，生成动态链接库
 ```shell
 cmake -B build . -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=OFF -DBUILD_SHARED_LIBS=ON
 make -C build -j4 faiss
