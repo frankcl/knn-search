@@ -35,7 +35,7 @@ JNIEXPORT jlong JNICALL Java_xin_manong_search_knn_index_hnsw_HNSWIndex_open
         return (jlong) NMSLibWrapper::open(cppPath, cppSpaceType, params);
     } catch (exception& e) {
         JNIUtil::catchCppAndThrowJavaException(env, e);
-        return NULL;
+        return (jlong) 0;
     }
 }
 
