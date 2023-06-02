@@ -1,42 +1,34 @@
-JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
-#JAVA_HOME = /usr/lib/jvm/java/
-NMSLIB_BASE_DIR = /Users/frankcl/Code/public/nmslib/2.1.1/nmslib-2.1.1/similarity_search/
-#NMSLIB_BASE_DIR = /home/admin/tools/nmslib-2.1.1/similarity_search/
-
-ARCH = $(shell uname -s)
-CC = gcc
-CFLAGS = -g -O2 -Wall -std=c++14
-BUILD_DIR = ./build/
-LIBS_DIR = -L$(NMSLIB_BASE_DIR)release -L../../../jni/common/build
-JNI_BASE_INCLUDE = $(JAVA_HOME)include
-LIBS = -lstdc++ -lKNNCommon -lNonMetricSpaceLib -lm -lgtest -lgtest_main -lpthread -ltcmalloc
-
-ifeq ($(ARCH),Darwin)
-    JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
-else
-    JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/linux
+PLATFORM = $(shell uname -s)
+ifeq (,$(filter Darwin Linux,$(PLATFORM)))
+	$(error unsupported platform[$(PLATFORM)])
 endif
 
-INCLUDE_DIR = -I$(NMSLIB_BASE_DIR)include -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I../../../..
+include ../../../make_common.dep
 
+LINK_OPTIONS = -L$(NMSLIB_DIR)/release -L../../../jni/common/build
+LINK_LIBS = -lstdc++ -lKNNCommon -lNonMetricSpaceLib -lm -lgtest -lgtest_main -lpthread -ltcmalloc
+ifeq ($(PLATFORM),Darwin)
+    INCLUDE_OPTIONS = -I$(NMSLIB_DIR)/include -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin -I../../../..
+else
+    INCLUDE_OPTIONS = -I$(NMSLIB_DIR)/include -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I../../../..
+endif
 SOURCE = $(wildcard ./*cpp ../*cpp)
 TARGET = knn_nmslib_wrapper_test
 
-$(shell mkdir -p $(BUILD_DIR))
-
 $(TARGET):$(SOURCE)
-	$(CC) $(SOURCE) -o $(BUILD_DIR)$(TARGET) $(CFLAGS) $(LIBS_DIR) $(INCLUDE_DIR) $(LIBS)
-	rm -fr $(BUILD_DIR)*.dSYM
+	$(COMPILER) $(SOURCE) -o $(BUILD_DIR)/$(TARGET) $(COMPILE_OPTIONS) $(LINK_OPTIONS) $(INCLUDE_OPTIONS) $(LINK_LIBS)
+ifeq ($(PLATFORM),Darwin)
+	rm -fr $(BUILD_DIR)/*.dSYM
+endif
 
 all: $(TARGET)
 
 clean:
-	rm -rf $(BUILD_DIR)$(TARGET)
 	rm -rf $(BUILD_DIR)
 
-runtest:
-ifeq ($(ARCH),Darwin)
-	DYLD_LIBRARY_PATH=/usr/local/lib:../../../jni/common/build HEAPCHECK=normal $(BUILD_DIR)$(TARGET)
+test:
+ifeq ($(PLATFORM),Darwin)
+	DYLD_LIBRARY_PATH=../../../jni/common/build HEAPCHECK=normal $(BUILD_DIR)/$(TARGET)
 else
-	LD_LIBRARY_PATH=/usr/local/lib:../../../jni/common/build HEAPCHECK=normal $(BUILD_DIR)$(TARGET)
+	LD_LIBRARY_PATH=../../../jni/common/build HEAPCHECK=normal $(BUILD_DIR)/$(TARGET)
 endif

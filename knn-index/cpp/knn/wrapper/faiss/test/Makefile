@@ -1,42 +1,37 @@
-JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
-#JAVA_HOME = /usr/lib/jvm/java/
+PLATFORM = $(shell uname -s)
+ifeq (,$(filter Darwin Linux,$(PLATFORM)))
+	$(error unsupported platform[$(PLATFORM)])
+endif
 
-ARCH = $(shell uname -s)
-CC = gcc
-CFLAGS = -g -O2 -Wall -std=c++14
-JNI_BASE_INCLUDE = $(JAVA_HOME)include
-BUILD_DIR = ./build/
+include ../../../make_common.dep
+
 SOURCE = $(wildcard ./*cpp ../*cpp)
 TARGET = knn_faiss_wrapper_test
-
-$(shell mkdir -p $(BUILD_DIR))
-
-ifeq ($(ARCH),Darwin)
-    JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
-    INCLUDE_DIR = -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I/opt/homebrew/opt/libomp/include -I../../../..
-    LIBS_DIR = -L/opt/homebrew/opt/libomp/lib -L../../../jni/common/build
-    LIBS = -lstdc++ -lKNNCommon -lfaiss -lomp -lgtest -lgtest_main -lpthread -ltcmalloc
+ifeq ($(PLATFORM),Darwin)
+    INCLUDE_OPTIONS = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin -I$(MAC_OMP_INCLUDE_OPTION) -I../../../..
+    LINK_OPTIONS = -L$(MAC_OMP_LINK_OPTION) -L../../../jni/common/build
+    LINK_LIBS = -lstdc++ -lKNNCommon -lfaiss -lomp -lgtest -lgtest_main -lpthread -ltcmalloc
 else
-    CFLAGS = -g -O2 -Wall -std=c++14 -fopenmp
-    JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/linux
-    INCLUDE_DIR = -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I../../../..
-    LIBS_DIR = -L../../../jni/common/build
-    LIBS = -lstdc++ -lKNNCommon -lfaiss -lgtest -lgtest_main -lpthread -ltcmalloc
+    COMPILE_OPTIONS = -g -O2 -Wall -std=c++11 -fopenmp
+    INCLUDE_OPTIONS = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I../../../..
+    LINK_OPTIONS = -L../../../jni/common/build
+    LINK_LIBS = -lstdc++ -lKNNCommon -lfaiss -lgtest -lgtest_main -lpthread -ltcmalloc
 endif
 
 $(TARGET):$(SOURCE)
-	$(CC) $(SOURCE) -o $(BUILD_DIR)$(TARGET) $(CFLAGS) $(LIBS_DIR) $(INCLUDE_DIR) $(LIBS)
-	rm -fr $(BUILD_DIR)*.dSYM
+	$(COMPILER) $(SOURCE) -o $(BUILD_DIR)/$(TARGET) $(COMPILE_OPTIONS) $(LINK_OPTIONS) $(INCLUDE_OPTIONS) $(LINK_LIBS)
+ifeq ($(PLATFORM),Darwin)
+	rm -fr $(BUILD_DIR)/*.dSYM
+endif
 
 all: $(TARGET)
 
 clean:
-	rm -rf $(BUILD_DIR)$(TARGET)
 	rm -rf $(BUILD_DIR)
 
-runtest:
-ifeq ($(ARCH),Darwin)
-	DYLD_LIBRARY_PATH=/usr/local/lib:../../../jni/common/build HEAPCHECK=normal $(BUILD_DIR)$(TARGET)
+test:
+ifeq ($(PLATFORM),Darwin)
+	DYLD_LIBRARY_PATH=../../../jni/common/build HEAPCHECK=normal $(BUILD_DIR)/$(TARGET)
 else
-	LD_LIBRARY_PATH=/usr/local/lib:../../../jni/common/build HEAPCHECK=normal $(BUILD_DIR)$(TARGET)
+	LD_LIBRARY_PATH=../../../jni/common/build HEAPCHECK=normal $(BUILD_DIR)/$(TARGET)
 endif

@@ -1,39 +1,31 @@
-JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home/
-#JAVA_HOME = /usr/lib/jvm/java/
-
-ARCH = $(shell uname -s)
-CURRENT_DIR = $(CURDIR)
-VERSION = V1_7_3
-CC = gcc
-CFLAGS = -g -O2 -Wall -std=c++11
-JNI_BASE_INCLUDE = $(JAVA_HOME)include
-
-ifeq ($(ARCH),Darwin)
-	LIBS = -lstdc++ -lKNNCommon -lfaiss -lomp
-	JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/darwin
-	INCLUDE_DIR = -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I/opt/homebrew/opt/libomp/include -I$(CURRENT_DIR)/../../..
-	LIBS_DIR = -L/opt/homebrew/opt/libomp/lib -L$(CURRENT_DIR)/../common/build
-	SHARED_TARGET = libFAISSIndexJNI_$(VERSION).dylib
-else
-	LIBS = -lstdc++ -lKNNCommon -lfaiss
-	JNI_PLATFORM_INCLUDE = $(JAVA_HOME)include/linux
-	INCLUDE_DIR = -I$(JNI_BASE_INCLUDE) -I$(JNI_PLATFORM_INCLUDE) -I$(CURRENT_DIR)/../../..
-	LIBS_DIR = -L$(CURRENT_DIR)/../common/build
-	SHARED_TARGET = libFAISSIndexJNI_$(VERSION).so
+PLATFORM = $(shell uname -s)
+ifeq (,$(filter Darwin Linux,$(PLATFORM)))
+	$(error unsupported platform[$(PLATFORM)])
 endif
 
-BUILD_DIR = ./build/
+include ../../make_common.dep
+
+ifeq ($(PLATFORM),Darwin)
+	LINK_LIBS = -lstdc++ -lKNNCommon -lfaiss -lomp
+	INCLUDE_OPTIONS = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin -I$(MAC_OMP_INCLUDE_OPTION) -I$(CURDIR)/../../..
+	LINK_OPTIONS = -L$(MAC_OMP_LINK_OPTION) -L$(CURDIR)/../common/build
+	SHARED_TARGET = libFAISSIndexJNI_$(FAISS_VERSION).dylib
+else
+	LINK_LIBS = -lstdc++ -lKNNCommon -lfaiss
+	INCLUDE_OPTIONS = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux -I$(CURDIR)/../../..
+	LINK_OPTIONS = -L$(CURDIR)/../common/build
+	SHARED_TARGET = libFAISSIndexJNI_$(FAISS_VERSION).so
+endif
 SOURCE = $(wildcard ./*cpp ../../wrapper/faiss/*cpp)
 
-$(shell mkdir -p $(BUILD_DIR))
-
 $(SHARED_TARGET):$(SOURCE)
-	$(CC) $(SOURCE) -shared -fPIC -o $(SHARED_TARGET) $(CFLAGS) $(LIBS_DIR) $(INCLUDE_DIR) $(LIBS)
+	$(COMPILER) $(SOURCE) -shared -fPIC -o $(SHARED_TARGET) $(COMPILE_OPTIONS) $(LINK_OPTIONS) $(INCLUDE_OPTIONS) $(LINK_LIBS)
 	mv $(SHARED_TARGET) $(BUILD_DIR)
+ifeq ($(PLATFORM),Darwin)
 	rm -fr *.dSYM
+endif
 
 all: $(SHARED_TARGET)
 
 clean:
-	rm -rf $(BUILD_DIR)$(SHARED_TARGET)
 	rm -rf $(BUILD_DIR)

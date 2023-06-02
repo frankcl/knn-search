@@ -1,0 +1,16 @@
+#JAVA_HOME = /usr/lib/jvm/java
+JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk-11.0.16.1.jdk/Contents/Home
+#NMSLIB_DIR = /home/admin/tools/nmslib-2.1.1/similarity_search
+NMSLIB_DIR = /Users/frankcl/Code/public/nmslib/2.1.1/nmslib-2.1.1/similarity_search
+
+BUILD_DIR = ./build
+$(shell mkdir -p $(BUILD_DIR))
+
+MAC_OMP_INCLUDE_OPTION = /opt/homebrew/opt/libomp/include
+MAC_OMP_LINK_OPTION = /opt/homebrew/opt/libomp/lib
+
+COMPILER = gcc
+COMPILE_OPTIONS = -g -O2 -Wall -std=c++11
+
+FAISS_VERSION = V1_7_3
+NMSLIB_VERSION = V2_1_1
