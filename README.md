@@ -26,7 +26,7 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
 - [x] nmslib：版本2.1.1
 - [x] faiss：版本1.7.3
 
-#### 安装jemalloc
+#### 1. 安装jemalloc
 打开性能检测开关：--enable-prof
 ```shell
 ./configure --enable-prof
@@ -34,7 +34,7 @@ make
 make install
 ```
 
-#### 编译nmslib
+#### 2. 编译nmslib
 静态库生成地址：similarity_search/release/libNonMetricSpaceLib.a
 ```shell
 cd similarity_search
@@ -42,7 +42,7 @@ cmake .
 make
 ```
 
-#### 安装faiss
+#### 3. 安装faiss
 不使用GPU，不支持python接口，生成动态链接库
 ```shell
 cmake -B build . -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=OFF -DBUILD_SHARED_LIBS=ON
@@ -66,7 +66,7 @@ JAVA_HOME = xxx
 # 修改nmslib编译目录，具体参见nmslib编译
 NMSLIB_DIR = xxx
 ```
-编译链接生成动态链接库
+编译生成动态链接库
 ```shell
 cd knn-search/knn-index/cpp/knn/jni
 make
