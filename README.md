@@ -63,7 +63,7 @@ git clone https://github.com/frankcl/knn-search.git
 ```shell
 # 修改JAVA主目录
 JAVA_HOME = xxx
-# 修改nmslib编译目录
+# 修改nmslib编译目录，具体参见nmslib编译
 NMSLIB_DIR = xxx
 ```
 编译链接生成动态链接库
