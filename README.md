@@ -22,6 +22,15 @@ git clone https://github.com/frankcl/knn-search.git
 ```
 
 2. 构建JNI相关动态链接库
+
+修改编译选项：knn-search/knn-index/cpp/knn/make_common.dep
+```shell
+# 修改JAVA主目录
+JAVA_HOME = xxx
+# 修改nmslib编译目录
+NMSLIB_DIR = xxx
+```
+编译链接生成动态链接库
 ```shell
 cd knn-search/knn-index/cpp/knn/jni
 make
