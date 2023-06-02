@@ -1,6 +1,6 @@
 # knn-search
 
-## 概述
+## 1. 概述
 k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模自行决定向量索引类型
 
 索引构建原则：中小规模索引保证搜索准召率，大规模索引保证内存占用低
@@ -12,9 +12,9 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
   * 优势：对向量进行降维量化，压缩存储，占用空间小
   * 缺点：准召率相比图算法有一定损失 
 
-## knn-search插件生成
+## 2. knn-search插件生成
 
-### Linux环境及工具依赖
+### 2.1. Linux环境及工具依赖
 - [x] JDK：1.8或更高版本
 - [x] gcc：4.8或更高版本
 - [x] gcc-c++：4.8或更高版本
@@ -26,7 +26,7 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
 - [x] nmslib：版本2.1.1
 - [x] faiss：版本1.7.3
 
-#### 1. 安装jemalloc
+#### 2.1.1. 安装jemalloc
 打开性能检测开关：--enable-prof
 ```shell
 ./configure --enable-prof
@@ -34,7 +34,7 @@ make
 make install
 ```
 
-#### 2. 编译nmslib
+#### 2.1.2. 编译nmslib
 静态库生成地址：similarity_search/release/libNonMetricSpaceLib.a
 ```shell
 cd similarity_search
@@ -42,7 +42,7 @@ cmake .
 make
 ```
 
-#### 3. 安装faiss
+#### 2.1.3. 安装faiss
 不使用GPU，不支持python接口，生成动态链接库
 ```shell
 cmake -B build . -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=OFF -DBUILD_SHARED_LIBS=ON
@@ -50,7 +50,7 @@ make -C build -j4 faiss
 make -C build install
 ```
 
-### 生成ElasticSearch插件package
+### 2.2. 生成ElasticSearch插件package
 
 1. 下载knn-search代码
 ```shell
