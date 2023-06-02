@@ -15,8 +15,10 @@ all:
 
 install:
 ifeq ($(PLATFORM),Darwin)
+	mkdir -p ../release/mac/
 	cp $(BUILD_DIR)/* ../release/mac/
 else
+	mkdir -p ../release/linux/
 	cp $(BUILD_DIR)/* ../release/linux/
 endif
 
