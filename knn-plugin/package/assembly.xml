@@ -17,7 +17,7 @@
     </files>
     <fileSets>
         <fileSet>
-            <directory>${parent.basedir}/knn-index/cpp/knn/lib/${os.name}/</directory>
+            <directory>${parent.basedir}/knn-index/cpp/knn/release/${os.family}/</directory>
             <outputDirectory>./</outputDirectory>
             <includes>
                 <include>*.dylib</include>

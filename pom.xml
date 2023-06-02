@@ -59,6 +59,21 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
+        <profile>
+            <id>linux</id>
+            <properties>
+                <os.family>linux</os.family>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>mac</id>
+            <properties>
+                <os.family>mac</os.family>
+            </properties>
+        </profile>
     </profiles>
 
     <build>
