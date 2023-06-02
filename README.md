@@ -14,36 +14,6 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
 
 ## knn-search插件生成
 
-### 生成ElasticSearch插件package
-
-1. 下载knn-search代码
-```shell
-git clone https://github.com/frankcl/knn-search.git
-```
-
-2. 构建JNI相关动态链接库
-
-修改编译选项：knn-search/knn-index/cpp/knn/make_common.dep
-```shell
-# 修改JAVA主目录
-JAVA_HOME = xxx
-# 修改nmslib编译目录
-NMSLIB_DIR = xxx
-```
-编译链接生成动态链接库
-```shell
-cd knn-search/knn-index/cpp/knn/jni
-make
-make install
-```
-
-3. 生成knn-search插件package(根据不同操作系统配置-P参数，Linux：-P linux，Mac：-P mac)
-```shell
-cd knn-search
-mvn package -P linux
-```
-插件package地址：knn-search/knn-plugin/target/knn-plugin-0.0.1-package.zip
-
 ### Linux环境及工具依赖
 - [x] JDK：1.8或更高版本
 - [x] gcc：4.8或更高版本
@@ -79,3 +49,33 @@ cmake -B build . -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=OFF -DBUILD_SHARED
 make -C build -j4 faiss
 make -C build install
 ```
+
+### 生成ElasticSearch插件package
+
+1. 下载knn-search代码
+```shell
+git clone https://github.com/frankcl/knn-search.git
+```
+
+2. 构建JNI相关动态链接库
+
+修改编译选项：knn-search/knn-index/cpp/knn/make_common.dep
+```shell
+# 修改JAVA主目录
+JAVA_HOME = xxx
+# 修改nmslib编译目录
+NMSLIB_DIR = xxx
+```
+编译链接生成动态链接库
+```shell
+cd knn-search/knn-index/cpp/knn/jni
+make
+make install
+```
+
+3. 生成knn-search插件package(根据不同操作系统配置-P参数，Linux：-P linux，Mac：-P mac)
+```shell
+cd knn-search
+mvn package -P linux
+```
+插件package地址：knn-search/knn-plugin/target/knn-plugin-0.0.1-package.zip
