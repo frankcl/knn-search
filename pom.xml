@@ -41,8 +41,7 @@
     </modules>
 
     <properties>
-        <jdk.version>8</jdk.version>
-        <junit.version>4.13.2</junit.version>
+        <jdk.version>11</jdk.version>
         <log4j.version>2.20.0</log4j.version>
         <lombok.version>1.18.26</lombok.version>
         <guava.version>31.1-jre</guava.version>
@@ -153,12 +152,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>

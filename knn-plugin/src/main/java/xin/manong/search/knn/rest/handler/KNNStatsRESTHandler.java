@@ -42,9 +42,9 @@ public class KNNStatsRESTHandler extends BaseRestHandler {
     @Override
     public List<Route> routes() {
         return ImmutableList.of(
-                new Route(RestRequest.Method.GET, String.format("%s/stats/{%s}",
+                new Route(RestRequest.Method.GET, String.format("%s/node_stats/{%s}",
                         KNNConstants.KNN_BASE_URL, KNNConstants.REST_REQUEST_NODE_ID)),
-                new Route(RestRequest.Method.GET, String.format("%s/stats/{%s}/{%s}",
+                new Route(RestRequest.Method.GET, String.format("%s/node_stats/{%s}/{%s}",
                         KNNConstants.KNN_BASE_URL, KNNConstants.REST_REQUEST_NODE_ID, KNNConstants.REST_REQUEST_STAT)),
                 new Route(RestRequest.Method.GET, String.format("%s/stats",
                         KNNConstants.KNN_BASE_URL)),

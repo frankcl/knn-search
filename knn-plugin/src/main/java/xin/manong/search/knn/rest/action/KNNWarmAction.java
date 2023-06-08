@@ -11,8 +11,8 @@ import xin.manong.search.knn.common.KNNConstants;
  */
 public class KNNWarmAction extends ActionType<KNNWarmResponse> {
 
-    public static final KNNWarmAction INSTANCE = new KNNWarmAction();
     public static final String NAME = String.format("cluster:admin/%s", KNNConstants.REST_ACTION_WARM);
+    public static final KNNWarmAction INSTANCE = new KNNWarmAction();
 
     private KNNWarmAction() {
         super(NAME, KNNWarmResponse::new);
