@@ -71,6 +71,7 @@ public class KNNVectorCompoundFormat extends CompoundFormat {
             dir.copyFrom(dir, dataFile, compoundFile, context);
             String metaFile = KNNUtil.buildMetaFileName(dataFile);
             writeCompoundMetaFile(dir, context, indexMetaClass, metaFile, compoundFile);
+            segmentFiles.remove(metaFile);
         }
         segmentFiles.removeAll(dataFiles);
         si.setFiles(segmentFiles);
@@ -91,12 +92,13 @@ public class KNNVectorCompoundFormat extends CompoundFormat {
                                        String metaFile, String compoundFile) throws IOException {
         String metaFilePath = Paths.get(((FSDirectory) FilterDirectory.unwrap(dir)).
                 getDirectory().toString(), metaFile).toString();
+        String compoundMetaFile = metaFile + KNNConstants.COMPOUND_EXTENSION;
         String tempMetaFile = metaFile + KNNConstants.TEMP_EXTENSION;
         String tempMetaFilePath = metaFilePath + KNNConstants.TEMP_EXTENSION;
         KNNIndexMeta indexMeta = KNNUtil.readKNNMeta(metaFilePath, indexMetaClass);
         indexMeta.file = compoundFile;
         KNNUtil.writeKNNMeta(indexMeta, tempMetaFilePath);
-        KNNUtil.appendFooter(tempMetaFile, metaFile, dir, context);
+        KNNUtil.appendFooter(tempMetaFile, compoundMetaFile, dir, context);
     }
 
     /**

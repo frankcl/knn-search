@@ -71,6 +71,10 @@ public abstract class KNNVectorWriter {
         }
         String tempFile = Paths.get(indexMeta.path).getFileName().toString();
         KNNUtil.appendFooter(tempFile, indexMeta.file, writeState.directory, writeState.context);
+        if (indexMeta.path.endsWith(KNNConstants.TEMP_EXTENSION)) {
+            indexMeta.path = indexMeta.path.substring(0, indexMeta.path.length() -
+                    KNNConstants.TEMP_EXTENSION.length());
+        }
     }
 
     /**
@@ -105,7 +109,7 @@ public abstract class KNNVectorWriter {
         writeData(knnVectorFacade, indexMeta, writeState);
         writeMeta(indexMeta, writeState);
         if (!KNNSettings.isLazyLoad()) KNNIndexCache.getInstance().get(indexMeta);
-        logger.info("build KNN index success for index[%s], field[%s] and file[%s], spend time[{}]",
+        logger.info("build KNN index success for index[{}], field[{}] and file[{}], spend time[{}]",
                 indexMeta.index, indexMeta.field, indexMeta.file, System.currentTimeMillis() - startTime);
     }
 

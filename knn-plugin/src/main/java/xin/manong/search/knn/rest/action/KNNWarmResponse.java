@@ -44,8 +44,7 @@ public class KNNWarmResponse extends BroadcastResponse implements ToXContentObje
     }
 
     @Override
-    public XContentBuilder toXContent(XContentBuilder xContentBuilder, Params params) throws IOException {
+    protected void addCustomXContentFields(XContentBuilder xContentBuilder, Params params) throws IOException {
         xContentBuilder.field(KNNConstants.REST_RESPONSE_SIZE, size);
-        return xContentBuilder;
     }
 }

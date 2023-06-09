@@ -50,7 +50,9 @@ public class KNNIndexShard {
     private List<String> findKNNVectorMetaFiles(SegmentReader reader) throws IOException {
         List<String> suffixList = new ArrayList<>(), metaFiles = new ArrayList<>();
         suffixList.add(KNNConstants.HNSW_VECTOR_INDEX_META_EXTENSION);
+        suffixList.add(KNNConstants.HNSW_VECTOR_INDEX_META_EXTENSION + KNNConstants.COMPOUND_EXTENSION);
         suffixList.add(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION);
+        suffixList.add(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION + KNNConstants.COMPOUND_EXTENSION);
         for (String suffix : suffixList) {
             List<String> fileNames = reader.getSegmentInfo().files().stream()
                     .filter(fileName -> fileName.endsWith(suffix))
@@ -75,7 +77,8 @@ public class KNNIndexShard {
             List<String> metaFiles = findKNNVectorMetaFiles(reader);
             for (String metaFile : metaFiles) {
                 String metaFilePath = PathUtils.get(directory, metaFile).toString();
-                KNNIndexMeta indexMeta = metaFile.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION) ?
+                KNNIndexMeta indexMeta = metaFile.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION) ||
+                        metaFile.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION + KNNConstants.COMPOUND_EXTENSION) ?
                         KNNUtil.readKNNMeta(metaFilePath, FAISSIndexMeta.class) :
                         KNNUtil.readKNNMeta(metaFilePath, HNSWIndexMeta.class);
                 indexMeta.path = PathUtils.get(directory, indexMeta.file).toString();

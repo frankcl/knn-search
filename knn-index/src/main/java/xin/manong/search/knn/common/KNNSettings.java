@@ -42,6 +42,7 @@ public class KNNSettings {
     private static final int DEFAULT_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE = 85;
     private static final int MAX_INDEX_THREAD_QUANTITY = 32;
     private static final int DEFAULT_HNSW_INDEX_SCALE = 500000;
+    private static final int MIN_HNSW_INDEX_SCALE = 10000;
     private static final int DEFAULT_M = 16;
     private static final int DEFAULT_EF_SEARCH = 512;
     private static final int DEFAULT_EF_CONSTRUCTION = 512;
@@ -89,6 +90,8 @@ public class KNNSettings {
             KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE, DEFAULT_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE,
             0, 100, NodeScope, Dynamic);
 
+    public static final Setting<Integer> KNN_INDEX_MAX_HNSW_INDEX_SCALE_SETTING = Setting.intSetting(
+            KNN_INDEX_MAX_HNSW_INDEX_SCALE, DEFAULT_HNSW_INDEX_SCALE, MIN_HNSW_INDEX_SCALE, IndexScope);
     public static final Setting<Integer> KNN_INDEX_M_SETTING = Setting.intSetting(
             KNN_INDEX_M, DEFAULT_M, KNNConstants.MIN_M, IndexScope);
     public static final Setting<Integer> KNN_INDEX_EF_SEARCH_SETTING = Setting.intSetting(
@@ -161,6 +164,7 @@ public class KNNSettings {
                 KNN_GLOBAL_INDEX_THREAD_QUANTITY_SETTING,
                 KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_TRIGGERED_SETTING,
                 KNN_GLOBAL_MEMORY_CIRCUIT_BREAKER_UNSET_PERCENTAGE_SETTING,
+                KNN_INDEX_MAX_HNSW_INDEX_SCALE_SETTING,
                 KNN_INDEX_M_SETTING,
                 KNN_INDEX_EF_SEARCH_SETTING,
                 KNN_INDEX_EF_CONSTRUCTION_SETTING,

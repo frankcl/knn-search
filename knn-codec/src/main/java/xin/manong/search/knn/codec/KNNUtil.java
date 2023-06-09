@@ -18,6 +18,8 @@ import xin.manong.search.knn.index.KNNIndexMeta;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,8 +153,10 @@ public class KNNUtil {
      * @throws IOException
      */
     public static void writeKNNMeta(KNNIndexMeta indexMeta, String path) throws IOException {
-        byte[] bytes = JSON.toJSONString(indexMeta, SerializerFeature.DisableCircularReferenceDetect,
-                SerializerFeature.PrettyFormat).getBytes(Charset.forName(CHARSET_UTF8));
+        byte[] bytes = AccessController.doPrivileged((PrivilegedAction<byte[]>) () ->
+                JSON.toJSONString(indexMeta, SerializerFeature.DisableCircularReferenceDetect,
+                        SerializerFeature.PrettyFormat).getBytes(Charset.forName(CHARSET_UTF8)));
+        if (bytes == null) throw new IOException("serialize index meta failed");
         try (DataOutputStream output = new DataOutputStream(new FileOutputStream(path))) {
             output.writeInt(bytes.length);
             output.write(bytes, 0, bytes.length);
@@ -172,7 +176,8 @@ public class KNNUtil {
         try (DataInputStream input = new DataInputStream(new FileInputStream(path))){
             byte[] bytes = new byte[input.readInt()];
             input.read(bytes, 0, bytes.length);
-            return JSON.parseObject(new String(bytes, Charset.forName(CHARSET_UTF8)), c);
+            return AccessController.doPrivileged((PrivilegedAction<T>) () ->
+                    JSON.parseObject(new String(bytes, Charset.forName(CHARSET_UTF8)), c));
         }
     }
 

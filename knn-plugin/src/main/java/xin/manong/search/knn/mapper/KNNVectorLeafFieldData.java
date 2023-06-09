@@ -3,6 +3,7 @@ package xin.manong.search.knn.mapper;
 import org.apache.lucene.index.BinaryDocValues;
 import org.apache.lucene.index.DocValues;
 import org.apache.lucene.index.LeafReader;
+import org.elasticsearch.index.fielddata.FieldData;
 import org.elasticsearch.index.fielddata.LeafFieldData;
 import org.elasticsearch.index.fielddata.ScriptDocValues;
 import org.elasticsearch.index.fielddata.SortedBinaryDocValues;
@@ -46,6 +47,10 @@ public class KNNVectorLeafFieldData implements LeafFieldData {
 
     @Override
     public SortedBinaryDocValues getBytesValues() {
-        throw new UnsupportedOperationException("unsupported operation");
+        try {
+            return FieldData.singleton(DocValues.getBinary(reader, fieldName));
+        } catch (IOException e) {
+            throw new IllegalStateException(String.format("load doc values failed for field[%s]", fieldName), e);
+        }
     }
 }

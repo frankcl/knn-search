@@ -41,12 +41,12 @@
     </modules>
 
     <properties>
-        <jdk.version>8</jdk.version>
+        <jdk.version>11</jdk.version>
         <log4j.version>2.20.0</log4j.version>
         <lombok.version>1.18.26</lombok.version>
         <guava.version>31.1-jre</guava.version>
         <elasticsearch.version>7.10.2</elasticsearch.version>
-        <fastjson.version>2.0.12</fastjson.version>
+        <fastjson.version>2.0.33</fastjson.version>
         <knn-search.version>0.0.1</knn-search.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

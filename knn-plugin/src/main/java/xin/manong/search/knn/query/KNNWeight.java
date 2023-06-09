@@ -58,7 +58,8 @@ public class KNNWeight extends Weight {
         String metaFile = findKNNVectorMetaFile(reader);
         if (Strings.isNullOrEmpty(metaFile)) return null;
         String metaFilePath = PathUtils.get(directory, metaFile).toString();
-        KNNIndexMeta indexMeta = metaFile.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION) ?
+        KNNIndexMeta indexMeta = metaFile.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION) ||
+                metaFile.endsWith(KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION + KNNConstants.COMPOUND_EXTENSION) ?
                 KNNUtil.readKNNMeta(metaFilePath, FAISSIndexMeta.class) :
                 KNNUtil.readKNNMeta(metaFilePath, HNSWIndexMeta.class);
         indexMeta.path = PathUtils.get(directory, indexMeta.file).toString();
@@ -126,8 +127,16 @@ public class KNNWeight extends Weight {
      */
     private String findKNNVectorMetaFile(SegmentReader reader) throws IOException {
         List<String> suffixList = new ArrayList<>();
-        suffixList.add(String.format("_%s%s", query.field, KNNConstants.HNSW_VECTOR_INDEX_META_EXTENSION));
-        suffixList.add(String.format("_%s%s", query.field, KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION));
+        suffixList.add(String.format("_%s%s", query.field,
+                KNNConstants.HNSW_VECTOR_INDEX_META_EXTENSION));
+        suffixList.add(String.format("_%s%s%s", query.field,
+                KNNConstants.HNSW_VECTOR_INDEX_META_EXTENSION,
+                KNNConstants.COMPOUND_EXTENSION));
+        suffixList.add(String.format("_%s%s", query.field,
+                KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION));
+        suffixList.add(String.format("_%s%s%s", query.field,
+                KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION,
+                KNNConstants.COMPOUND_EXTENSION));
         for (String suffix : suffixList) {
             List<String> metaFiles = reader.getSegmentInfo().files().stream()
                     .filter(fileName -> fileName.endsWith(suffix))
