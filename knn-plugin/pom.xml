@@ -38,6 +38,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
+                    <finalName>knn-search-${knn-search.version}</finalName>
                     <descriptors>
                         <descriptor>package/assembly.xml</descriptor>
                     </descriptors>
