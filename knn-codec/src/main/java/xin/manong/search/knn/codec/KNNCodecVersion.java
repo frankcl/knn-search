@@ -2,6 +2,8 @@ package xin.manong.search.knn.codec;
 
 import lombok.Getter;
 import org.apache.lucene.codecs.Codec;
+import org.apache.lucene.codecs.lucene50.Lucene50CompoundFormat;
+import org.apache.lucene.codecs.lucene80.Lucene80DocValuesFormat;
 import org.apache.lucene.codecs.lucene87.Lucene87Codec;
 
 import java.util.function.Function;
@@ -19,8 +21,8 @@ public enum KNNCodecVersion {
             "KNNCodec",
             new Lucene87Codec(),
             delegate -> new KNNVectorFormatFacade(
-                    new KNNVectorDocValuesFormat(delegate.docValuesFormat()),
-                    new KNNVectorCompoundFormat(delegate.compoundFormat())),
+                    new KNNVectorDocValuesFormat(new Lucene80DocValuesFormat()),
+                    new KNNVectorCompoundFormat(new Lucene50CompoundFormat())),
             userCodec -> new KNNCodec(userCodec)
     );
 

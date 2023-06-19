@@ -1,9 +1,7 @@
 package xin.manong.search.knn.codec;
 
-import org.apache.lucene.codecs.Codec;
-import org.apache.lucene.codecs.CompoundFormat;
-import org.apache.lucene.codecs.DocValuesFormat;
-import org.apache.lucene.codecs.FilterCodec;
+import org.apache.lucene.codecs.*;
+import org.apache.lucene.codecs.perfield.PerFieldDocValuesFormat;
 
 /**
  * KNNCodec实现
@@ -16,6 +14,7 @@ public class KNNCodec extends FilterCodec {
     public static final KNNCodecVersion VERSION = KNNCodecVersion.CURRENT;
 
     protected KNNVectorFormatFacade formatFacade;
+    private final DocValuesFormat perFieldDocValuesFormat;
 
     public KNNCodec() {
         this(VERSION.getCodecDelegate());
@@ -24,11 +23,17 @@ public class KNNCodec extends FilterCodec {
     public KNNCodec(Codec delegate) {
         super(VERSION.getCodecName(), delegate);
         this.formatFacade = VERSION.getFormatFacadeSupplier().apply(delegate);
+        this.perFieldDocValuesFormat = new PerFieldDocValuesFormat() {
+            @Override
+            public DocValuesFormat getDocValuesFormatForField(String field) {
+                return formatFacade.docValuesFormat();
+            }
+        };
     }
 
     @Override
     public DocValuesFormat docValuesFormat() {
-        return formatFacade.docValuesFormat();
+        return perFieldDocValuesFormat;
     }
 
     @Override

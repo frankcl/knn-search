@@ -32,9 +32,9 @@ public class KNNVectorDocValuesProducer extends EmptyDocValuesProducer {
             for (int i = 0; i < mergeState.docValuesProducers.length; i++) {
                 DocValuesProducer producer = mergeState.docValuesProducers[i];
                 if (producer == null) continue;
-                FieldInfo subField = mergeState.fieldInfos[i].fieldInfo(field.name);
-                if (subField == null || subField.getDocValuesType() != DocValuesType.BINARY) continue;
-                BinaryDocValues docValues = producer.getBinary(subField);
+                FieldInfo fieldInfo = mergeState.fieldInfos[i].fieldInfo(field.name);
+                if (fieldInfo == null || fieldInfo.getDocValuesType() != DocValuesType.BINARY) continue;
+                BinaryDocValues docValues = producer.getBinary(fieldInfo);
                 if (docValues != null) subReaders.add(new KNNVectorDocValuesSub(mergeState.docMaps[i], docValues));
             }
             return new KNNVectorDocValues(DocIDMerger.of(subReaders, mergeState.needsIndexSort));
