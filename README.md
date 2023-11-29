@@ -12,37 +12,44 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
   * 优势：对向量进行降维量化，压缩存储，占用空间小
   * 缺点：准召率相比图算法有一定损失 
 
-## 2. knn-search插件生成和安装
+## 2. Linux环境准备
 
-### 2.1. Linux环境及工具依赖
-- [x] JDK：1.8或更高版本
-- [x] gcc：4.8或更高版本
-- [x] gcc-c++：4.8或更高版本
-- [x] cmake：版本3或更高版本
-- [x] openblas-devel
-- [x] autoconf
-- [x] unzip
-- [x] jemalloc
-- [x] nmslib：版本2.1.1
-- [x] faiss：版本1.7.3
+### 依赖模块
 
-#### 2.1.1. 安装jemalloc
-打开性能检测开关：--enable-prof
+- [x] JDK：1.8或更高版本（编译运行依赖）
+- [x] gcc：4.8或更高版本（编译依赖）
+- [x] gcc-c++：4.8或更高版本 （编译依赖）
+- [x] cmake：版本3或更高版本 （编译依赖）
+- [x] openblas-devel （编译运行依赖）
+- [x] autoconf （编译依赖）
+- [x] jemalloc （编译运行依赖）
+- [x] nmslib：版本2.1.1 （编译运行依赖）
+- [x] faiss：版本1.7.3 （编译运行依赖）
+
+### 编译安装jemalloc
+
+FACEBOOK内存分配：解决默认内存分配模块造成内存碎片问题。底层向量检索使用三方C++完成，会产生内存碎片
+
+编译时建议打开性能检测开关：--enable-prof
 ```shell
 ./configure --enable-prof
 make
 make install
 ```
 
-#### 2.1.2. 编译nmslib
-静态库生成地址：similarity_search/release/libNonMetricSpaceLib.a
+### 编译安装nmslib
+开源第三方非量化向量检索库：采用非量化图算法HNSW进行向量相似性搜索，精准度高，费内存
+
+编译源码后静态库位置：similarity_search/release/libNonMetricSpaceLib.a
 ```shell
 cd similarity_search
 cmake .
 make
 ```
 
-#### 2.1.3. 安装faiss
+### 编译安装faiss
+FACEBOOK开源量化向量检索库：支持Product Quantization等量化向量相似性检索，向量量化压缩后内存使用显著下降，以牺牲少量精度为代价
+
 不使用GPU，不支持python接口，生成动态链接库
 ```shell
 cmake -B build . -DFAISS_ENABLE_GPU=OFF -DFAISS_ENABLE_PYTHON=OFF -DBUILD_SHARED_LIBS=ON
@@ -50,14 +57,14 @@ make -C build -j4 faiss
 make -C build install
 ```
 
-### 2.2. 生成knn-search插件
+## 3. 编译构建knn向量插件
 
-1. 下载knn-search代码
+### 下载knn-search代码
 ```shell
 git clone https://github.com/frankcl/knn-search.git
 ```
 
-2. 构建JNI相关动态链接库
+### 构建JNI动态链接库
 
 修改编译选项：knn-search/knn-index/cpp/knn/make_common.dep
 ```shell
@@ -66,25 +73,37 @@ JAVA_HOME = xxx
 # 修改nmslib编译目录，具体参见nmslib编译
 NMSLIB_DIR = xxx
 ```
-编译生成动态链接库
+编译生成JNI动态链接库
 ```shell
 cd knn-search/knn-index/cpp/knn/jni
 make
 make install
 ```
 
-3. 生成knn-search插件(根据不同操作系统配置-P参数，Linux：-P linux，Mac：-P mac)
+### 构建knn向量插件
+
+根据不同操作系统配置maven环境参数 
+ * Linux：-P linux
+ * Mac：-P mac
+
 ```shell
 cd knn-search
 mvn package -P linux
 ```
-插件package地址：knn-search/knn-plugin/target/knn-search-0.0.1-package.zip
+生成插件位置：knn-search/knn-plugin/target/knn-search-0.0.1-package.zip
 
-### 2.3. 安装knn-search插件
+## 4. 安装knn向量插件
 
-1. 下载elasticsearch，版本7.10.2（ElasticSearch位置${ES_HOME}）
+### 下载elasticsearch
 
-2. 修改elasticsearch启动脚本：${ES_HOME}/bin/elasticsearch，支持jemalloc
+版本7.10.2，ElasticSearch位置定义为${ES_HOME}
+
+### 修改elasticsearch启动脚本
+
+脚本位置：${ES_HOME}/bin/elasticsearch
+
+使用jemalloc替换默认内存分配模块
+
 ```shell
 #根据实际情况设置ElasticSearch路径
 ES_HOME=xxx
@@ -93,24 +112,34 @@ export LD_PRELOAD=/usr/local/lib/libjemalloc.so
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ES_HOME}/plugins/knn-search
 ```
 
-3. 修改jvm配置：${ES_HOME}/config/jvm.options，定义jni动态库加载路径
+### 修改JVM配置
+
+JVM配置位置：${ES_HOME}/config/jvm.options
+
+定义依赖第三方向量搜索及JNI相关动态库加载路径
+
 ```shell
 #根据实际情况设置ElasticSearch路径ES_HOME
 -Djava.library.path=${ES_HOME}/plugins/knn-search
 ```
 
-4. 根据实际情况配置ElasticSearch：${ES_HOME}/config/elasticsearch.yml
+### 修改ElasticSearch配置
 
-5. 安装knn-search插件
+配置文件位置：${ES_HOME}/config/elasticsearch.yml
+
+根据实际情况修改配置
+
+### 安装knn向量插件
+
 ```shell
 cd ${ES_HOME}
 #根据实际情况修改knn-search插件路径
 ./bin/elasticsearch-plugin install file:///knn-search/knn-plugin/target/knn-search-0.0.1-package.zip
 ```
 
-## 3. 向量索引定义及搜索
+## 5. 向量索引定义及搜索
 
-### 3.1. 向量索引定义
+### 向量索引定义
 
 定义索引test_index，向量字段feature，维度为3
 
@@ -129,7 +158,7 @@ PUT /test_index
   "mappings": {
     "_source": {
       "excludes": [
-        "feature"                                             //向量字段不进source，节省空间
+        "feature"                                             //向量字段不存储source，节省空间
       ]
     },
     "properties": {
@@ -142,7 +171,7 @@ PUT /test_index
 }
 ```
 
-### 3.2. 插入数据
+### 插入数据
 
 ```json
 PUT /test_index/_doc/1
@@ -151,7 +180,7 @@ PUT /test_index/_doc/1
 }
 ```
 
-### 3.3. 搜索数据
+### 搜索数据
 
 ```json
 GET /test_index/_search
@@ -169,7 +198,7 @@ GET /test_index/_search
       }
     }
   },
-  "docvalue_fields": [                      //返回原始向量信息                   
+  "docvalue_fields": [                      //返回原始向量信息，从docValue读取向量数据                   
     {
       "field": "feature"
     }
