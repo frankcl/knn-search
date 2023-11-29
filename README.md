@@ -60,13 +60,17 @@ make -C build install
 ## 3. 编译构建knn向量插件
 
 ### 下载knn-search代码
+
+定义工作目录为${work_dir}
+
 ```shell
+cd ${work_dir}
 git clone https://github.com/frankcl/knn-search.git
 ```
 
 ### 构建JNI动态链接库
 
-修改编译选项：knn-search/knn-index/cpp/knn/make_common.dep
+修改编译选项：${work_dir}/knn-search/knn-index/cpp/knn/make_common.dep
 ```shell
 # 修改JAVA主目录
 JAVA_HOME = xxx
@@ -75,7 +79,7 @@ NMSLIB_DIR = xxx
 ```
 编译生成JNI动态链接库
 ```shell
-cd knn-search/knn-index/cpp/knn/jni
+cd ${work_dir}/knn-search/knn-index/cpp/knn/jni
 make
 make install
 ```
@@ -87,10 +91,10 @@ make install
  * Mac：-P mac
 
 ```shell
-cd knn-search
+cd ${work_dir}/knn-search
 mvn package -P linux
 ```
-生成插件位置：knn-search/knn-plugin/target/knn-search-0.0.1-package.zip
+生成插件位置：${work_dir}/knn-search/knn-plugin/target/knn-search-0.0.1-package.zip
 
 ## 4. 安装knn向量插件
 
@@ -134,7 +138,7 @@ JVM配置位置：${ES_HOME}/config/jvm.options
 ```shell
 cd ${ES_HOME}
 #根据实际情况修改knn-search插件路径
-./bin/elasticsearch-plugin install file:///knn-search/knn-plugin/target/knn-search-0.0.1-package.zip
+./bin/elasticsearch-plugin install file:///${work_dir}/knn-search/knn-plugin/target/knn-search-0.0.1-package.zip
 ```
 
 ## 5. 向量索引定义及搜索
