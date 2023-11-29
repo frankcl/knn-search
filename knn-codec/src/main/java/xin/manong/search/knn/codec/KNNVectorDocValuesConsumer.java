@@ -6,8 +6,9 @@ import org.apache.lucene.codecs.DocValuesConsumer;
 import org.apache.lucene.codecs.DocValuesProducer;
 import org.apache.lucene.index.*;
 import xin.manong.search.knn.codec.writer.KNNVectorWriter;
-import xin.manong.search.knn.codec.writer.KNNVectorWriterSelector;
+import xin.manong.search.knn.codec.writer.KNNSelector;
 import xin.manong.search.knn.common.KNNConstants;
+import xin.manong.search.knn.index.KNNIndexData;
 
 import java.io.IOException;
 
@@ -48,15 +49,14 @@ public class KNNVectorDocValuesConsumer extends DocValuesConsumer {
      */
     private void addKNNVectorBinaryField(FieldInfo field, DocValuesProducer producer) throws IOException {
         BinaryDocValues docValues = producer.getBinary(field);
-        KNNVectorFacade knnVectorFacade = KNNUtil.parseKNNVectors(docValues);
-        if (knnVectorFacade.vectors.length == 0 || knnVectorFacade.docIDs.length == 0) {
-            logger.warn("skip KNN index building as no vector data in segment[{}] for field[{}]",
-                    state.segmentInfo.name, field.name);
+        KNNIndexData indexData = KNNUtil.parseKNNVectors(docValues);
+        if (indexData.data.length == 0 || indexData.ids.length == 0) {
+            logger.warn("no vector found in segment[{}] for field[{}]", state.segmentInfo.name, field.name);
             return;
         }
         String index = field.getAttribute(KNNConstants.FIELD_ATTRIBUTE_INDEX);
-        KNNVectorWriter writer = KNNVectorWriterSelector.select(knnVectorFacade.vectors.length, index);
-        writer.write(knnVectorFacade, state, field);
+        KNNVectorWriter writer = KNNSelector.select(indexData.data.length, index);
+        writer.write(indexData, state, field);
     }
 
     /**

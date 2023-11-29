@@ -8,7 +8,6 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.FilterDirectory;
 import xin.manong.search.knn.cache.KNNIndexCache;
 import xin.manong.search.knn.codec.KNNUtil;
-import xin.manong.search.knn.codec.KNNVectorFacade;
 import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.common.KNNSettings;
 import xin.manong.search.knn.index.KNNIndexData;
@@ -52,15 +51,14 @@ public abstract class KNNVectorWriter {
     /**
      * KNN向量数据文件写入
      *
-     * @param knnVectorFacade KNN向量
-     * @param indexMeta 向量索引meta信息
+     * @param indexData 索引数据
+     * @param indexMeta 索引meta
      * @param writeState lucene索引segment状态信息
      * @throws IOException
      */
-    protected void writeData(KNNVectorFacade knnVectorFacade,
+    protected void writeData(KNNIndexData indexData,
                              KNNIndexMeta indexMeta,
                              SegmentWriteState writeState) throws IOException {
-        KNNIndexData indexData = new KNNIndexData(knnVectorFacade.docIDs, knnVectorFacade.vectors);
         boolean status = AccessController.doPrivileged((PrivilegedAction<Boolean>) () ->
                 indexFactory.build(indexData, indexMeta));
         if (!status) {
@@ -97,16 +95,16 @@ public abstract class KNNVectorWriter {
     /**
      * KNN向量写入
      *
-     * @param knnVectorFacade 向量数据封装
+     * @param indexData 向量数据
      * @param writeState segment信息
      * @param field 字段信息
      */
-    public void write(KNNVectorFacade knnVectorFacade,
+    public void write(KNNIndexData indexData,
                       SegmentWriteState writeState,
                       FieldInfo field) throws IOException {
         Long startTime = System.currentTimeMillis();
-        KNNIndexMeta indexMeta = buildIndexMeta(knnVectorFacade, writeState, field);
-        writeData(knnVectorFacade, indexMeta, writeState);
+        KNNIndexMeta indexMeta = buildIndexMeta(indexData, writeState, field);
+        writeData(indexData, indexMeta, writeState);
         writeMeta(indexMeta, writeState);
         if (!KNNSettings.isLazyLoad()) KNNIndexCache.getInstance().get(indexMeta);
         logger.info("build KNN index success for index[{}], field[{}] and file[{}], spend time[{}]",
@@ -116,12 +114,12 @@ public abstract class KNNVectorWriter {
     /**
      * 构建KNN索引meta信息
      *
-     * @param knnVectorFacade 向量数据封装
+     * @param indexData 向量数据
      * @param writeState segment信息
      * @param field 字段信息
      * @return KNN索引meta信息
      */
-    public abstract KNNIndexMeta buildIndexMeta(KNNVectorFacade knnVectorFacade,
+    public abstract KNNIndexMeta buildIndexMeta(KNNIndexData indexData,
                                                 SegmentWriteState writeState,
                                                 FieldInfo field);
 }

@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * KNN向量写入器选择器
+ * KNN向量写入选择器
  *
  * @author frankcl
  * @date 2023-05-10 15:59:38
  */
-public class KNNVectorWriterSelector {
+public class KNNSelector {
 
-    private static final Logger logger = LogManager.getLogger(KNNVectorWriterSelector.class);
+    private static final Logger logger = LogManager.getLogger(KNNSelector.class);
 
     private static final Map<Class<? extends KNNVectorWriter>, KNNVectorWriter> WRITER_MAP = new HashMap<>();
 

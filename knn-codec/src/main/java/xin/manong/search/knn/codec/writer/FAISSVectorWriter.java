@@ -4,9 +4,9 @@ import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.SegmentWriteState;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.FilterDirectory;
-import xin.manong.search.knn.codec.KNNVectorFacade;
 import xin.manong.search.knn.common.KNNConstants;
 import xin.manong.search.knn.common.KNNSettings;
+import xin.manong.search.knn.index.KNNIndexData;
 import xin.manong.search.knn.index.KNNIndexMeta;
 import xin.manong.search.knn.index.faiss.FAISSConstants;
 import xin.manong.search.knn.index.faiss.FAISSIndex;
@@ -30,7 +30,7 @@ public class FAISSVectorWriter extends KNNVectorWriter {
     }
 
     @Override
-    public KNNIndexMeta buildIndexMeta(KNNVectorFacade knnVectorFacade, SegmentWriteState writeState, FieldInfo field) {
+    public KNNIndexMeta buildIndexMeta(KNNIndexData indexData, SegmentWriteState writeState, FieldInfo field) {
         String index = field.attributes().get(KNNConstants.FIELD_ATTRIBUTE_INDEX);
         String fileName = String.format("%s_%s_%s%s", writeState.segmentInfo.name, FAISSIndex.VERSION,
                 field.name, KNNConstants.FAISS_VECTOR_INDEX_DATA_EXTENSION);
@@ -55,7 +55,7 @@ public class FAISSVectorWriter extends KNNVectorWriter {
                 field(field.name).
                 file(fileName).
                 path(tempFilePath).
-                num(knnVectorFacade.docIDs.length).
+                num(indexData.ids.length).
                 dimension(Integer.parseInt(field.attributes().get(KNNConstants.FIELD_ATTRIBUTE_DIMENSION)));
         return builder.build();
     }

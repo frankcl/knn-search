@@ -14,6 +14,7 @@ import org.apache.lucene.store.IndexOutput;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.IOUtils;
 import xin.manong.search.knn.common.KNNConstants;
+import xin.manong.search.knn.index.KNNIndexData;
 import xin.manong.search.knn.index.KNNIndexMeta;
 
 import java.io.*;
@@ -43,10 +44,7 @@ public class KNNUtil {
      * @return cosine距离
      */
     public static float computeCosineDistance(float[] vector1, float[] vector2) {
-        if (vector1.length != vector2.length) {
-            throw new RuntimeException(String.format("length is not consistent for vector1[%d] and vector2[%d]",
-                    vector1.length, vector2.length));
-        }
+        if (vector1.length != vector2.length) throw new IllegalArgumentException("vector length are not consistent");
         float m = 0f, s1 = 0f, s2 = 0f;
         for (int k = 0; k < vector1.length; k++) {
             m += vector1[k] * vector2[k];
@@ -78,7 +76,8 @@ public class KNNUtil {
      * @throws IOException
      */
     public static float[] byteRefToFloatArray(BytesRef bytesRef) throws IOException {
-        try (ByteArrayInputStream byteStream = new ByteArrayInputStream(bytesRef.bytes);
+        try (ByteArrayInputStream byteStream = new ByteArrayInputStream(
+                bytesRef.bytes, bytesRef.offset, bytesRef.length);
              ObjectInputStream objectStream = new ObjectInputStream(byteStream)) {
             return (float[]) objectStream.readObject();
         } catch (ClassNotFoundException e) {
@@ -109,15 +108,15 @@ public class KNNUtil {
      * @return KNN向量数据
      * @throws IOException
      */
-    public static KNNVectorFacade parseKNNVectors(BinaryDocValues docValues) throws IOException {
-        ArrayList<float[]> vectors = new ArrayList<>();
-        ArrayList<Integer> docs = new ArrayList<>();
-        for (int id = docValues.nextDoc(); id != DocIdSetIterator.NO_MORE_DOCS; id = docValues.nextDoc()) {
+    public static KNNIndexData parseKNNVectors(BinaryDocValues docValues) throws IOException {
+        List<Integer> docIDs = new ArrayList<>();
+        List<float[]> vectors = new ArrayList<>();
+        for (int docID = docValues.nextDoc(); docID != DocIdSetIterator.NO_MORE_DOCS; docID = docValues.nextDoc()) {
+            docIDs.add(docID);
             vectors.add(byteRefToFloatArray(docValues.binaryValue()));
-            docs.add(id);
         }
-        return new KNNVectorFacade(docs.stream().mapToInt(Integer::intValue).toArray(),
-                vectors.toArray(new float[][]{}));
+        return new KNNIndexData(docIDs.stream().mapToInt(Integer::intValue).toArray(),
+                vectors.toArray(new float[][] {}));
     }
 
     /**
@@ -142,7 +141,7 @@ public class KNNUtil {
                     KNNConstants.FAISS_VECTOR_INDEX_META_EXTENSION);
         }
         logger.error("unexpected index data file name[{}]", indexDataFileName);
-        throw new RuntimeException(String.format("unexpected index data file name[%s]", indexDataFileName));
+        throw new IllegalArgumentException(String.format("unexpected index data file name[%s]", indexDataFileName));
     }
 
     /**
