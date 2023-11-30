@@ -38,7 +38,7 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
   * 向量索引文件构建完成后，将其加载进入内存，由KNNIndexCache管理向量索引，对外提供向量搜索能力
 * 数据合并：数据合并过程遵守ElasticSearch LSM模型，数据合并完成后生成新的segment文件
   * 生成新的向量字段docValue文件
-  * 基于新的docValue的向量数据构建向量索引文件
+  * 基于新的docValue的向量数据构建向量索引文件，由于合并导致数据量变化，向量索引类型可能改变
   * 将新构建向量索引加载进KNNIndexCache，合并使用的向量索引从KNNIndexCache中删除
 * 数据检索：基于KNNIndexCache和docValue检索数据
   * 根据搜索向量搜索所有segment对应KNNIndexCache中的向量索引，获取top K结果
