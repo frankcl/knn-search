@@ -81,7 +81,7 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
 
 定义索引test_index，向量字段feature，维度为3
 
-```json
+```text
 PUT /test_index
 {
   "settings" : {
@@ -111,7 +111,7 @@ PUT /test_index
 
 ### 插入数据
 
-```json
+```text
 PUT /test_index/_doc/1
 {
   "feature" : [1.0, 2.0, 3.0]
@@ -120,7 +120,7 @@ PUT /test_index/_doc/1
 
 ### 搜索数据
 
-```json
+```text
 GET /test_index/_search
 {
   "size": 3,                                //返回数据规模
