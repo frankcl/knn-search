@@ -14,6 +14,23 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
 
 ## 2. 架构原理
 
+基于ElasticSearch提供的插件机制，开发knn-search插件，支持向量搜索
+
+* 新增向量字段field定义：
+  * 类型：knn-vector
+  * 向量维数：dimension
+  * 数据：多维浮点型数组，使用BinaryDocValues进行存储
+* 新增向量搜索query定义：
+  * query名：knn
+  * 查询向量：vector
+  * 召回最近邻数量：k
+* 向量索引及搜索
+  * 底层使用nmslib和FAISS进行向量索引构建，小规模数据使用nmslib构建HNSW索引，大规模数据使用FAISS构建量化索引（节省内存）
+  * 向量索引构建：与向量字段的docValue一一对应，在docValue构建完成之后，基于其构建向量索引文件，索引文件构建完成之后将向量索引加载进内存KNNIndexCache
+  * 向量搜索：在KNNIndexCache中查询搜索向量，返回top K查询结果（多shard多segment结果进行merge）
+
+![knn_architecture](https://github.com/frankcl/knn-search/blob/main/image/knn_architecture.png)
+
 ## 3. 使用指南
 
 ### 向量索引定义
