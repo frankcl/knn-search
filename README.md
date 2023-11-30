@@ -31,6 +31,20 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
 
 ![knn_architecture](https://github.com/frankcl/knn-search/blob/main/image/knn_architecture.png)
 
+* 数据写入：数据写入过程遵守ElasticSearch LSM模型，数据先写入MemoryBuffer，当MemoryBuffer写满后生成segment文件
+  * 向量字段生成docValue文件，使用BinaryDocValues存储向量字段
+  * 利用docValue中的向量数据构建向量索引文件，小规模数据使用HNSW向量索引，大规模数据使用量化向量索引
+  * 向量索引文件构建完成后，将其加载进入内存，由KNNIndexCache管理向量索引，对外提供向量搜索能力
+* 数据合并：数据写入过程遵守ElasticSearch LSM模型，数据合并完成后生成新的segment文件
+  * 生成新的向量字段docValue文件
+  * 基于新的docValue的向量数据构建向量索引文件
+  * 将新构建向量索引加载进KNNIndexCache，合并使用的向量索引从KNNIndexCache中删除
+* 数据检索：基于KNNIndexCache和docValue检索数据
+  * 根据搜索向量搜索所有segment对应KNNIndexCache中的向量索引，获取top K结果
+  * 合并所有segment查询结果，取top K作为最终结果
+  * 由于各个segment向量索引类型不一致（fvd和hvd向量相似度标准有差异），对segment搜索结果需要进行reRanking，统一向量相似度标准
+  * 如果需要获取原始向量，可以通过docValue获取
+
 ## 3. 使用指南
 
 ### 向量索引定义
