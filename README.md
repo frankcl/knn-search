@@ -83,6 +83,15 @@ GET /test_index/_search
 }
 ```
 
-## 4. 安装指南
+## 4. 相关依赖
+
+| 模块/组件         | 版本     | 说明                      |
+|:--------------|:-------|:------------------------|
+| JDK           | 大于等于11 | Java编译运行支持，版本1.8存在死锁bug |
+ | ElasticSearch | 7.10.2 | 全文搜索引擎                  |
+ | FAISS         | 1.7.3  | 量化向量检索库                 |
+| nmslib        | 2.1.1  | 非量化向量检索库                |
+
+## 5. 安装指南
 
 安装指南：[链接](https://github.com/frankcl/knn-search/blob/main/INSTALL.md)
