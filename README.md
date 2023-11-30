@@ -27,7 +27,7 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
   * 召回最近邻数量：k
 * 向量索引及搜索
   * 底层使用nmslib和FAISS进行向量索引构建，小规模数据使用nmslib构建HNSW索引，大规模数据使用FAISS构建量化索引（节省内存）
-  * 向量索引构建：与向量字段的docValue一一对应，在docValue构建完成之后，基于其构建向量索引文件，索引文件构建完成之后将向量索引加载进内存KNNIndexCache
+  * 向量索引构建：一个向量字段的docValue文件对应一个向量索引文件，在docValue构建完成之后，基于其构建向量索引文件，索引文件构建完成之后将向量索引加载进内存KNNIndexCache
   * 向量搜索：在KNNIndexCache中查询搜索向量，返回top K查询结果（多shard多segment结果进行merge）
 
 ![knn_architecture](https://github.com/frankcl/knn-search/blob/main/image/knn_architecture.png)
