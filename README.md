@@ -14,7 +14,21 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
 
 ## 2. 架构及原理
 
-### 2.1. 整体架构
+### 2.1. 代码模块
+
+* knn-index：抽象定义向量索引KNNIndex，封装向量索引相关操作（构建，搜索，打开和关闭等），支持两类向量索引
+  * HNSWIndex：封装nmslib，支持非量化图算法HNSW向量检索
+  * FAISSIndex：封装faiss，支持量化向量检索，量化索引选择策略详见[链接](https://github.com/frankcl/knn-search#22-%E7%B4%A2%E5%BC%95%E9%80%89%E6%8B%A9%E5%8F%8A%E5%86%85%E5%AD%98%E5%8D%A0%E7%94%A8)
+* knn-codec：扩展Lucene Codec，新增定义KNNCodec，支持向量字段的索引构建和加载
+* knn-plugin：扩展ElasticSearch插件，新增定义knn-search插件，支持向量字段写入和检索
+  * 向量字段定义：新增knn-vector类型字段，定义向量
+  * 向量搜索query定义：新增knn查询类型，定义向量检索方式
+  * 向量索引相关RESTFul接口定义：新增向量索引相关RESTFul接口
+    * 向量索引预热：提前加载向量索引到内存，防止因加载时间过长造成服务抖动
+    * 向量索引驱逐：驱逐指定索引内存占用
+    * 向量索引内存空间统计：获取向量索引内存空间占用情况
+
+### 2.2. 整体架构
 基于ElasticSearch提供的插件机制，开发knn-search插件，支持向量搜索
 
 * 新增向量字段field定义：
@@ -46,7 +60,7 @@ k最近邻搜素：基于ElasticSearch的向量搜索插件，根据数据规模
   * 由于各个segment向量索引类型不一致（fvd和hvd向量相似度标准有差异），对segment搜索结果需要进行reRanking，统一向量相似度标准
   * 如果需要获取原始向量，可以通过docValue获取
 
-### 2.2. 索引选择及内存占用
+### 2.3. 索引选择及内存占用
 
 * 量化索引和非量化索引选择：根据索引规模划分
   * 索引规模小于阈值选择非量化索引，否则选择量化索引
@@ -144,15 +158,40 @@ GET /test_index/_search
 }
 ```
 
+### 向量索引RESTFul接口
+
+* 预热索引：/knn/index/{index}/warm (index：索引名)
+* 驱逐索引：/knn/index/{index}/evict (index：索引名)
+* 索引内存统计
+  * 集群内存所有指标统计：/knn/stats
+  * 集群内存指定指标统计：/knn/stats/{stat} (stat：统计指标)
+  * 结点内存所有指标统计：/knn/node_stats/{node_id} (node_id：结点ID)
+  * 结点内存指定指标统计：/knn/node_stats/{node_id}/{stat} (node_id：结点ID，stat：统计指标)
+
+* 统计指标如下
+
+| 指标                        |            说明             |
+|---------------------------|:-------------------------:|
+| hit_count                 |           索引命中数           |
+ | miss_count                |           索引缺失数           |
+ | evict_count               |           索引驱逐数           |
+ | load_success_count        |          索引加载成功数          |
+ | load_fail_count           |          索引加载失败数          |
+ | total_load_time           |          索引加载时间           |
+ | memory_size               |       索引占用内存（单位：字节）       |
+ | memory_stats              | 索引占用内存，包含各向量字段内存占用（单位：字节） |
+ | cache_capacity_reached    |         是否达到内存上限          |
+ | circuit_breaker_triggered |        内存熔断机制是否触发         |
+
 ## 4. 相关依赖
 
-| 模块/组件         | 版本        | 说明                      |
-|:--------------|:----------|:------------------------|
-| JDK           | 大于等于11    | Java编译运行支持，版本1.8存在死锁bug |
- | ElasticSearch | 7.10.2    | 全文搜索引擎                  |
- | FAISS         | 1.7.3     | 量化向量检索库                 |
-| nmslib        | 2.1.1     | 非量化向量检索库                |
-| jemalloc      | 大于等于5.3.0 | 内存分配，解决内存碎片问题           |
+| 模块/组件         | 版本        | 开源下载地址                                                                          | 说明                      |
+|:--------------|:----------|:--------------------------------------------------------------------------------|:------------------------|
+| JDK           | 大于等于11    | [链接](https://www.oracle.com/cn/java/technologies/downloads/)                    | Java编译运行支持，版本1.8存在死锁bug |
+ | ElasticSearch | 7.10.2    | [链接](https://www.elastic.co/cn/downloads/past-releases#elasticsearch)           | 全文搜索引擎                  |
+ | FAISS         | 1.7.3     | [链接](https://github.com/facebookresearch/faiss/archive/refs/tags/v1.7.3.tar.gz) | 量化向量检索库                 |
+| nmslib        | 2.1.1     | [链接](https://github.com/nmslib/nmslib/archive/refs/tags/v2.1.1.tar.gz)          | 非量化向量检索库                |
+| jemalloc      | 大于等于5.3.0 | [链接](https://github.com/jemalloc/jemalloc/archive/refs/tags/5.3.0.tar.gz)       | 内存分配，解决内存碎片问题           |
 
 ## 5. 安装指南
 
