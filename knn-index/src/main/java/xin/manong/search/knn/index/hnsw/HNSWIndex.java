@@ -52,6 +52,10 @@ public class HNSWIndex extends KNNIndex {
 
     @Override
     public void open() {
+        if (pointer != 0L) {
+            logger.warn("HNSW index [{}] is already init", meta.path);
+            return;
+        }
         try {
             HNSWIndexMeta indexMeta = (HNSWIndexMeta) meta;
             if (meta == null || !meta.check()) {
