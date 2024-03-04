@@ -43,7 +43,6 @@ public abstract class KNNIndex {
         this.pointer = 0L;
         this.meta = meta;
         this.lock = new ReentrantReadWriteLock();
-        open();
     }
 
     /**
