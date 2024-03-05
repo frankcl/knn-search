@@ -52,7 +52,7 @@ public class FAISSIndex extends KNNIndex {
     @Override
     public void open() {
         if (pointer != 0L) {
-            logger.warn("FAISS index [{}] is already init", meta.path);
+            logger.warn("FAISS index[{}] has been opened", meta.path);
             return;
         }
         try {
@@ -68,7 +68,7 @@ public class FAISSIndex extends KNNIndex {
     @Override
     public void close() {
         if (pointer == 0L) {
-            logger.warn("FAISS index is not init");
+            logger.warn("FAISS index is not opened");
             return;
         }
         if (closed) {

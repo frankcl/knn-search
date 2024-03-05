@@ -53,7 +53,7 @@ public class HNSWIndex extends KNNIndex {
     @Override
     public void open() {
         if (pointer != 0L) {
-            logger.warn("HNSW index [{}] is already init", meta.path);
+            logger.warn("HNSW index[{}] has been opened", meta.path);
             return;
         }
         try {
@@ -74,7 +74,7 @@ public class HNSWIndex extends KNNIndex {
     @Override
     public void close() {
         if (pointer == 0L) {
-            logger.warn("HNSW index is not init");
+            logger.warn("HNSW index is not opened");
             return;
         }
         if (this.closed) {
